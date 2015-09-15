@@ -9,21 +9,19 @@
 	</title>
 	
 	<link rel="stylesheet" rev="stylesheet" href="<?php echo base_url();?>css/ospos.css" />
-	<link rel="stylesheet" rev="stylesheet" href="<?php echo base_url();?>css/ospos_print.css"  media="print"/>	
-	
+	<link rel="stylesheet" rev="stylesheet" href="<?php echo base_url();?>css/ospos_print.css"  media="print"/>		
 	<link rel="stylesheet" rev="stylesheet" href="<?php echo base_url('public/bootstrap/dist/css/bootstrap.css');?>" />
-	
-<style type="text/css">
-html {
-    overflow: auto;
-}
-</style>
-
 </head>
+
 <body>
 
-<section>
-	<?php $this->load->view("partial/_navigation"); ?>
+<section id="navigation">
+	<?php
+		if(isset($no_navigation))
+		{ 
+			$this->load->view("partial/_navigation");
+		} 
+	?>
 </section>
 
 <div id="content_area_wrapper" class="container">
