@@ -1,0 +1,13 @@
+{
+    "name": "sofyan_a/rinjanipos",
+    "description": "Best POS ever invented",
+    "require": {
+        "bcit-ci/CodeIgniter": "^3.0"
+    },
+    "authors": [
+        {
+            "name": "The Awesome Vyan",
+            "email": "sofyan.h.ahmad@gmail.com"
+        }
+    ]
+}
