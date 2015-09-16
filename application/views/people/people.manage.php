@@ -57,35 +57,59 @@ function post_person_form_submit(response)
 </script>
 
 <div id="title_bar">
-	<div id="title" class="float_left"><?php echo $this->lang->line('common_list_of').' '.$this->lang->line('module_'.$controller_name); ?></div>
+	
+	<h1 class="pull-left">
+		<?php echo $this->lang->line('common_list_of').' '.$this->lang->line('module_'.$controller_name); ?>
+	</h1>
+	
 	<div id="new_button">
-		<?php echo anchor("$controller_name/view/-1/width:$form_width",
+		<div class="pull-left">
+			<img src='<?php echo base_url()?>images/spinner_small.gif' alt='spinner' id='spinner' />
+			<?php echo form_open("$controller_name/search",array('id'=>'search_form')); ?>
+			<input type="text" name="search"  class="form-control"/>
+			</form>
+		</div>
+		
+		<a class="btn btn-primary" data-toggle="modal" href="<?php echo base_url()."index.php/"."$controller_name/view/-1/width:$form_width"; ?>" data-target="#modal-container">
+			<i class="fa fa-plus"></i> <?php echo $this->lang->line($controller_name.'_new');?>
+		</a>
+		
+		<?php if ($controller_name =='customers') {?>
+		<a class="btn btn-success" data-toggle="modal" href="<?php echo base_url()."index.php/"."$controller_name/excel_import/width:$form_width"; ?>" data-target="#modal-container">
+			<i class="fa fa-file-excel-o"></i> Excel Import
+		</a>
+		<?php } ?>
+	
+		<?php  
+		/*echo anchor("$controller_name/view/-1/width:$form_width",
 		"<div class='big_button' style='float: left;'><span>".$this->lang->line($controller_name.'_new')."</span></div>",
 		array('class'=>'thickbox none','title'=>$this->lang->line($controller_name.'_new')));
+		*/
 		?>
-		<?php if ($controller_name =='customers') {?>
+		
+		<?php 
+		/*if ($controller_name =='customers') {?>
 			<?php echo anchor("$controller_name/excel_import/width:$form_width",
 			"<div class='big_button' style='float: left;'><span>Excel Import</span></div>",
 				array('class'=>'thickbox none','title'=>'Import Items from Excel'));
 			?>	
-		<?php } ?>
+		<?php } */
+		?>
 	</div>
 </div>
-<?php echo $this->pagination->create_links();?>
-<div id="table_action_header">
-	<ul>
-		<li class="float_left"><span><?php echo anchor("$controller_name/delete",$this->lang->line("common_delete"),array('id'=>'delete')); ?></span></li>
-		<li class="float_left"><span><a href="#" id="email"><?php echo $this->lang->line("common_email");?></a></span></li>
-		<li class="float_right">
-		<img src='<?php echo base_url()?>images/spinner_small.gif' alt='spinner' id='spinner' />
-		<?php echo form_open("$controller_name/search",array('id'=>'search_form')); ?>
-		<input type="text" name ='search' id='search'/>
-		</form>
-		</li>
-	</ul>
+
+
+<div class="">
+	<div class="">
+		<?php echo anchor("$controller_name/delete",$this->lang->line("common_delete"),array("class"=>"btn btn-danger btn-sm")); ?>
+	
+		<button class="btn btn-success btn-sm" id="email"><?php echo $this->lang->line("common_email");?></button>
+	</div>		
 </div>
-<div id="table_holder">
+
+<div class id="table_holder">
 <?php echo $manage_table; ?>
 </div>
+<?php echo $this->pagination->create_links();?>
 <div id="feedback_bar"></div>
 <?php $this->load->view("partial/footer"); ?>

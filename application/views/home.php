@@ -11,7 +11,7 @@
 		if (sizeof(explode('_', $module->module_id)) == 1)
 		{
 	?>
-	<div class="module-item col-md-6" style="background:#17984E">
+	<div class="module-item col-md-6" >
 		<a href="<?php echo site_url("$module->module_id");?>">		
 			<img src="<?php echo base_url().'images/menubar/'.$module->module_id.'.png';?>" class="circle" />
 			<br />				
