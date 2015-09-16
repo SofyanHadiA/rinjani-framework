@@ -10,14 +10,16 @@
 	
 	<link rel="stylesheet" rev="stylesheet" href="<?php echo base_url();?>css/ospos.css" />
 	<link rel="stylesheet" rev="stylesheet" href="<?php echo base_url();?>css/ospos_print.css"  media="print"/>		
+	
 	<link rel="stylesheet" rev="stylesheet" href="<?php echo base_url('public/bootstrap/dist/css/bootstrap.css');?>" />
+	<link rel="stylesheet" rev="stylesheet" href="<?php echo base_url('public/font-awesome/css/font-awesome.css');?>" />
 </head>
 
 <body>
 
 <section id="navigation">
 	<?php
-		if(isset($no_navigation))
+		if(!isset($no_navigation))
 		{ 
 			$this->load->view("partial/_navigation");
 		} 

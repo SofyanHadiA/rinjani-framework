@@ -5,7 +5,6 @@
 @import url(receipt.css);
 @import url(reports.css);
 @import url(tables.css);
-@import url(thickbox.css);
 @import url(datepicker.css);
 
 a.none
@@ -84,7 +83,7 @@ a.none
 	position: relative;
 }
 
-.module_item
+.module-item
 {
 	padding: 10px;
 }
@@ -121,8 +120,8 @@ a.none
 	
 }
 
-  		html, body{
-            background:#00407A;
+  		body{
+            background:#00407A !important;
         }
         
         div, input, select, textarea, span, img, table, label, td, th, p, a, button, ul, code, pre, li {
@@ -137,6 +136,7 @@ a.none
         
         #content_area_wrapper
         {
+            background: #fff;
             margin-top: 55px;            
         }
         
@@ -224,3 +224,20 @@ a.none
             border-bottom-style: solid;
          }
          
+         .bg-danger
+         {
+             padding: 10px;
+             margin: 10px 0;
+         }
+         
+            #login-container
+            {             
+                background: #fff;            
+            }
+         
+         @media (min-width: 992px){
+            #login-container
+            {             
+                width:500px;           
+            }
+         }

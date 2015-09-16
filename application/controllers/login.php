@@ -19,7 +19,8 @@ class Login extends CI_Controller
 			
 			if($this->form_validation->run() == FALSE)
 			{
-				$this->load->view('login');
+				$data['no_navigation'] = true;
+				$this->load->view('login', $data);
 			}
 			else
 			{
