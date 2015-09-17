@@ -124,6 +124,10 @@ a.none
             background:#00407A !important;
         }
         
+        input, textarea, keygen, select{
+            margin-bottom: 10px !important;
+        }
+        
         div, input, select, textarea, span, img, table, label, td, th, p, a, button, ul, code, pre, li {
             -webkit-border-radius: 0 !important;
             -moz-border-radius: 0 !important;
