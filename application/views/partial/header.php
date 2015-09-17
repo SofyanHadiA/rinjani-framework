@@ -47,5 +47,5 @@
 	?>
 </section>
 
-<div id="content_area_wrapper" class="container">
+<div id="content_area_wrapper" class="container-fluid">
 	<div id="content_area">
