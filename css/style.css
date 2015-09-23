@@ -6,6 +6,7 @@
 @import url(reports.css);
 @import url(tables.css);
 @import url(datepicker.css);
+@import url(dashboard.css);
 
 a.none
 {
@@ -139,8 +140,7 @@ a.none
         }
         
         #content_area_wrapper
-        {
-            background: #fff;
+        {           
             margin-top: 55px;            
         }
         
