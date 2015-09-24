@@ -4,35 +4,54 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "445016135041aeb493cbb120ac3c30ae",
+    "hash": "620fbe2d5fbdf625f960afe50e36b40a",
+    "content-hash": "dd2348e574bf5b10ef75cdf6be71166c",
     "packages": [
         {
-            "name": "bcit-ci/codeigniter",
-            "version": "3.0.0",
+            "name": "mustache/mustache",
+            "version": "v2.9.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/circlecreative/codeigniter-libraries.git",
-                "reference": "3fe79499c5bedb5b3bc4281821776f031f73674e"
+                "url": "https://github.com/bobthecow/mustache.php.git",
+                "reference": "c745b01956caf27d26b55a72a90aff56bc169cd6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/circlecreative/codeigniter-libraries/zipball/3fe79499c5bedb5b3bc4281821776f031f73674e",
-                "reference": "3fe79499c5bedb5b3bc4281821776f031f73674e",
+                "url": "https://api.github.com/repos/bobthecow/mustache.php/zipball/c745b01956caf27d26b55a72a90aff56bc169cd6",
+                "reference": "c745b01956caf27d26b55a72a90aff56bc169cd6",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.2.4"
             },
             "require-dev": {
-                "mikey179/vfsstream": "1.1.*"
+                "fabpot/php-cs-fixer": "~1.6",
+                "phpunit/phpunit": "~3.7|~4.0"
             },
             "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Mustache": "src/"
+                }
+            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "description": "The CodeIgniter framework",
-            "time": "2015-04-24 10:00:52"
+            "authors": [
+                {
+                    "name": "Justin Hileman",
+                    "email": "justin@justinhileman.info",
+                    "homepage": "http://justinhileman.com"
+                }
+            ],
+            "description": "A Mustache implementation in PHP.",
+            "homepage": "https://github.com/bobthecow/mustache.php",
+            "keywords": [
+                "mustache",
+                "templating"
+            ],
+            "time": "2015-08-15 19:23:13"
         }
     ],
     "packages-dev": [],

@@ -1,5 +1,5 @@
 <?php
-class Employee extends Person
+class Employee extends CI_Model
 {
 	/*
 	Determines if a given person_id is an employee
@@ -10,7 +10,7 @@ class Employee extends Person
 		$this->db->join('people', 'people.person_id = employees.person_id');
 		$this->db->where('employees.person_id',$person_id);
 		$query = $this->db->get();
-		
+
 		return ($query->num_rows()==1);
 	}	
 	

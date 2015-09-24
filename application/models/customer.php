@@ -1,5 +1,5 @@
 <?php
-class Customer extends Person
+class Customer extends CI_Model
 {	
 	/*
 	Determines if a given person_id is a customer

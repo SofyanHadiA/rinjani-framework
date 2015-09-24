@@ -1,5 +1,5 @@
 <?php
-require_once ("secure_area.php");
+require_once("secure_areas.php");
 require_once ("interfaces/idata_controller.php");
 class Giftcards extends Secure_area implements iData_controller
 {

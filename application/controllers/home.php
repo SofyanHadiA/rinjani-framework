@@ -1,5 +1,5 @@
 <?php
-require_once ("secure_area.php");
+require_once("secure_areas.php");
 
 class Home extends Secure_area 
 {
@@ -10,7 +10,9 @@ class Home extends Secure_area
 	
 	function index()
 	{
-		$this->load->view("home");
+        $this->data['title'] = 'Dashboard - ';
+        $this->data['pagebody'] = 'home';
+        $this->render();
 	}
 	
 	function logout()

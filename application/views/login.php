@@ -1,15 +1,3 @@
-<?php
-	$no_navigation = true;
-	 
-	$this->load->view("partial/header"); 
-?>
-
-<style>
-#content_area_wrapper
-{
-	background: none !important;            
-}
-</style>
 
 <div id="login-container" class="container">
 
@@ -56,4 +44,3 @@
 		</div>
 	<?php echo form_close(); ?>
 </div>
-

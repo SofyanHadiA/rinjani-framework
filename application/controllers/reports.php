@@ -1,5 +1,5 @@
 <?php
-require_once ("secure_area.php");
+require_once("secure_areas.php");
 require_once (APPPATH."libraries/ofc-library/open-flash-chart.php");
 
 define("FORM_WIDTH", "400");

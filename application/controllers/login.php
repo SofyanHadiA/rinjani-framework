@@ -1,5 +1,5 @@
 <?php
-class Login extends CI_Controller 
+class Login extends PublicController
 {
 	function __construct()
 	{
@@ -19,8 +19,12 @@ class Login extends CI_Controller
 			
 			if($this->form_validation->run() == FALSE)
 			{
-				$data['no_navigation'] = true;
-				$this->load->view('login', $data);
+                $this->data['title'] = 'Login ';
+                $this->data['pagebody'] = 'login';
+                $this->render();
+
+				//$data['no_navigation'] = true;
+				//$this->load->view('login', $data);
 			}
 			else
 			{

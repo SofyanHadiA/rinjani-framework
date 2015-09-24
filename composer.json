@@ -2,7 +2,7 @@
     "name": "sofyan_a/rinjanipos",
     "description": "Best POS ever invented",
     "require": {
-        "bcit-ci/CodeIgniter": "^3.0"
+        "mustache/mustache": "~2.5"
     },
     "authors": [
         {

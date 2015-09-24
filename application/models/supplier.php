@@ -1,5 +1,5 @@
 <?php
-class Supplier extends Person
+class Supplier extends CI_Model
 {	
 	/*
 	Determines if a given person_id is a customer

@@ -1,6 +1,3 @@
-<?php 
-	$this->load->view("partial/header"); 
-?>
 
 <div id="home_module_list">
 	<?php
@@ -11,12 +8,15 @@
 	?>
 	<div class="module-item col-md-6" >
 		<div id="module-icon-<?php echo $module->module_id;?>">
-			<a href="<?php echo site_url("$module->module_id");?>" >		
+			<a href="<?php echo site_url("$module->module_id");?>" >
 				<img src="<?php echo base_url().'images/menubar/'.$module->module_id.'.png';?>" class="circle" />
-				<br />				
-				<?php echo $this->lang->line("module_".$module->module_id) ?>
+				<br />
+				<?php
+                echo $this->lang->line("module_".$module->module_id)
+                ?>
+                {$module->module_id}
 			</a>
-			
+
 			- <?php echo $this->lang->line('module_'.$module->module_id.'_desc');?>
 		</div>
 	</div>
@@ -25,5 +25,3 @@
 	}
 	?>
 </div>
-
-<?php $this->load->view("partial/footer"); ?>
