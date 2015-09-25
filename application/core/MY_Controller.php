@@ -16,8 +16,8 @@ abstract class Controller extends CI_Controller {
         $this->data['menubar'] = null;
         $this->data['titleblock'] = null;
         $this->data['footer'] = null;
-		$this->data['control_sidebar'] = null;
-		
+		$this->data['control_sidebar'] = null;		
+		$this->data['pagedescription'] = null;		
 		$this->data['base_url'] = $this->config->base_url();
     }
 	
