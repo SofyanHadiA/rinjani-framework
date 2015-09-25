@@ -10,7 +10,8 @@ class Home extends Secure_area
 	
 	function index()
 	{
-        $this->data['title'] = 'Dashboard - ';
+        $this->data['title'] = 'Dashboard';
+		$this->data['description'] = 'Dashboard description';
         $this->data['pagebody'] = 'home';
         $this->render();
 	}

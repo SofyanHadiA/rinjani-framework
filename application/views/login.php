@@ -2,13 +2,14 @@
 <div id="login-container" class="container">
 
 	<h1 class="text-center">
-		<?php echo $this->lang->line('login_login'); ?>
+		{pagetitle}
 	</h1>
 	
 	<hr/>
 	
-	<div id="welcome_message"> 
-		<?php echo $this->lang->line('login_welcome_message'); ?> 
+	<div id="welcome_message">
+		{pagedescription} 
+		<?php // echo $this->lang->line('login_welcome_message'); ?> 
 	</div>
 	
 	<br/>

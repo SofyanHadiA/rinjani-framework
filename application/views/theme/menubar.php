@@ -1,47 +1,46 @@
+ <!-- Left side column. contains the logo and sidebar -->
+      <aside class="main-sidebar">
 
-<div id="menubar" class="navbar navbar-fixed-top">
-    <div id="menubar_container" class="container-fluid">
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
 
-        <!-- Brand and toggle get grouped for better mobile display -->
+          <!-- Sidebar user panel (optional) -->
+          <div class="user-panel">
+            <div class="pull-left image">
+              <img src="{base_url}public/theme/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+            </div>
+            <div class="pull-left info">
+              <p>Alexander Pierce</p>
+              <!-- Status -->
+              <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+            </div>
+          </div>
 
-        <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        Menu <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <?php
-                        foreach($allowed_modules->result() as $module)
-                        {
-                            ?>
-                            <li class="" >
-                                <a href="<?php echo site_url("$module->module_id");?>">
-                                    <!--<img src="<?php echo base_url().'images/menubar/'.$module->module_id.'.png';?>" />-->
-                                    <?php echo $this->lang->line("module_".$module->module_id) ?>
-                                </a>
-                            </li>
-                        <?php
-                        }
-                        ?>
-                    </ul>
-                </li>
-            </ul>
+          <!-- search form (Optional) -->
+          <form action="#" method="get" class="sidebar-form">
+            <div class="input-group">
+              <input type="text" name="q" class="form-control" placeholder="Search...">
+              <span class="input-group-btn">
+                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+              </span>
+            </div>
+          </form>
+          <!-- /.search form -->
 
-            <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <a>
-                        <i class="glyphicon glyphicon-user"></i>
-                        <?php echo $this->lang->line('common_welcome')." $user_info->first_name $user_info->last_name!"; ?>
-                    </a>
-                </li>
-                <li>
-                    <?php echo anchor("home/logout",$this->lang->line("common_logout")); ?>
-                </li>
-                <li>
-                    <a><?php echo date('F d, Y h:i a') ?></a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</div>
+          <!-- Sidebar Menu -->
+          <ul class="sidebar-menu">
+            <li class="header">HEADER</li>
+            <!-- Optionally, you can add icons to the links -->
+            <li class="active"><a href="#"><i class="fa fa-link"></i> <span>Link</span></a></li>
+            <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
+            <li class="treeview">
+              <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span> <i class="fa fa-angle-left pull-right"></i></a>
+              <ul class="treeview-menu">
+                <li><a href="#">Link in level 2</a></li>
+                <li><a href="#">Link in level 2</a></li>
+              </ul>
+            </li>
+          </ul><!-- /.sidebar-menu -->
+        </section>
+        <!-- /.sidebar -->
+      </aside>

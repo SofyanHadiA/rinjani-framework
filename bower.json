@@ -9,14 +9,12 @@
   "ignore": [
     "**/.*",
     "node_modules",
-    "" +
-"" +
-"",
     "test",
     "tests"
   ],
   "dependencies": {
     "bootstrap": "~3.3.5",
-    "font-awesome": "fontawesome#~4.4.0"
+    "font-awesome": "fontawesome#~4.4.0",
+    "theme": "./local_package/theme-2.3.0"
   }
 }
