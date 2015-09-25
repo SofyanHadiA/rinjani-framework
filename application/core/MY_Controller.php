@@ -20,15 +20,17 @@ abstract class Controller extends CI_Controller {
 		
 		$this->data['base_url'] = $this->config->base_url();
     }
+	
+	abstract function render($view=null, $data=null);	
 }
 
 class PublicController extends Controller {
     /**
      * Render view page
      */
-    function render()
+    function render($view=null, $data=null)
     {
-        if (!isset($this->data['pagetitle']))
+        if (isset($this->data['title']))
             $this->data['pagetitle'] = $this->data['title'];
 		
 		if (isset($this->data['description']))
@@ -75,12 +77,18 @@ class AdminController extends Controller {
     /**
      * Render view page
      */
-    function render()
+    function render($view = null, $data=null)
     {
-        if (!isset($this->data['pagetitle']))
+		if($data)
+			$this->data = array_merge($this->data, $data);			 
+		
+		if($view)
+			$this->data['pagebody'] = $view;
+		
+        if (isset($this->data['title']))
             $this->data['pagetitle'] = $this->data['title'];
 			
-		if (!isset($this->data['pagedescription']))
+		if (isset($this->data['description']))
             $this->data['pagedescription'] = $this->data['description'];
 
         // Massage the menubar

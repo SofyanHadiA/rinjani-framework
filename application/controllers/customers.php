@@ -23,7 +23,9 @@ class Customers extends Person_controller
 		
 		$data['customer_data']= $customers;
 		
-		$this->load->view('people/people.manage.php',$data);
+		$data['title']='Customer';
+		
+		$this->render('people/people', $data);
 	}
 	
 	/*

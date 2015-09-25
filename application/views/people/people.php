@@ -1,4 +1,4 @@
-<?php $this->load->view("partial/header"); ?>
+
 <script type="text/javascript">
 $(document).ready(function() 
 { 
