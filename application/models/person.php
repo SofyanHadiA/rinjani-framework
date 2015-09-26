@@ -7,7 +7,7 @@ class Person extends CI_Model
 		$this->db->from('people');	
 		$this->db->where('people.person_id',$person_id);
 		$query = $this->db->get();
-		
+
 		return ($query->num_rows()==1);
 	}
 	
@@ -68,7 +68,7 @@ class Person extends CI_Model
 	/*
 	Inserts or updates a person
 	*/
-	function save(&$person_data,$person_id=false)
+	function save(&$person_data, &$customer_data=null, $person_id=false)
 	{		
 		if (!$person_id or !$this->exists($person_id))
 		{

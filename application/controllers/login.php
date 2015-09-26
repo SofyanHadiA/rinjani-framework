@@ -19,8 +19,14 @@ class Login extends PublicController
 			
 			if($this->form_validation->run() == FALSE)
 			{
+                $this->data['hide_page_header'] = true;
+                $this->data['hide_side_nav'] = true;
+
                 $this->data['title'] = 'Login ';
                 $this->data['pagebody'] = 'login';
+
+                $this->data['template'] = 'theme/login_template';
+
                 $this->render();
 
 				//$data['no_navigation'] = true;

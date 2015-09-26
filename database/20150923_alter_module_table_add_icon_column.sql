@@ -1,7 +1,6 @@
 ALTER TABLE pos.ospos_modules
 ADD icon varchar(50);
 
-
 UPDATE `pos`.`ospos_modules` SET `icon`='fa-wrench' WHERE `module_id`='config';
 UPDATE `pos`.`ospos_modules` SET `icon`='fa-users' WHERE `module_id`='customers';
 UPDATE `pos`.`ospos_modules` SET `icon`='fa-credit-card' WHERE `module_id`='giftcards';

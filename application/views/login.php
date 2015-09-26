@@ -1,5 +1,5 @@
 
-<div id="login-container" class="container">
+<div id="login-container" style="width:500px" class="text-center">
 
 	<h1 class="text-center">
 		{pagetitle}
@@ -9,7 +9,7 @@
 	
 	<div id="welcome_message">
 		{pagedescription} 
-		<?php // echo $this->lang->line('login_welcome_message'); ?> 
+
 	</div>
 	
 	<br/>

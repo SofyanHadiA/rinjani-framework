@@ -1,5 +1,5 @@
 <?php
-class Customer extends CI_Model
+class Customer extends Person
 {	
 	/*
 	Determines if a given person_id is a customer
@@ -82,7 +82,7 @@ class Customer extends CI_Model
 	/*
 	Inserts or updates a customer
 	*/
-	function save(&$person_data, &$customer_data,$customer_id=false)
+	function save(&$person_data, &$customer_data=null, $customer_id=false)
 	{
 		$success=false;
 		//Run these queries as a transaction, we want to make sure we do all or nothing

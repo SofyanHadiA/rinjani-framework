@@ -9,7 +9,11 @@ class Customers extends Person_controller
 	
 	function index()
 	{
-		$config['base_url'] = site_url('/customers/index');
+        $data['title']= $this->lang->line('module_'. strtolower(get_class()));
+
+        $data['scripts'] = [base_url("js/search.js")];
+
+        $config['base_url'] = site_url('/customers/index');
 		$config['total_rows'] = $this->Customer->count_all();
 		$config['per_page'] = '20';
 		$config['uri_segment'] = 3;
@@ -21,8 +25,6 @@ class Customers extends Person_controller
 		$customers= $this->Customer->get_all( $config['per_page'], $this->uri->segment( $config['uri_segment'] ) )->result();
 		
 		$data['customer_data']= $customers;
-		
-		$data['title']= $this->lang->line('module_'. strtolower(get_class()));	
 		
 		$this->render('people/people', $data);
 	}
