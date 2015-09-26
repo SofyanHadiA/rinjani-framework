@@ -13,3 +13,4 @@ git-svn-diff.py
 *~
 vendor/
 public/
+.idea/

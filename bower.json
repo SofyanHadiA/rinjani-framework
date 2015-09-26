@@ -14,6 +14,7 @@
   ],
   "dependencies": {
     "bootstrap": "~3.3.5",
+    "datatables": "DataTables#~1.10.9",
     "font-awesome": "fontawesome#~4.4.0",
     "theme": "./local_package/theme-2.3.0"
   }

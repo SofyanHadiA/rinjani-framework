@@ -17,12 +17,22 @@ class Customer extends Person
 	/*
 	Returns all the customers
 	*/
-	function get_all($limit=10000, $offset=0)
+	function get_all($limit=10000, $offset=0, $order_by="last_name", $order = "asc", $search = null )
 	{
 		$this->db->from('customers');
-		$this->db->join('people','customers.person_id=people.person_id');			
-		$this->db->where('deleted',0);
-		$this->db->order_by("last_name", "asc");
+		$this->db->join('people','customers.person_id=people.person_id');
+		if(!$search) {
+            $this->db->where('deleted', 0);
+        }
+        else{
+            $this->db->where("(first_name LIKE '%".$this->db->escape_like_str($search)."%' or
+            last_name LIKE '%".$this->db->escape_like_str($search)."%' or
+            email LIKE '%".$this->db->escape_like_str($search)."%' or
+            phone_number LIKE '%".$this->db->escape_like_str($search)."%' or
+            account_number LIKE '%".$this->db->escape_like_str($search)."%' or
+            CONCAT(`first_name`,' ',`last_name`) LIKE '%".$this->db->escape_like_str($search)."%') and deleted=0");
+        }
+		$this->db->order_by($order_by, $order);
 		$this->db->limit($limit);
 		$this->db->offset($offset);
 		return $this->db->get();		
@@ -229,13 +239,13 @@ class Customer extends Person
 	function search($search)
 	{
 		$this->db->from('customers');
-		$this->db->join('people','customers.person_id=people.person_id');		
-		$this->db->where("(first_name LIKE '%".$this->db->escape_like_str($search)."%' or 
-		last_name LIKE '%".$this->db->escape_like_str($search)."%' or 
-		email LIKE '%".$this->db->escape_like_str($search)."%' or 
-		phone_number LIKE '%".$this->db->escape_like_str($search)."%' or 
-		account_number LIKE '%".$this->db->escape_like_str($search)."%' or 
-		CONCAT(`first_name`,' ',`last_name`) LIKE '%".$this->db->escape_like_str($search)."%') and deleted=0");		
+		$this->db->join('people','customers.person_id=people.person_id');
+		$this->db->where("(first_name LIKE '%".$this->db->escape_like_str($search)."%' or
+		last_name LIKE '%".$this->db->escape_like_str($search)."%' or
+		email LIKE '%".$this->db->escape_like_str($search)."%' or
+		phone_number LIKE '%".$this->db->escape_like_str($search)."%' or
+		account_number LIKE '%".$this->db->escape_like_str($search)."%' or
+		CONCAT(`first_name`,' ',`last_name`) LIKE '%".$this->db->escape_like_str($search)."%') and deleted=0");
 		$this->db->order_by("last_name", "asc");
 		
 		return $this->db->get();	

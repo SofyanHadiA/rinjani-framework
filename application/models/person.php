@@ -12,10 +12,10 @@ class Person extends CI_Model
 	}
 	
 	/*Gets all people*/
-	function get_all($limit=10000, $offset=0)
+	function get_all($limit=10000, $offset=0, $order_by="last_name", $order = "asc", $search=null)
 	{
 		$this->db->from('people');
-		$this->db->order_by("last_name", "asc");
+		$this->db->order_by($order_by, $order);
 		$this->db->limit($limit);
 		$this->db->offset($offset);
 		return $this->db->get();		

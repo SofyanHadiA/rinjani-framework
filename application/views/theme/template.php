@@ -23,6 +23,8 @@
     -->
     <link rel="stylesheet" href="{base_url}public/theme/dist/css/skins/skin-yellow.min.css">
 
+    <link rel="stylesheet" href="{base_url}public/datatables/media/css/dataTables.bootstrap.css">
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -34,6 +36,8 @@
     <script src="{base_url}public/jQuery/dist/jQuery.min.js"></script>
     <script src="{base_url}public/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="{base_url}public/theme/dist/js/app.min.js"></script>
+    <script src="{base_url}public/datatables/media/js/jquery.dataTables.js"></script>
+    <script src="{base_url}public/datatables/media//js/dataTables.bootstrap.js"></script>
 
     <?php
     foreach($scripts as $script)
