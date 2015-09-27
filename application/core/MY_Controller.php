@@ -2,7 +2,6 @@
 
 abstract class Controller extends CI_Controller
 {
-
     protected $data = array();      // parameters for view components
     protected $id;                  // identifier for our contents
 
@@ -26,6 +25,8 @@ abstract class Controller extends CI_Controller
         $this->data['template'] = 'theme/template';
 
         $this->data['scripts'] = array();
+
+        header('Content-Type: application/json');
     }
 
     abstract function render($view = null, $data = null);
@@ -49,6 +50,7 @@ class PublicController extends Controller
 
         $this->data['data'] = &$this->data;
 
+        header('Content-Type: text/html');
         $this->parser->parse($this->data['template'], $this->data);
     }
 }
@@ -123,6 +125,7 @@ class AdminController extends Controller
         // finally, build the browser page!
         $this->data['data'] = &$this->data;
 
+        header('Content-Type: text/html');
         $this->parser->parse($this->data['template'], $this->data);
     }
 

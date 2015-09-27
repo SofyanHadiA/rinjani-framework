@@ -10,20 +10,17 @@
     <link rel="stylesheet" href="{base_url}css/style.css">
 
     <!-- Bootstrap 3.3.5 -->
-    <link rel="stylesheet" href="{base_url}public/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{base_url}packages/bootstrap/dist/css/bootstrap.min.css">
     <!-- Font Awesome -->
-    <link rel="stylesheet" rev="stylesheet" href="{base_url}public/font-awesome/css/font-awesome.css"/>
+    <link rel="stylesheet" rev="stylesheet" href="{base_url}packages/font-awesome/css/font-awesome.css"/>
     <!-- Ionicons -->
-<!--    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">-->
+    <!--    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">-->
     <!-- Theme style -->
-    <link rel="stylesheet" href="{base_url}public/theme/dist/css/AdminLTE.min.css">
-    <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
-          page. However, you can choose any other skin. Make sure you
-          apply the skin class to the body tag so the changes take effect.
-    -->
-    <link rel="stylesheet" href="{base_url}public/theme/dist/css/skins/skin-yellow.min.css">
-
-    <link rel="stylesheet" href="{base_url}public/datatables/media/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" href="{base_url}packages/theme/dist/css/AdminLTE.css">
+    <link rel="stylesheet" href="{base_url}packages/theme/dist/css/skins/skin-yellow.css">
+    <link rel="stylesheet" href="{base_url}packages/datatables/media/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" href="{base_url}packages/pace/themes/yellow/pace-theme-loading-bar.css">
+    <link rel="stylesheet" href="{base_url}packages/blueimp-file-upload/css/jquery.fileupload.css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -33,16 +30,21 @@
     <![endif]-->
 
     <!-- REQUIRED JS SCRIPTS -->
-    <script src="{base_url}public/jQuery/dist/jQuery.min.js"></script>
-    <script src="{base_url}public/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="{base_url}public/theme/dist/js/app.min.js"></script>
-    <script src="{base_url}public/datatables/media/js/jquery.dataTables.js"></script>
-    <script src="{base_url}public/datatables/media//js/dataTables.bootstrap.js"></script>
+    <script src="{base_url}packages/jQuery/dist/jQuery.min.js"></script>
+    <script src="{base_url}packages/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="{base_url}packages/datatables/media/js/jquery.dataTables.js"></script>
+    <script src="{base_url}packages/datatables/media//js/dataTables.bootstrap.js"></script>
+    <script src="{base_url}packages/notify/dist/bootstrap-notify.js"></script>
+    <script src="{base_url}packages/bootbox.js/bootbox.js"></script>
+    <script src="{base_url}packages/pace/pace.js"></script>
+    <script src="{base_url}packages/blueimp-file-upload/js/vendor/jquery.ui.widget.js"></script>
+    <script src="{base_url}packages/blueimp-file-upload/js/jquery.fileupload.js"></script>
+
+    <script src="{base_url}packages/theme/dist/js/app.min.js"></script>
 
     <?php
-    foreach($scripts as $script)
-    {
-        echo '<script src="'.$script.'"></script>';
+    foreach ($scripts as $script) {
+        echo '<script src="' . $script . '"></script>';
     }
     ?>
 </head>
@@ -106,6 +108,20 @@ desired effect
      Both of these plugins are recommended to enhance the
      user experience. Slimscroll is required when using the
      fixed layout. -->
+
+
+<!-- Modal Container -->
+<div class="modal fade" id="modal-container" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
 
 <!-- Clear modal content on close -->
 <script>

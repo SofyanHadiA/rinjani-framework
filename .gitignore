@@ -12,5 +12,6 @@ git-svn-diff.py
 *.orig
 *~
 vendor/
-public/
 .idea/
+packages/
+application/config/database.php

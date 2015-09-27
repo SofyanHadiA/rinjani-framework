@@ -4,7 +4,7 @@
 </div>
 
 <div class="modal-body">
-    <?php echo form_open('customers/save/' . $person_info->person_id, array('id' => 'customer_form', "class" => 'form-horizontal')); ?>
+    <?php echo form_open('customers/save/' . $person_info->person_id, array('name' => 'customer_form', 'id' => 'customer_form', "class" => 'form-horizontal')); ?>
     <span class="small"><?php echo $this->lang->line('common_fields_required_message'); ?></span>
 
     <ul id="error_message_box" class="warning"></ul>
@@ -16,7 +16,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
-                    <?php echo form_label($this->lang->line('customers_account_number') , 'account_number', array('class' => 'col-sm-4 control-label')); ?>
+                    <?php echo form_label($this->lang->line('customers_account_number'), 'account_number', array('class' => 'col-sm-4 control-label')); ?>
                     <div class='col-sm-8'>
                         <?php echo form_input(array(
                                 'name' => 'account_number',
@@ -29,7 +29,7 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <?php echo form_label($this->lang->line('customers_taxable') , 'taxable', array('class' => 'col-sm-4 control-label')); ?>
+                    <?php echo form_label($this->lang->line('customers_taxable'), 'taxable', array('class' => 'col-sm-4 control-label')); ?>
                     <div class='col-sm-8'>
                         <div class="checkbox">
                             <label>
@@ -51,33 +51,63 @@
 </div>
 
 <script type='text/javascript'>
+    'use strict';
 
-    //validation and submit handling
-    $(document).ready(function () {
-        $('#customer_form').validate({
-            submitHandler: function (form) {
-                $(form).ajaxSubmit({
-                    success: function (response) {
-                        tb_remove();
-                        post_person_form_submit(response);
-                    },
-                    dataType: 'json'
-                });
+    $(function () {
+        $('#customer_form').submit(function (event) {
+            event.preventDefault();
 
-            },
-            errorLabelContainer: "#error_message_box",
-            wrapper: "li",
-            rules: {
-                first_name: "required",
-                last_name: "required",
-                email: "email"
-            },
-            messages: {
-                first_name: "<?php echo $this->lang->line('common_first_name_required'); ?>",
-                last_name: "<?php echo $this->lang->line('common_last_name_required'); ?>",
-                email: "<?php echo $this->lang->line('common_email_invalid_format'); ?>"
-            }
+            var url = $(this).attr('action');
+            var data = $(this).serialize();
+
+            $.post(url, data, function (response) {
+                $('#modal-container').modal('hide');
+
+                if (response['success']) {
+                    customers.tableGrid.ajax.reload();
+
+                    $.notify({
+                        icon: 'fa fa-info-circle',
+                        message: response['message']
+                    }, {
+                        type: "info"
+                    });
+                }
+                else {
+                    $.notify({
+                        icon: 'fa fa-warning',
+                        message: response['message']
+                    }, {
+                        type: "warning"
+                    });
+                }
+            });
         });
+
+//        $('#customer_form').validate({
+//            submitHandler: function (form) {
+//                $(form).ajaxSubmit({
+//                    success: function (response) {
+//                        tb_remove();
+//                        post_person_form_submit(response);
+//                    },
+//                    dataType: 'json'
+//                });
+//
+//            },
+//            errorLabelContainer: "#error_message_box",
+//            wrapper: "li",
+//            rules: {
+//                first_name: "required",
+//                last_name: "required",
+//                email: "email"
+//            },
+//            messages: {
+//                first_name: "<?php //echo $this->lang->line('common_first_name_required'); ?>//",
+//                last_name: "<?php //echo $this->lang->line('common_last_name_required'); ?>//",
+//                email: "<?php //echo $this->lang->line('common_email_invalid_format'); ?>//"
+//            }
+//        });
     });
 </script>
 
