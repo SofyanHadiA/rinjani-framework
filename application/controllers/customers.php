@@ -6,7 +6,6 @@ class Customers extends Person_controller
     function __construct()
     {
         parent::__construct('customers');
-
         header('Content-Type: application/json');
     }
 
@@ -209,8 +208,6 @@ class Customers extends Person_controller
                     'message' => 'Cannot delete customer ' . $id));
             }
         }
-
-
     }
 
     function excel()
@@ -232,10 +229,8 @@ class Customers extends Person_controller
 
         if ($_FILES['file_path']['error'] != UPLOAD_ERR_OK) {
             $msg = $this->lang->line('items_excel_import_failed');
-
             echo json_encode(array('success' => false,
                 'message' => $msg));
-
             return;
 
         } else {
@@ -286,8 +281,6 @@ class Customers extends Person_controller
         } else {
             $msg = "Import Customers successful";
         }
-
-        header('Content-Type: application/json');
         echo json_encode(array('success' => $success, 'message' => $msg));
     }
 

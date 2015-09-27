@@ -13,7 +13,6 @@ abstract class Controller extends CI_Controller
         $this->data = array();
         $this->errors = array();
         $this->data['lang'] = $this->lang->language;
-
         $this->data['header'] = null;
         $this->data['menubar'] = null;
         $this->data['titleblock'] = null;
@@ -21,9 +20,7 @@ abstract class Controller extends CI_Controller
         $this->data['control_sidebar'] = null;
         $this->data['pagedescription'] = null;
         $this->data['base_url'] = $this->config->base_url();
-
         $this->data['template'] = 'theme/template';
-
         $this->data['scripts'] = array();
 
         header('Content-Type: application/json');
