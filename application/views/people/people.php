@@ -6,17 +6,23 @@
 
     var customers = {};
 
-var Modal = function(url, size)
-{
-     $('#modal-container').find('.modal-dialog').addClass('modal-'+size);            
-            $('#modal-container').removeData('modal')            
+    var Modal = function (url, size) {
+
+        $('#modal-container').remove();
+        $('body').append('<div class="modal fade" id="modal-container" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">'
+            + '<div class="modal-dialog modal-' + size + '">'
+            + '<div class="modal-content">'
+            + '</div>'
+            + '</div>'
+            + '</div>'
+        );
+
+        $('#modal-container').removeData('modal')
             .modal({
                 remote: url,
                 show: true
             });
-            
-            //$('#modal-container').find('.modal-dialog').removeClass('modal-'+size); 
-}
+    }
 
     $(function () {
 
@@ -24,21 +30,21 @@ var Modal = function(url, size)
         var tableGrid = TableGrid(table, "{base_url}customers/get_all");
 
         customers.tableGrid = tableGrid.render;
-        
-        $('#add-data').click(function(){
+
+        $('#add-data').click(function () {
             event.preventDefault();
             var url = $(this).attr('href');
-            
-            Modal(url, 'lg')          
-            
+
+            Modal(url, 'lg')
+
         });
-        
-        $('#import-excel').click(function(){
+
+        $('#import-excel').click(function () {
             event.preventDefault();
             var url = $(this).attr('href');
-            
-            Modal(url, 'md')          
-            
+
+            Modal(url, 'md')
+
         });
 
         $(table + '#select-all').click(function () {
@@ -54,7 +60,7 @@ var Modal = function(url, size)
             }
         });
 
-        $( table + " tbody").on("click", '.btn-delete', function (event) {
+        $(table + " tbody").on("click", '.btn-delete', function (event) {
             event.preventDefault();
             var url = $(this).attr('href');
             bootbox.confirm('<?php echo $this->lang->line($controller_name."_confirm_delete")?>', function (result) {

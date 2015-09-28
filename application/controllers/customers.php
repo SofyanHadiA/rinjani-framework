@@ -183,7 +183,16 @@ class Customers extends Person_controller
     */
     function delete($id = null)
     {
-        if (!$id) {
+        if ($id) {
+            $result = $this->Customer->delete($id);
+            if ($result) {
+                echo json_encode(array('success' => true,
+                    'message' => $this->lang->line('customers_successful_deleted') . ' ' . $this->lang->line('customers_one_or_multiple')));
+            } else {
+                echo json_encode(array('success' => false,
+                    'message' => 'Cannot delete customer ' . $id));
+            }
+        } else if (count($this->input->post('ids')) > 0) {
             $customers_to_delete = $this->input->post('ids');
             $result = $this->Customer->delete_list($customers_to_delete);
 
@@ -195,18 +204,10 @@ class Customers extends Person_controller
                 echo json_encode(array('success' => false,
                     'message' => $this->lang->line('customers_cannot_be_deleted')));
             }
-        } else {
-            $customers_to_delete = [$id];
-            $result = $this->Customer->delete($id);
-
-            if ($result) {
-                echo json_encode(array('success' => true,
-                    'message' => $this->lang->line('customers_successful_deleted') . ' ' .
-                        count($customers_to_delete) . ' ' . $this->lang->line('customers_one_or_multiple')));
-            } else {
-                echo json_encode(array('success' => false,
-                    'message' => 'Cannot delete customer ' . $id));
-            }
+        }
+        else {
+            echo json_encode(array('success' => false,
+                'message' => $this->lang->line("customers_none_selected")));
         }
     }
 
@@ -259,7 +260,7 @@ class Customers extends Person_controller
                         'taxable' => $data[12] == '' ? 0 : 1,
                     );
 
-                    if (!$this->Customer->save($person_data, $customer_data)) {
+                    if (!$this->Customer->save($person_data, null, $customer_data)) {
                         $failCodes[] = $i;
                     }
 

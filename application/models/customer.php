@@ -115,7 +115,9 @@ class Customer extends Person
     */
     function delete($customer_id)
     {
-        if ($this->get_info($customer_id)->deleted == 0) {
+        $deleted = $this->get_info($customer_id)->deleted;
+
+        if ($deleted == '0') {
             $this->db->where('person_id', $customer_id);
             return $this->db->update('customers', array('deleted' => 1));
         }
