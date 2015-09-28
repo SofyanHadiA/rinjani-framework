@@ -6,12 +6,40 @@
 
     var customers = {};
 
+var Modal = function(url, size)
+{
+     $('#modal-container').find('.modal-dialog').addClass('modal-'+size);            
+            $('#modal-container').removeData('modal')            
+            .modal({
+                remote: url,
+                show: true
+            });
+            
+            //$('#modal-container').find('.modal-dialog').removeClass('modal-'+size); 
+}
+
     $(function () {
 
         var table = '#manage-table ';
         var tableGrid = TableGrid(table, "{base_url}customers/get_all");
 
         customers.tableGrid = tableGrid.render;
+        
+        $('#add-data').click(function(){
+            event.preventDefault();
+            var url = $(this).attr('href');
+            
+            Modal(url, 'lg')          
+            
+        });
+        
+        $('#import-excel').click(function(){
+            event.preventDefault();
+            var url = $(this).attr('href');
+            
+            Modal(url, 'md')          
+            
+        });
 
         $(table + '#select-all').click(function () {
             if ($(this).prop('checked')) {
@@ -79,14 +107,14 @@
                     </div>
 
                     <div class="col-sm-6 text-right">
-                        <a class="btn btn-primary" data-toggle="modal"
+                        <a class="btn btn-primary" id="add-data"
                            href="<?php echo base_url() . "index.php/" . "$controller_name/view"; ?>"
                            data-target="#modal-container">
                             <i class="fa fa-plus"></i> <?php echo $this->lang->line($controller_name . '_new'); ?>
                         </a>
 
                         <?php if ($controller_name == 'customers') { ?>
-                        <a class="btn btn-success" data-toggle="modal"
+                        <a class="btn btn-success" id="import-excel"
                            href="<?php echo base_url() . "index.php/" . "$controller_name/excel_import"; ?>"
                            data-target="#modal-container">
                             <i class="fa fa-file-excel-o"></i> Excel Import

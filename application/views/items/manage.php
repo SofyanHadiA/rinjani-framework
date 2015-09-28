@@ -1,4 +1,4 @@
-<?php $this->load->view("partial/header"); ?>
+
 <script type="text/javascript">
 $(document).ready(function()
 {
@@ -171,4 +171,3 @@ function show_hide_search_filter(search_filter_section, switchImgTag) {
 <?php echo $manage_table; ?>
 </div>
 <div id="feedback_bar"></div>
-<?php $this->load->view("partial/footer"); ?>

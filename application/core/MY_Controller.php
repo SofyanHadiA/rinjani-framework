@@ -78,6 +78,10 @@ class AdminController extends Controller
         $data['allowed_modules'] = $this->Module->get_allowed_modules($logged_in_employee_info->person_id);
         $data['user_info'] = $logged_in_employee_info;
         $data['controller_name'] = $module_id;
+        
+        // merge data
+        $this->data['controller_name'] = $module_id;
+        
         $this->load->vars($data);
     }
 
