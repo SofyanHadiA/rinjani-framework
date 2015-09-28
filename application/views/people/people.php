@@ -1,4 +1,3 @@
-<script src="{base_url}app/js/app.tablegrid.js"></script>
 <script type="text/javascript">
     // enable_email('<?php echo site_url("$controller_name/mailto")?>');
 
@@ -6,45 +5,54 @@
 
     var customers = {};
 
-    var Modal = function (url, size) {
-
-        $('#modal-container').remove();
-        $('body').append('<div class="modal fade" id="modal-container" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">'
-            + '<div class="modal-dialog modal-' + size + '">'
-            + '<div class="modal-content">'
-            + '</div>'
-            + '</div>'
-            + '</div>'
-        );
-
-        $('#modal-container').removeData('modal')
-            .modal({
-                remote: url,
-                show: true
-            });
-    }
-
     $(function () {
-
         var table = '#manage-table ';
-        var tableGrid = TableGrid(table, "{base_url}customers/get_all");
+        var tableGrid = app.tableGrid(table, "{base_url}customers/get_all");
 
-        customers.tableGrid = tableGrid.render;
+        customers.tableGrid = tableGrid.render([
+            {
+                sortable: false,
+                data: 'person_id',
+                render: function (data, type, row) {
+                    return '<input type="checkbox" id="person_' + row['person_id'] +
+                    '" value="' + row['person_id'] + '"/>';
+                }
+            },
+            {data: 'last_name'},
+            {data: 'first_name'},
+            {data: 'email'},
+            {data: 'phone_number'},
+            {
+                sortable: false,
+                data: 'person_id',
+                render: function (data, type, row) {
+                    return '<div class="btn-group"><a class="btn btn-xs btn-default edit-data" href="{base_url}customers/view/' + data + '">'
+                    + '<i class="fa fa-edit"></i></a> '
+                    + '<a class="btn btn-xs btn-default btn-delete" href="{base_url}customers/delete/' + data
+                    + '"><i class="fa fa-trash"></i></a></div>';
+                }
+            }
+        ]);
+
+        $(table + ' tbody').on('click', '.edit-data', function () {
+            event.preventDefault();
+            var url = $(this).attr('href');
+
+            app.modalForm(url, 'lg')
+        });
 
         $('#add-data').click(function () {
             event.preventDefault();
             var url = $(this).attr('href');
 
-            Modal(url, 'lg')
-
+            app.modalForm(url, 'lg')
         });
 
         $('#import-excel').click(function () {
             event.preventDefault();
             var url = $(this).attr('href');
 
-            Modal(url, 'md')
-
+            app.modalForm(url, 'md')
         });
 
         $(table + '#select-all').click(function () {

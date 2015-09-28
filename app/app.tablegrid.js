@@ -1,21 +1,20 @@
 'use strict';
 
-var TableGrid = function (table_container, get_data_url) {
+app.tableGrid = function (table_container, get_data_url) {
     var vm = {};
+    vm.table = table_container;
     vm.dataTable = {};
-    vm.render = render(table_container);
+    vm.render = render;
     vm.get_selected_rows = get_selected_rows;
     vm.delete = do_delete;
+
     return vm;
 
-    function render(table) {
-        vm.dataTable = $(table).DataTable({
+    function render(columnConfig) {
+        vm.dataTable = $(vm.table).DataTable({
             "info": true,
             "autoWidth": false,
-            aoColumnDefs: [
-                {aTargets: [0], bSortable: false},
-                {aTargets: [5], bSortable: false}
-            ],
+            columns: columnConfig,
             "pageLength": 25,
             "order": [[1, "asc"]],
             "processing": true,

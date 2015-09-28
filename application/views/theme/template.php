@@ -39,8 +39,11 @@
     <script src="{base_url}packages/pace/pace.js"></script>
     <script src="{base_url}packages/blueimp-file-upload/js/vendor/jquery.ui.widget.js"></script>
     <script src="{base_url}packages/blueimp-file-upload/js/jquery.fileupload.js"></script>
-
     <script src="{base_url}packages/theme/dist/js/app.min.js"></script>
+
+    <script src="{base_url}app/app.js"></script>
+    <script src="{base_url}app/app.modalform.js"></script>
+    <script src="{base_url}app/app.tablegrid.js"></script>
 
     <?php
     foreach ($scripts as $script) {
@@ -110,18 +113,6 @@ desired effect
      Both of these plugins are recommended to enhance the
      user experience. Slimscroll is required when using the
      fixed layout. -->
-
-
-<!-- Modal Container -->
-
-<!-- /.modal -->
-
-<!-- Clear modal content on close -->
-<script>
-    $('body').on('hidden.bs.modal', '.modal', function () {
-        $(this).removeData('bs.modal');
-    });
-</script>
 
 </body>
 </html>

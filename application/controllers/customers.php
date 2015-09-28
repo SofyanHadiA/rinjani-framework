@@ -75,17 +75,11 @@ class Customers extends Person_controller
         foreach ($customers as $customer) {
             $row = array();
 
-            $row[] = '<input type="checkbox" id="person_' . $customer->person_id . '" value="' . $customer->person_id . '"/>';
-            $row[] = $customer->last_name;
-            $row[] = $customer->first_name;
-            $row[] = $customer->email;
-            $row[] = $customer->phone_number;
-
-            // WARNING: No HTML in controller
-            $row[] = '<div class="btn-group"><a class="btn btn-xs btn-default" href="' . base_url('customers/view/' . $customer->person_id)
-                . '" data-toggle="modal" data-target="#modal-container" ><i class="fa fa-edit"></i></a> '
-                . '<a class="btn btn-xs btn-default btn-delete" href="' . base_url('customers/delete/' . $customer->person_id)
-                . '"><i class="fa fa-trash"></i></a></div>';
+            $row['person_id'] = $customer->person_id;
+            $row['last_name'] = $customer->last_name;
+            $row['first_name'] = $customer->first_name;
+            $row['email'] = $customer->email;
+            $row['phone_number'] = $customer->phone_number;
 
             $result[] = $row;
         }
@@ -97,7 +91,6 @@ class Customers extends Person_controller
             "data" => $result
         );
 
-        header('Content-Type: application/json');
         echo json_encode($json_data);
     }
 
@@ -107,7 +100,6 @@ class Customers extends Person_controller
     function search()
     {
         $search = $this->input->post('search');
-        //$data_rows=get_people_manage_table_data_rows($this->Customer->search($search),$this);
         $data = $this->Customer->search($search)->result();
 
         header('Content-Type: application/json');
