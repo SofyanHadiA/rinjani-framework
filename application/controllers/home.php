@@ -5,13 +5,14 @@ class Home extends Secure_area
 {
 	function __construct()
 	{
-		parent::__construct();	
+		parent::__construct();
+
+		$this->data['pagetitle'] = 'Dashboard';
+		$this->data['description'] = $this->lang->line('common_welcome_message');
 	}
 	
 	function index()
 	{
-        $this->data['title'] = 'Dashboard';
-		$this->data['description'] = 'Dashboard description';
         $this->data['pagebody'] = 'home';
         $this->render();
 	}

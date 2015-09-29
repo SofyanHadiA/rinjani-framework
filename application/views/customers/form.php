@@ -1,33 +1,35 @@
-
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h4 class="modal-title"><?php echo $this->lang->line("customers_basic_information"); ?></h4>
 </div>
 
 <div class="modal-body">
-    <?php echo form_open('customers/save/' . $person_info->person_id, array('name' => 'customer_form', 'id' => 'customer_form', "class" => 'form-horizontal')); ?>
+    <?php echo form_open('customers/save/' . $person_info->person_id,
+        array('name' => 'customer_form', 'id' => 'customer_form', "class" => 'form-horizontal')); ?>
     <span class="small"><?php echo $this->lang->line('common_fields_required_message'); ?></span>
 
     <ul id="error_message_box" class="warning"></ul>
 
     <fieldset id="customer_basic_info">
 
-        <?php $this->load->view("people/form_basic_info"); ?>
-
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
-                    <?php echo form_label($this->lang->line('customers_account_number'), 'account_number', array('class' => 'col-sm-4 control-label')); ?>
+                    <?php echo form_label($this->lang->line('customers_account_number'), 'account_number',
+                        array('class' => 'col-sm-4 control-label required')); ?>
                     <div class='col-sm-8'>
                         <?php echo form_input(array(
                                 'name' => 'account_number',
                                 'id' => 'account_number',
                                 'class' => 'form-control',
                                 'value' => $person_info->account_number)
-                        );?>
+                        ); ?>
                     </div>
                 </div>
             </div>
+
+            <?php $this->load->view("people/form_basic_info"); ?>
+
             <div class="col-sm-6">
                 <div class="form-group">
                     <?php echo form_label($this->lang->line('customers_taxable'), 'taxable', array('class' => 'col-sm-4 control-label')); ?>
@@ -40,6 +42,8 @@
                     </div>
                 </div>
             </div>
+        </div>
+
     </fieldset>
     <?php
     echo form_close();
@@ -55,60 +59,61 @@
     'use strict';
 
     $(function () {
-        $('#customer_form').submit(function (event) {
-            event.preventDefault();
 
-            var url = $(this).attr('action');
-            var data = $(this).serialize();
-
-            $.post(url, data, function (response) {
-                $('#modal-container').modal('hide');
-
-                if (response['success']) {
-                    customers.tableGrid.ajax.reload();
-
-                    $.notify({
-                        icon: 'fa fa-info-circle',
-                        message: response['message']
-                    }, {
-                        type: "info"
-                    });
+        $('#customer_form').validate({
+            rules: {
+                account_number: {
+                    minlength: 2,
+                    required: true
+                },
+                first_name: {
+                    minlength: 3,
+                    required: true
+                },
+                last_name: {
+                    minlength: 3,
+                    required: true
+                },
+                email: {
+                    email: true
                 }
-                else {
-                    $.notify({
-                        icon: 'fa fa-warning',
-                        message: response['message']
-                    }, {
-                        type: "warning"
-                    });
-                }
-            });
+            },
+            messages: {
+                first_name: "<?php echo $this->lang->line('common_first_name_required'); ?>",
+                last_name: "<?php echo $this->lang->line('common_last_name_required'); ?>",
+                email: "<?php echo $this->lang->line('common_email_invalid_format'); ?>"
+            },
+            errorClass: "pull-left text-yellow error",
+            highlight: function (element) {
+                $(element).closest('.control-group').removeClass('success').addClass('error');
+            },
+            success: function (element) {
+                element.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
+            },
+            submitHandler: function (form) {
+                // do other things for a valid form
+                $(form).submit(function (event) {
+                        event.preventDefault();
+
+                        var url = $(this).attr('action');
+                        var data = $(this).serialize();
+
+                        $.post(url, data, function (response) {
+                            $('#add-data-modal').modal('hide');
+
+                            if (response['success']) {
+                                customers.tableGrid.ajax.reload();
+
+                                $.notify({icon: 'fa fa-info-circle', message: response['message']}, {type: "info"});
+                            }
+                            else {
+                                $.notify({icon: 'fa fa-warning', message: response['message']}, {type: "warning"});
+                            }
+                        });
+                    }
+                );
+            }
         });
-
-//        $('#customer_form').validate({
-//            submitHandler: function (form) {
-//                $(form).ajaxSubmit({
-//                    success: function (response) {
-//                        tb_remove();
-//                        post_person_form_submit(response);
-//                    },
-//                    dataType: 'json'
-//                });
-//
-//            },
-//            errorLabelContainer: "#error_message_box",
-//            wrapper: "li",
-//            rules: {
-//                first_name: "required",
-//                last_name: "required",
-//                email: "email"
-//            },
-//            messages: {
-//                first_name: "<?php //echo $this->lang->line('common_first_name_required'); ?>//",
-//                last_name: "<?php //echo $this->lang->line('common_last_name_required'); ?>//",
-//                email: "<?php //echo $this->lang->line('common_email_invalid_format'); ?>//"
-//            }
-//        });
     });
 </script>
 

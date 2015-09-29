@@ -3,3 +3,12 @@
 }
 
 .top-buffer { margin-top:20px; }
+
+.error {
+    font-size: smaller;
+    color: #aaa;
+    font-weight: normal;
+    font-style: normal;
+    float: left;
+    margin-bottom: -20px;
+}

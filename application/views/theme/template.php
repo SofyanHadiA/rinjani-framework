@@ -21,7 +21,6 @@
     <link rel="stylesheet" href="{base_url}packages/datatables/media/css/dataTables.bootstrap.css">
     <link rel="stylesheet" href="{base_url}packages/pace/themes/yellow/pace-theme-loading-bar.css">
     <link rel="stylesheet" href="{base_url}packages/blueimp-file-upload/css/jquery.fileupload.css">
-
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -40,6 +39,7 @@
     <script src="{base_url}packages/blueimp-file-upload/js/vendor/jquery.ui.widget.js"></script>
     <script src="{base_url}packages/blueimp-file-upload/js/jquery.fileupload.js"></script>
     <script src="{base_url}packages/theme/dist/js/app.min.js"></script>
+    <script src="{base_url}packages/jquery-validation/dist/jquery.validate.js"></script>
 
     <script src="{base_url}app/app.js"></script>
     <script src="{base_url}app/app.modalform.js"></script>
