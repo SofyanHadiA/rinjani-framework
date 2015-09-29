@@ -45,7 +45,7 @@
             event.preventDefault();
             var url = $(this).attr('href');
 
-            app.modalForm(url, 'lg')
+            app.modalForm(url, 'lg', 'add-data-modal')
         });
 
         $('#import-excel').click(function () {
