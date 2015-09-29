@@ -151,7 +151,6 @@
                     </tr>
                     </thead>
                 </table>
-
             </div>
 
             <div id="feedback_bar"></div>

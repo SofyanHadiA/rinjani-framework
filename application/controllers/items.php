@@ -1,12 +1,16 @@
 <?php
 require_once("secure_areas.php");
 require_once ("interfaces/idata_controller.php");
+
 class Items extends Secure_area implements iData_controller
 {
 	function __construct()
 	{
 		parent::__construct('items');
 		$this->load->library('item_lib');
+		
+		$this->data['pagetitle'] = $this->lang->line('module_' . strtolower(get_class()));
+		$this->data['pagedescription'] = $this->lang->line('module_items_desc');
 	}
 
 	function index()
@@ -27,6 +31,59 @@ class Items extends Secure_area implements iData_controller
 		//$this->load->view('items/manage',$data);
 		
 		$this->render('items/manage',$data);
+	}
+	
+	function get($id=-1)
+	{
+        // $column = [
+        //     "sort",
+        //     "last_name",
+        //     "first_name",
+        //     "email",
+        //     "phone_number",
+        //     "action"
+        // ];
+
+        // $searchValue = $this->input->post('search')['value'];
+
+        // $orderby = $this->input->post('order')[0]['column'];
+
+        // if ($this->input->post('columns')[$orderby]['orderable'] == 'true') {
+        //     $orderby = $column[$orderby];
+        // } else {
+        //     $orderby = 'last_name';
+        // }
+
+        // $customers = $this->Customer->get_all(
+        //     $this->input->post('length'),
+        //     $this->input->post('start'),
+        //     $orderby,
+        //     $this->input->post('order')[0]['dir'],
+        //     $searchValue
+        // )->result();
+
+        // $result = array();
+
+        // foreach ($customers as $customer) {
+        //     $row = array();
+
+        //     $row['person_id'] = $customer->person_id;
+        //     $row['last_name'] = $customer->last_name;
+        //     $row['first_name'] = $customer->first_name;
+        //     $row['email'] = $customer->email;
+        //     $row['phone_number'] = $customer->phone_number;
+
+        //     $result[] = $row;
+        // }
+
+        // $json_data = array(
+        //     "draw" => intval($_REQUEST['draw']),
+        //     "recordsTotal" => intval($this->Customer->count_all()),
+        //     "recordsFiltered" => intval($searchValue ? count($result) : $this->Customer->count_all()),
+        //     "data" => $result
+        // );
+
+        // echo json_encode($json_data);
 	}
 
 	function refresh()

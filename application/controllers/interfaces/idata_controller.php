@@ -6,6 +6,7 @@ as the customers, employees, and items controllers.
 interface iData_controller
 {
 	public function index();
+	public function get($id=-1);
 	public function search();
 	public function suggest();
 	public function get_row();
