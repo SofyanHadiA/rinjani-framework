@@ -39,7 +39,7 @@ class Customers extends Person_controller
         $this->render('people/people', $data);
     }
 
-    function get_all()
+    function get($id=-1)
     {
         $data['title'] = $this->lang->line('module_' . strtolower(get_class()));
 

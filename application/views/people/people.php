@@ -7,7 +7,7 @@
 
     $(function () {
         var table = '#manage-table ';
-        var tableGrid = app.tableGrid(table, "{base_url}customers/get_all");
+        var tableGrid = app.tableGrid(table, "{base_url}customers/get");
 
         customers.tableGrid = tableGrid.render([
             {
