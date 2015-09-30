@@ -1,7 +1,7 @@
 <script>
     'use strict';
     $(function () {
-        $('#customer_form').validate({
+        $('#item_form').validate({
             rules: {
                 first_name: {
                     minlength: 3,

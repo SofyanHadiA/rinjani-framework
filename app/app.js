@@ -1,5 +1,3 @@
 'use strict'
 
-var app = {
-
-}
+var app = {};
