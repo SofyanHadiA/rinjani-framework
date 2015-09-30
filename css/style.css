@@ -1,3 +1,8 @@
+.form-group {
+    margin-top: 15px;
+    margin-bottom: 0px !important;
+}
+
 .form-group .control-label.required:after {
     content:"*";
 }
@@ -6,9 +11,9 @@
 
 .error {
     font-size: smaller;
-    color: #aaa;
     font-weight: normal;
     font-style: normal;
+    margin-top: -15px;
+    margin-bottom: -15px;
     float: left;
-    margin-bottom: -20px;
 }

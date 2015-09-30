@@ -83,15 +83,17 @@
                 last_name: "<?php echo $this->lang->line('common_last_name_required'); ?>",
                 email: "<?php echo $this->lang->line('common_email_invalid_format'); ?>"
             },
-            errorClass: "pull-left text-yellow error",
+            errorClass: "error text-red",
+            errorPlacement: function(error, element) {         
+                error.insertBefore(element);
+            },
             highlight: function (element) {
                 $(element).closest('.control-group').removeClass('success').addClass('error');
             },
             success: function (element) {
                 element.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
             },
-            submitHandler: function (form) {
-                // do other things for a valid form
+            submitHandler: function (form) {                
                 $(form).submit(function (event) {
                         event.preventDefault();
 
