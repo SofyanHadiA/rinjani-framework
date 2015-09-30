@@ -35,55 +35,44 @@ class Items extends Secure_area implements iData_controller
 	
 	function get($id=-1)
 	{
-        // $column = [
-        //     "sort",
-        //     "last_name",
-        //     "first_name",
-        //     "email",
-        //     "phone_number",
-        //     "action"
-        // ];
+        $searchValue = $this->input->post('search')['value'];
+        $orderby = $this->input->post('order')[0]['column'];
 
-        // $searchValue = $this->input->post('search')['value'];
+        if ($this->input->post('columns')[$orderby]['orderable'] == 'true') {
+            $orderby = $column[$orderby];
+        } else {
+            $orderby = 'last_name';
+        }
 
-        // $orderby = $this->input->post('order')[0]['column'];
+        $items = $this->Item->get_all(
+            $this->input->post('length'),
+            $this->input->post('start'),
+            $orderby,
+            $this->input->post('order')[0]['dir'],
+            $searchValue
+        )->result();
 
-        // if ($this->input->post('columns')[$orderby]['orderable'] == 'true') {
-        //     $orderby = $column[$orderby];
-        // } else {
-        //     $orderby = 'last_name';
-        // }
+        $result = array();
 
-        // $customers = $this->Customer->get_all(
-        //     $this->input->post('length'),
-        //     $this->input->post('start'),
-        //     $orderby,
-        //     $this->input->post('order')[0]['dir'],
-        //     $searchValue
-        // )->result();
+        foreach ($items as $item) {
+            $row = array();
 
-        // $result = array();
+			$row['item_number'] = $item->item_number;
+			$row['catgory'] = $item->catgory;
+            $row['name'] = $item->name;            
+            $row['receiving_quantity'] = $item->receiving_quantity;                        
 
-        // foreach ($customers as $customer) {
-        //     $row = array();
+            $result[] = $row;
+        }
 
-        //     $row['person_id'] = $customer->person_id;
-        //     $row['last_name'] = $customer->last_name;
-        //     $row['first_name'] = $customer->first_name;
-        //     $row['email'] = $customer->email;
-        //     $row['phone_number'] = $customer->phone_number;
+        $json_data = array(
+            "draw" => 1,//intval($_REQUEST['draw']),
+            "recordsTotal" => intval($this->Customer->count_all()),
+            "recordsFiltered" => intval($searchValue ? count($result) : $this->Customer->count_all()),
+            "data" => $result
+        );
 
-        //     $result[] = $row;
-        // }
-
-        // $json_data = array(
-        //     "draw" => intval($_REQUEST['draw']),
-        //     "recordsTotal" => intval($this->Customer->count_all()),
-        //     "recordsFiltered" => intval($searchValue ? count($result) : $this->Customer->count_all()),
-        //     "data" => $result
-        // );
-
-        // echo json_encode($json_data);
+        echo json_encode($json_data);
 	}
 
 	function refresh()

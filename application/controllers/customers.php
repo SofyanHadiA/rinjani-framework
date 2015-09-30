@@ -128,9 +128,7 @@ class Customers extends Person_controller
     Inserts/updates a customer
     */
     function save($customer_id = -1)
-    {
-        header('Content-Type: application/json');
-
+    {        
         $person_data = array(
             'first_name' => $this->input->post('first_name'),
             'last_name' => $this->input->post('last_name'),
@@ -149,25 +147,53 @@ class Customers extends Person_controller
             'account_number' => $this->input->post('account_number') == '' ? null : $this->input->post('account_number'),
             'taxable' => $this->input->post('taxable') == '' ? 0 : 1,
         );
-
-        if ($this->Customer->save($person_data, $customer_id, $customer_data)) {
-
-            // new customers
-            if ($customer_id == -1) {
-                echo json_encode(array('success' => true,
-                    'message' => $this->lang->line('customers_successful_adding') . ' ' . $person_data['first_name'] . ' ' . $person_data['last_name'],
-                    'person_id' => $customer_data['person_id']));
-            } else //update customer
-            {
-                echo json_encode(array('success' => true,
-                    'message' => $this->lang->line('customers_successful_updating') . ' ' . $person_data['first_name'] . ' ' . $person_data['last_name'],
-                    'person_id' => $customer_id));
-            }
-        } else {
-            echo json_encode(array('success' => false,
-                'message' => $this->lang->line('customers_error_adding_updating') . ' ' .
-                    $person_data['first_name'] . ' ' . $person_data['last_name'], 'person_id' => -1));
-        }
+        
+        // move to model
+        $validation_conf = array(
+            array(
+                    'field' => 'first_name',
+                    'label' => 'First Name',
+                    'rules' => 'required'
+            ),
+            array(
+                    'field' => 'last_name',
+                    'label' => 'Last Name',
+                    'rules' => 'required',
+            ),
+            array(
+                    'field' => 'email',
+                    'label' => 'Email',
+                    'rules' => 'valid_email'
+            )
+        );
+        
+        $this->form_validation->set_rules($validation_conf);
+        
+        if ($this->form_validation->run()){
+    
+            if ($this->Customer->save($person_data, $customer_id, $customer_data)) {
+    
+                // new customers
+                if ($customer_id == -1) {
+                    echo json_encode(array('success' => true,
+                        'message' => $this->lang->line('customers_successful_adding') . ' ' . $person_data['first_name'] . ' ' . $person_data['last_name'],
+                        'person_id' => $customer_data['person_id']));
+                } else //update customer
+                {
+                    echo json_encode(array('success' => true,
+                        'message' => $this->lang->line('customers_successful_updating') . ' ' . $person_data['first_name'] . ' ' . $person_data['last_name'],
+                        'person_id' => $customer_id));
+                }
+            } else {
+                echo json_encode(array('success' => false,
+                    'message' => $this->lang->line('customers_error_adding_updating') . ' ' .
+                        $person_data['first_name'] . ' ' . $person_data['last_name'], 'person_id' => -1));
+           }
+       }
+       else{
+           echo json_encode(array('success' => false,
+                    'message' => $this->lang->line('validation_form_error')));
+       }
     }
 
     /*
@@ -222,8 +248,10 @@ class Customers extends Person_controller
 
         if ($_FILES['file_path']['error'] != UPLOAD_ERR_OK) {
             $msg = $this->lang->line('items_excel_import_failed');
+           
             echo json_encode(array('success' => false,
                 'message' => $msg));
+                
             return;
 
         } else {
