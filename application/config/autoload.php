@@ -97,7 +97,7 @@ $autoload['config'] = array();
 */
 
 $autoload['language'] = array('common', 'config', 'customers', 'employees', 'error', 'form_validation',
-    'giftcards', 'item_kits', 'login', 'module', 'receivings', 'reports', 'sales', 'suppliers');
+    'giftcards', 'items', 'item_kits', 'login', 'module', 'receivings', 'reports', 'sales', 'suppliers');
 
 
 /*

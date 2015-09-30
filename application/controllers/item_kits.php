@@ -1,7 +1,8 @@
 <?php
 require_once("secure_areas.php");
 require_once ("interfaces/idata_controller.php");
-class Item_kits extends Secure_area implements iData_controller
+class
+Item_kits extends Secure_area implements iData_controller
 {
 	function __construct()
 	{

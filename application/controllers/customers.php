@@ -6,7 +6,6 @@ class Customers extends Person_controller
     function __construct()
     {
         parent::__construct('customers');
-        header('Content-Type: application/json');
     }
 
     function index()
@@ -36,7 +35,7 @@ class Customers extends Person_controller
 
         $data['customer_data'] = $customers;
 
-        $this->render('people/people', $data);
+        $this->render('people/people_manage', $data);
     }
 
     function get($id=-1)

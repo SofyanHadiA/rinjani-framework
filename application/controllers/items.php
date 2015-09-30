@@ -15,26 +15,29 @@ class Items extends Secure_area implements iData_controller
 
 	function index()
 	{
-		$config['base_url'] = site_url('/items/index');
-		$config['total_rows'] = $this->Item->count_all();
-		$config['per_page'] = '20';
-		$config['uri_segment'] = 3;
-		$this->pagination->initialize($config);
-		
 		$stock_location=$this->item_lib->get_item_location();
 		$stock_locations=$this->Stock_locations->get_allowed_locations();
 		$data['stock_location']=$stock_location;
 		$data['stock_locations']=$stock_locations;
 		$data['controller_name']=strtolower(get_class());
-		$data['form_width']=$this->get_form_width();
-		$data['manage_table']=get_items_manage_table( $this->Item->get_all( $stock_location, $config['per_page'], $this->uri->segment( $config['uri_segment'] ) ), $this );
-		//$this->load->view('items/manage',$data);
 		
-		$this->render('items/manage',$data);
+		$this->render('items/item_manage',$data);
 	}
 	
 	function get($id=-1)
 	{
+		$column = [
+			'item_id',
+			'items_item_number',
+			'items_name',
+			'items_category',
+			'items_cost_price',
+			'items_unit_price',
+			'items_quantity',
+			'items_tax_percents',
+			'items_inventory'
+		];
+
         $searchValue = $this->input->post('search')['value'];
         $orderby = $this->input->post('order')[0]['column'];
 
@@ -55,18 +58,30 @@ class Items extends Secure_area implements iData_controller
         $result = array();
 
         foreach ($items as $item) {
-            $row = array();
 
+			$item_tax_info=$this->Item_taxes->get_info($item->item_id);
+			$tax_percents = '';
+			foreach($item_tax_info as $tax_info)
+			{
+				$tax_percents.=$tax_info['percent']. '%, ';
+			}
+
+			$tax_percents=substr($tax_percents, 0, -2);
+
+			$row['item_id'] = $item->item_id;
 			$row['item_number'] = $item->item_number;
-			$row['catgory'] = $item->catgory;
-            $row['name'] = $item->name;            
-            $row['receiving_quantity'] = $item->receiving_quantity;                        
+            $row['name'] = $item->name;
+            $row['category'] = $item->category;
+			$row['cost_price'] = $item->cost_price;
+			$row['unit_price'] = $item->unit_price;
+			$row['quantity'] = $item->quantity;
+			$row['tax_percents'] = $tax_percents;
 
             $result[] = $row;
         }
 
         $json_data = array(
-            "draw" => 1,//intval($_REQUEST['draw']),
+            "draw" => intval($_REQUEST['draw']),
             "recordsTotal" => intval($this->Customer->count_all()),
             "recordsFiltered" => intval($searchValue ? count($result) : $this->Customer->count_all()),
             "data" => $result

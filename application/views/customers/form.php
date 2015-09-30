@@ -39,9 +39,9 @@
 
                         $.post(url, data, function (response) {                                                      
                             if (response['success']) {
-                                $('#add-data-modal').modal('hide');
+                                $('#modal-container').modal('hide');
                                 customers.tableGrid.ajax.reload();
-                                
+
                                 app.notify.info(response['message']);
                             }
                             else {
