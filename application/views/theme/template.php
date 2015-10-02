@@ -42,6 +42,7 @@
     <script src="{base_url}packages/jquery-validation/dist/jquery.validate.js"></script>
 
     <script src="{base_url}app/app.js"></script>
+    <script src="{base_url}app/app.loader.js"></script>
     <script src="{base_url}app/app.modalform.js"></script>
     <script src="{base_url}app/app.tablegrid.js"></script>
     <script src="{base_url}app/service/app.notification.service.js"></script>

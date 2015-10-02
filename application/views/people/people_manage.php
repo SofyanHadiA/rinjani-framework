@@ -74,3 +74,9 @@
         </div>
     </div>
 </div>
+<script>
+    app.loader.load('{base_url}customers/get');
+    
+    $('app-view').load('{base_url}customers/get');
+</script>
+<app-view/>
