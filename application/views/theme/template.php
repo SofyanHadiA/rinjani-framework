@@ -41,14 +41,18 @@
     <script src="{base_url}packages/theme/dist/js/app.min.js"></script>
     <script src="{base_url}packages/jquery-validation/dist/jquery.validate.js"></script>
 
-    <script src="{base_url}app/app.js"></script>
-    <script src="{base_url}app/app.loader.js"></script>
-    <script src="{base_url}app/app.route.js"></script>
-    <script src="{base_url}app/app.modalform.js"></script>
-    <script src="{base_url}app/app.tablegrid.js"></script>
-    <script src="{base_url}app/app.form.js"></script>
-    <script src="{base_url}app/service/app.http.js"></script>
-    <script src="{base_url}app/service/app.notification.service.js"></script>
+    <script src="{base_url}app/core/app.js"></script>
+    <script src="{base_url}app/core/app.loader.js"></script>
+    <script src="{base_url}app/core/app.route.js"></script>
+    <script src="{base_url}app/core/app.modalform.js"></script>
+    <script src="{base_url}app/core/app.tablegrid.js"></script>
+    <script src="{base_url}app/core/app.form.js"></script>
+    <script src="{base_url}app/core/service/app.http.js"></script>
+    <script src="{base_url}app/core/service/app.notification.service.js"></script>
+
+    <script src="{base_url}app/config.js"></script>
+    <script src="{base_url}app/people/customer.controller.js"></script>
+    <script src="{base_url}app/item/item.controller.js"></script>
 
     <?php
     foreach ($scripts as $script) {
@@ -66,29 +70,8 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
 
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-            <h1>
-                <!-- change to {{}} -->
-                <pagetitle></pagetitle>
-                <small>
-                    <pagedescription/>
-                </small>
-            </h1>
-            <?php
-            // <ol class="breadcrumb">
-            //     <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-            //     <li class="active">{controller_name}</li>
-            // </ol>
-            ?>
-        </section>
-
-        <!-- Main content -->
-        <section class="content">
-
             <app-view></app-view>
 
-        </section>
         <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
