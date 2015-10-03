@@ -3,11 +3,14 @@
 
     'use_script';
 
-    var customers = {};
-
     $(function () {
+        var customers = {};
+
+        $("pagetitle").html('<?php echo $title; ?>');
+        $("pagedescription").html('<?php echo $description; ?>');
+
         var table = '#manage-table ';
-        var tableGrid = app.tableGrid(table, "{base_url}customers");
+        var tableGrid = app.tableGrid(table, "<?php echo base_url(); ?>customers");
 
         customers.tableGrid = tableGrid.render([
             {data: 'last_name'},
@@ -74,9 +77,3 @@
         </div>
     </div>
 </div>
-<script>
-    app.loader.load('{base_url}customers/get');
-    
-    $('app-view').load('{base_url}customers/get');
-</script>
-<app-view/>

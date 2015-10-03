@@ -15,13 +15,18 @@ class Items extends Secure_area implements iData_controller
 
 	function index()
 	{
+		$data['title'] = $this->lang->line('module_' . strtolower(get_class()));
+		$data['description'] = $this->lang->line('module_items_desc');
+
 		$stock_location=$this->item_lib->get_item_location();
 		$stock_locations=$this->Stock_locations->get_allowed_locations();
 		$data['stock_location']=$stock_location;
 		$data['stock_locations']=$stock_locations;
 		$data['controller_name']=strtolower(get_class());
-		
-		$this->render('items/item_manage',$data);
+
+		$this->load->view('items/item_manage',$data);
+
+		//$this->render('items/item_manage',$data);
 	}
 	
 	function get($id=-1)

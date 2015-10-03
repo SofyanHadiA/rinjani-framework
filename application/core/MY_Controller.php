@@ -63,14 +63,23 @@ class AdminController extends Controller
     {
         parent::__construct();
         $this->load->model('Employee');
+
         if (!$this->Employee->is_logged_in()) {
-            redirect('login');
+            header('Content-Type: application/json', true, 401);
+            echo json_encode(array('success' => false,
+                'message' => $this->lang->line('error_no_permission_module'),
+                'url_login' => base_url('login')));
+            exit();
         }
+
         $employee_id = $this->Employee->get_logged_in_employee_info()->person_id;
+
         if (!$this->Employee->has_module_grant($module_id, $employee_id) ||
-            (isset($submodule_id) && !$this->Employee->has_module_grant($submodule_id, $employee_id))
-        ) {
-            redirect('no_access/' . $module_id . '/' . $submodule_id);
+            (isset($submodule_id) && !$this->Employee->has_module_grant($submodule_id, $employee_id))) {
+            header('Content-Type: application/json', true, 401);
+            echo json_encode(array('success' => false,
+                'message' => $this->lang->line('error_no_permission_module')));
+            exit();
         }
 
         //load up global data
@@ -78,10 +87,10 @@ class AdminController extends Controller
         $data['allowed_modules'] = $this->Module->get_allowed_modules($logged_in_employee_info->person_id);
         $data['user_info'] = $logged_in_employee_info;
         $data['controller_name'] = $module_id;
-        
+
         // merge data
         $this->data['controller_name'] = $module_id;
-        
+
         $this->load->vars($data);
     }
 
@@ -115,7 +124,7 @@ class AdminController extends Controller
 
         $this->data['header'] = $this->parser->parse('theme/header', $this->data, true);
         $this->data['menubar'] = $this->parser->parse('theme/menubar', $this->data, true);
-        $this->data['content'] = $this->parser->parse($this->data['pagebody'], $this->data, true);
+        //$this->data['content'] = $this->parser->parse($this->data['pagebody'], $this->data, true);
         $this->data['footer'] = $this->parser->parse('theme/footer', $this->data, true);
         $this->data['control_sidebar'] = $this->parser->parse('theme/control_sidebar', $this->data, true);
 

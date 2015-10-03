@@ -43,8 +43,11 @@
 
     <script src="{base_url}app/app.js"></script>
     <script src="{base_url}app/app.loader.js"></script>
+    <script src="{base_url}app/app.route.js"></script>
     <script src="{base_url}app/app.modalform.js"></script>
     <script src="{base_url}app/app.tablegrid.js"></script>
+    <script src="{base_url}app/app.form.js"></script>
+    <script src="{base_url}app/service/app.http.js"></script>
     <script src="{base_url}app/service/app.notification.service.js"></script>
 
     <?php
@@ -53,26 +56,7 @@
     }
     ?>
 </head>
-<!--
-BODY TAG OPTIONS:
-=================
-Apply one or more of the following classes to get the
-desired effect
-|---------------------------------------------------------|
-| SKINS         | skin-blue                               |
-|               | skin-black                              |
-|               | skin-purple                             |
-|               | skin-yellow                             |
-|               | skin-red                                |
-|               | skin-green                              |
-|---------------------------------------------------------|
-|LAYOUT OPTIONS | fixed                                   |
-|               | layout-boxed                            |
-|               | layout-top-nav                          |
-|               | sidebar-collapse                        |
-|               | sidebar-mini                            |
-|---------------------------------------------------------|
--->
+
 <body class="hold-transition skin-yellow sidebar-mini">
 <div class="wrapper">
 
@@ -85,8 +69,11 @@ desired effect
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                {pagetitle}
-                <small>{pagedescription}</small>
+                <!-- change to {{}} -->
+                <pagetitle></pagetitle>
+                <small>
+                    <pagedescription/>
+                </small>
             </h1>
             <?php
             // <ol class="breadcrumb">
@@ -99,7 +86,7 @@ desired effect
         <!-- Main content -->
         <section class="content">
 
-            {content}
+            <app-view></app-view>
 
         </section>
         <!-- /.content -->

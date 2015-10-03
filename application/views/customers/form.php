@@ -1,7 +1,7 @@
 <script>
     'use strict';
     $(function () {
-        $('#customer_form').validate({
+        var formConfig = {
             rules: {
                 first_name: {
                     minlength: 3,
@@ -20,38 +20,19 @@
                 last_name: "<?php echo $this->lang->line('common_last_name_required'); ?>",
                 email: "<?php echo $this->lang->line('common_email_invalid_format'); ?>"
             },
-            errorClass: "error text-red",
-            errorPlacement: function(error, element) {         
-                error.insertBefore(element);
-            },
-            highlight: function (element) {
-                $(element).closest('.control-group').removeClass('success').addClass('error');
-            },
-            success: function (element) {
-                element.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
-            },
-            submitHandler: function (form) {                
-                $(form).submit(function (event) {
-                        event.preventDefault();
+        };
 
-                        var url = $(this).attr('action');
-                        var data = $(this).serialize();
-
-                        $.post(url, data, function (response) {                                                      
-                            if (response['success']) {
-                                $('#modal-container').modal('hide');
-                                customers.tableGrid.ajax.reload();
-
-                                app.notify.info(response['message']);
-                            }
-                            else {
-                                 app.notify.warning(response['message']);                                
-                            }
-                        });
-                    }
-                );
-            }
-        });
+        var form = "#customer_form";
+        app.form(form)
+            .config(formConfig)
+            .onSubmit(function() {
+                var url = $(form).attr('action');
+                var data = $(form).serialize();
+                app.http.post(url, data, function () {
+                    $('#modal-container').modal('hide');
+                    customers.tableGrid.ajax.reload();
+                });
+            });
     });
 </script>
 

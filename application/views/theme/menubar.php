@@ -35,7 +35,7 @@
                 if (sizeof(explode('_', $module->module_id)) == 1) {
                     ?>
                     <li <?php if($module->module_id==$controller_name){?>class="active"<?php } ?>>
-                        <a href="<?php echo site_url("$module->module_id"); ?>">
+                        <a href="#<?php echo $module->module_id; ?>">
                             <i class="fa <?php echo $module->icon; ?>"></i>
                             <span><?php echo $this->lang->line("module_" . $module->module_id) ?>	</span>
                         </a>
@@ -49,4 +49,3 @@
     </section>
     <!-- /.sidebar -->
 </aside>
-

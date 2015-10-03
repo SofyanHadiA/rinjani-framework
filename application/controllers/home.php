@@ -13,9 +13,14 @@ class Home extends Secure_area
 	
 	function index()
 	{
-        $this->data['pagebody'] = 'home';
         $this->render();
 	}
+
+	function dashboard()
+	{
+		$this->load->view('dashboard');
+	}
+
 	
 	function logout()
 	{

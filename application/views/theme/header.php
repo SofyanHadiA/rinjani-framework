@@ -2,11 +2,11 @@
 <header class="main-header">
 
     <!-- Logo -->
-    <a href="{base_url}" class="logo">
+    <a href="#home" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
-        <span class="logo-mini"><b>A</b>LT</span>
+        <span class="logo-mini"><b>ERP</b></span>
         <!-- logo for regular state and mobile devices -->
-        <span class="logo-lg"><b>Admin</b>LTE</span>
+        <span class="logo-lg"><b>RIN</b>JANI</span>
     </a>
 
     <!-- Header Navbar -->

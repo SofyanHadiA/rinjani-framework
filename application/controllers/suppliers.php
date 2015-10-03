@@ -18,6 +18,7 @@ class Suppliers extends Person_controller
 		$data['controller_name']=strtolower(get_class());
 		$data['form_width']=$this->get_form_width();
 		$data['manage_table']=get_supplier_manage_table( $this->Supplier->get_all( $config['per_page'], $this->uri->segment( $config['uri_segment'] ) ), $this );
+
 		$this->load->view('suppliers/manage',$data);
 	}
 	

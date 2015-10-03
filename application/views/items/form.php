@@ -1,7 +1,8 @@
 <script>
     'use strict';
     $(function () {
-        $('#item_form').validate({
+
+        var formConfig = {
             rules: {
                 first_name: {
                     minlength: 3,
@@ -19,39 +20,23 @@
                 first_name: "<?php echo $this->lang->line('common_first_name_required'); ?>",
                 last_name: "<?php echo $this->lang->line('common_last_name_required'); ?>",
                 email: "<?php echo $this->lang->line('common_email_invalid_format'); ?>"
-            },
-            errorClass: "error text-red",
-            errorPlacement: function (error, element) {
-                error.insertBefore(element);
-            },
-            highlight: function (element) {
-                $(element).closest('.control-group').removeClass('success').addClass('error');
-            },
-            success: function (element) {
-                element.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
-            },
-            submitHandler: function (form) {
-                $(form).submit(function (event) {
-                        event.preventDefault();
-
-                        var url = $(this).attr('action');
-                        var data = $(this).serialize();
-
-                        $.post(url, data, function (response) {
-                            if (response['success']) {
-                                $('#modal-container').modal('hide');
-                                customers.tableGrid.ajax.reload();
-
-                                app.notify.info(response['message']);
-                            }
-                            else {
-                                app.notify.warning(response['message']);
-                            }
-                        });
-                    }
-                );
             }
-        });
+        };
+
+        var form = "#item_form";
+        app.form(form)
+            .config(formConfig)
+            .onSubmit(function() {
+                var url = $(this).attr('action');
+                var data = $(this).serialize();
+
+                var callback = function () {
+                    $('#modal-container').modal('hide');
+                    customers.tableGrid.ajax.reload();
+                };
+
+                app.http.post(url, data, callback());
+            });
     });
 </script>
 
@@ -288,204 +273,195 @@
             </div>
 
             <?php
-            if ($this->config->item('custom10_name') != NULL)
-            {
-            ?>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php
-                    echo form_label($this->config->item('custom1_name'), 'custom1', array('class' => 'col-sm-4 control-label')); ?>
-                    <div class='col-sm-8'>
-                        <?php echo form_input(array(
-                                'name' => 'custom1',
-                                'id' => 'custom1',
-                                'class' => 'form-control', 'value' => $item_info->custom1)
-                        ); ?>
+            if ($this->config->item('custom10_name') != NULL) {
+                ?>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
+                        echo form_label($this->config->item('custom1_name'), 'custom1', array('class' => 'col-sm-4 control-label')); ?>
+                        <div class='col-sm-8'>
+                            <?php echo form_input(array(
+                                    'name' => 'custom1',
+                                    'id' => 'custom1',
+                                    'class' => 'form-control', 'value' => $item_info->custom1)
+                            ); ?>
+                        </div>
                     </div>
+
                 </div>
 
-            </div>
-
             <?php }//end if
-                ?>
+            ?>
             <?php
-            if ($this->config->item('custom10_name') != NULL)
-            {
-            ?>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php
+            if ($this->config->item('custom10_name') != NULL) {
+                ?>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
 
-                    echo form_label($this->config->item('custom2_name'), 'custom2', array('class' => 'col-sm-4 control-label')); ?>
-                    <div class='col-sm-8'>
-                        <?php echo form_input(array(
-                                'name' => 'custom2',
-                                'id' => 'custom2',
-                                'class' => 'form-control', 'value' => $item_info->custom2)
-                        ); ?>
+                        echo form_label($this->config->item('custom2_name'), 'custom2', array('class' => 'col-sm-4 control-label')); ?>
+                        <div class='col-sm-8'>
+                            <?php echo form_input(array(
+                                    'name' => 'custom2',
+                                    'id' => 'custom2',
+                                    'class' => 'form-control', 'value' => $item_info->custom2)
+                            ); ?>
+                        </div>
                     </div>
+
                 </div>
 
-            </div>
-
             <?php }//end if
-                ?>
+            ?>
 
             <?php
-            if ($this->config->item('custom10_name') != NULL)
-            {
-            ?>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php
+            if ($this->config->item('custom10_name') != NULL) {
+                ?>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
 
-                    echo form_label($this->config->item('custom3_name'), 'custom3', array('class' => 'col-sm-4 control-label')); ?>
-                    <div class='col-sm-8'>
-                        <?php echo form_input(array(
-                                'name' => 'custom3',
-                                'id' => 'custom3',
-                                'class' => 'form-control', 'value' => $item_info->custom3)
-                        ); ?>
+                        echo form_label($this->config->item('custom3_name'), 'custom3', array('class' => 'col-sm-4 control-label')); ?>
+                        <div class='col-sm-8'>
+                            <?php echo form_input(array(
+                                    'name' => 'custom3',
+                                    'id' => 'custom3',
+                                    'class' => 'form-control', 'value' => $item_info->custom3)
+                            ); ?>
+                        </div>
                     </div>
+
                 </div>
 
-            </div>
-
             <?php }//end if
-                ?>
-                <?php
-            if ($this->config->item('custom10_name') != NULL)
-            {
             ?>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php
+            <?php
+            if ($this->config->item('custom10_name') != NULL) {
+                ?>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
 
-                    echo form_label($this->config->item('custom4_name'), 'custom4', array('class' => 'col-sm-4 control-label')); ?>
-                    <div class='col-sm-8'>
-                        <?php echo form_input(array(
-                                'name' => 'custom4',
-                                'id' => 'custom4',
-                                'class' => 'form-control', 'value' => $item_info->custom4)
-                        ); ?>
+                        echo form_label($this->config->item('custom4_name'), 'custom4', array('class' => 'col-sm-4 control-label')); ?>
+                        <div class='col-sm-8'>
+                            <?php echo form_input(array(
+                                    'name' => 'custom4',
+                                    'id' => 'custom4',
+                                    'class' => 'form-control', 'value' => $item_info->custom4)
+                            ); ?>
+                        </div>
                     </div>
+
+
                 </div>
 
-
-            </div>
-
             <?php }//end if
-                ?>
+            ?>
 
             <?php
-            if ($this->config->item('custom10_name') != NULL)
-            {
-            ?>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php
+            if ($this->config->item('custom10_name') != NULL) {
+                ?>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
 
-                    echo form_label($this->config->item('custom5_name'), 'custom5', array('class' => 'col-sm-4 control-label')); ?>
-                    <div class='col-sm-8'>
-                        <?php echo form_input(array(
-                                'name' => 'custom5',
-                                'id' => 'custom5',
-                                'class' => 'form-control', 'value' => $item_info->custom5)
-                        ); ?>
+                        echo form_label($this->config->item('custom5_name'), 'custom5', array('class' => 'col-sm-4 control-label')); ?>
+                        <div class='col-sm-8'>
+                            <?php echo form_input(array(
+                                    'name' => 'custom5',
+                                    'id' => 'custom5',
+                                    'class' => 'form-control', 'value' => $item_info->custom5)
+                            ); ?>
+                        </div>
                     </div>
+
+
                 </div>
 
-
-            </div>
-
             <?php }//end if
-                ?>
+            ?>
 
             <?php
-            if ($this->config->item('custom10_name') != NULL)
-            {
-            ?>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php
+            if ($this->config->item('custom10_name') != NULL) {
+                ?>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
 
-                    echo form_label($this->config->item('custom6_name'), 'custom6', array('class' => 'col-sm-4 control-label')); ?>
-                    <div class='col-sm-8'>
-                        <?php echo form_input(array(
-                                'name' => 'custom6',
-                                'id' => 'custom6',
-                                'class' => 'form-control', 'value' => $item_info->custom6)
-                        ); ?>
+                        echo form_label($this->config->item('custom6_name'), 'custom6', array('class' => 'col-sm-4 control-label')); ?>
+                        <div class='col-sm-8'>
+                            <?php echo form_input(array(
+                                    'name' => 'custom6',
+                                    'id' => 'custom6',
+                                    'class' => 'form-control', 'value' => $item_info->custom6)
+                            ); ?>
+                        </div>
                     </div>
                 </div>
-            </div>
 
             <?php }//end if
-                ?>
+            ?>
 
             <?php
-            if ($this->config->item('custom10_name') != NULL)
-            {
-            ?>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php
+            if ($this->config->item('custom10_name') != NULL) {
+                ?>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
 
-                    echo form_label($this->config->item('custom7_name'), 'custom7', array('class' => 'col-sm-4 control-label')); ?>
-                    <div class='col-sm-8'>
-                        <?php echo form_input(array(
-                                'name' => 'custom7',
-                                'id' => 'custom7',
-                                'class' => 'form-control', 'value' => $item_info->custom7)
-                        ); ?>
+                        echo form_label($this->config->item('custom7_name'), 'custom7', array('class' => 'col-sm-4 control-label')); ?>
+                        <div class='col-sm-8'>
+                            <?php echo form_input(array(
+                                    'name' => 'custom7',
+                                    'id' => 'custom7',
+                                    'class' => 'form-control', 'value' => $item_info->custom7)
+                            ); ?>
+                        </div>
                     </div>
                 </div>
-            </div>
 
             <?php }//end if
-                ?>
+            ?>
 
             <?php
-            if ($this->config->item('custom10_name') != NULL)
-            {
-            ?>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php
+            if ($this->config->item('custom10_name') != NULL) {
+                ?>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
 
-                    echo form_label($this->config->item('custom8_name'), 'custom8', array('class' => 'col-sm-4 control-label')); ?>
-                    <div class='col-sm-8'>
-                        <?php echo form_input(array(
-                                'name' => 'custom8',
-                                'id' => 'custom8',
-                                'class' => 'form-control', 'value' => $item_info->custom8)
-                        ); ?>
+                        echo form_label($this->config->item('custom8_name'), 'custom8', array('class' => 'col-sm-4 control-label')); ?>
+                        <div class='col-sm-8'>
+                            <?php echo form_input(array(
+                                    'name' => 'custom8',
+                                    'id' => 'custom8',
+                                    'class' => 'form-control', 'value' => $item_info->custom8)
+                            ); ?>
+                        </div>
                     </div>
                 </div>
-            </div>
             <?php }//end if
-                ?>
+            ?>
 
             <?php
-            if ($this->config->item('custom10_name') != NULL)
-            {
-            ?>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <?php
+            if ($this->config->item('custom10_name') != NULL) {
+                ?>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <?php
 
-                    echo form_label($this->config->item('custom9_name'), 'custom9', array('class' => 'col-sm-4 control-label')); ?>
-                    <div class='col-sm-8'>
-                        <?php echo form_input(array(
-                                'name' => 'custom9',
-                                'id' => 'custom9',
-                                'class' => 'form-control', 'value' => $item_info->custom9)
-                        ); ?>
+                        echo form_label($this->config->item('custom9_name'), 'custom9', array('class' => 'col-sm-4 control-label')); ?>
+                        <div class='col-sm-8'>
+                            <?php echo form_input(array(
+                                    'name' => 'custom9',
+                                    'id' => 'custom9',
+                                    'class' => 'form-control', 'value' => $item_info->custom9)
+                            ); ?>
+                        </div>
                     </div>
                 </div>
-            </div>
             <?php }//end if
-                ?>
+            ?>
             <?php
             if ($this->config->item('custom10_name') != NULL) {
                 ?>
@@ -518,7 +494,7 @@
                                 'class' => 'form-control',
                                 'value' => $item_info->description,
                                 'rows' => '3'
-                                )
+                            )
                         ); ?>
                     </div>
                 </div>
@@ -549,170 +525,170 @@
 </div>
 
 <script type='text/javascript'>
-
-    //validation and submit handling
-    $(document).ready(function () {
-        $("#category").autocomplete("<?php echo site_url('items/suggest_category');?>", {
-            max: 100,
-            minChars: 0,
-            delay: 10
-        });
-        $("#category").result(function (event, data, formatted) {
-        });
-        $("#category").search();
-
-        $("#custom1").autocomplete("<?php echo site_url('items/suggest_custom1');?>", {
-            max: 100,
-            minChars: 0,
-            delay: 10
-        });
-        $("#custom1").result(function (event, data, formatted) {
-        });
-        $("#custom1").search();
-
-        $("#custom2").autocomplete("<?php echo site_url('items/suggest_custom2');?>", {
-            max: 100,
-            minChars: 0,
-            delay: 10
-        });
-        $("#custom2").result(function (event, data, formatted) {
-        });
-        $("#custom2").search();
-
-        $("#custom3").autocomplete("<?php echo site_url('items/suggest_custom3');?>", {
-            max: 100,
-            minChars: 0,
-            delay: 10
-        });
-        $("#custom3").result(function (event, data, formatted) {
-        });
-        $("#custom3").search();
-
-        $("#custom4").autocomplete("<?php echo site_url('items/suggest_custom4');?>", {
-            max: 100,
-            minChars: 0,
-            delay: 10
-        });
-        $("#custom4").result(function (event, data, formatted) {
-        });
-        $("#custom4").search();
-
-        $("#custom5").autocomplete("<?php echo site_url('items/suggest_custom5');?>", {
-            max: 100,
-            minChars: 0,
-            delay: 10
-        });
-        $("#custom5").result(function (event, data, formatted) {
-        });
-        $("#custom5").search();
-
-        $("#custom6").autocomplete("<?php echo site_url('items/suggest_custom6');?>", {
-            max: 100,
-            minChars: 0,
-            delay: 10
-        });
-        $("#custom6").result(function (event, data, formatted) {
-        });
-        $("#custom6").search();
-
-        $("#custom7").autocomplete("<?php echo site_url('items/suggest_custom7');?>", {
-            max: 100,
-            minChars: 0,
-            delay: 10
-        });
-        $("#custom7").result(function (event, data, formatted) {
-        });
-        $("#custom7").search();
-
-        $("#custom8").autocomplete("<?php echo site_url('items/suggest_custom8');?>", {
-            max: 100,
-            minChars: 0,
-            delay: 10
-        });
-        $("#custom8").result(function (event, data, formatted) {
-        });
-        $("#custom8").search();
-
-        $("#custom9").autocomplete("<?php echo site_url('items/suggest_custom9');?>", {
-            max: 100,
-            minChars: 0,
-            delay: 10
-        });
-        $("#custom9").result(function (event, data, formatted) {
-        });
-        $("#custom9").search();
-
-        $("#custom10").autocomplete("<?php echo site_url('items/suggest_custom10');?>", {
-            max: 100,
-            minChars: 0,
-            delay: 10
-        });
-        $("#custom10").result(function (event, data, formatted) {
-        });
-        $("#custom10").search();
-        /** END GARRISON ADDED **/
-
-        $('#item_form').validate({
-            submitHandler: function (form) {
-                /*
-                 make sure the hidden field #item_number gets set
-                 to the visible scan_item_number value
-                 */
-                $('#item_number').val($('#scan_item_number').val());
-                $(form).ajaxSubmit({
-                    success: function (response) {
-                        tb_remove();
-                        post_item_form_submit(response);
-                    },
-                    dataType: 'json'
-                });
-
-            },
-            errorLabelContainer: "#error_message_box",
-            wrapper: "li",
-            rules: {
-                name: "required",
-                category: "required",
-                cost_price: {
-                    required: true,
-                    number: true
-                },
-
-                unit_price: {
-                    required: true,
-                    number: true
-                },
-                tax_percent: {
-                    required: true,
-                    number: true
-                },
-                reorder_level: {
-                    required: true,
-                    number: true
-                }
-
-            },
-            messages: {
-                name: "<?php echo $this->lang->line('items_name_required'); ?>",
-                category: "<?php echo $this->lang->line('items_category_required'); ?>",
-                cost_price: {
-                    required: "<?php echo $this->lang->line('items_cost_price_required'); ?>",
-                    number: "<?php echo $this->lang->line('items_cost_price_number'); ?>"
-                },
-                unit_price: {
-                    required: "<?php echo $this->lang->line('items_unit_price_required'); ?>",
-                    number: "<?php echo $this->lang->line('items_unit_price_number'); ?>"
-                },
-                tax_percent: {
-                    required: "<?php echo $this->lang->line('items_tax_percent_required'); ?>",
-                    number: "<?php echo $this->lang->line('items_tax_percent_number'); ?>"
-                },
-                reorder_level: {
-                    required: "<?php echo $this->lang->line('items_reorder_level_required'); ?>",
-                    number: "<?php echo $this->lang->line('items_reorder_level_number'); ?>"
-                }
-
-            }
-        });
-    });
+//
+//    //validation and submit handling
+//    $(document).ready(function () {
+//        $("#category").autocomplete("<?php //echo site_url('items/suggest_category');?>//", {
+//            max: 100,
+//            minChars: 0,
+//            delay: 10
+//        });
+//        $("#category").result(function (event, data, formatted) {
+//        });
+//        $("#category").search();
+//
+//        $("#custom1").autocomplete("<?php //echo site_url('items/suggest_custom1');?>//", {
+//            max: 100,
+//            minChars: 0,
+//            delay: 10
+//        });
+//        $("#custom1").result(function (event, data, formatted) {
+//        });
+//        $("#custom1").search();
+//
+//        $("#custom2").autocomplete("<?php //echo site_url('items/suggest_custom2');?>//", {
+//            max: 100,
+//            minChars: 0,
+//            delay: 10
+//        });
+//        $("#custom2").result(function (event, data, formatted) {
+//        });
+//        $("#custom2").search();
+//
+//        $("#custom3").autocomplete("<?php //echo site_url('items/suggest_custom3');?>//", {
+//            max: 100,
+//            minChars: 0,
+//            delay: 10
+//        });
+//        $("#custom3").result(function (event, data, formatted) {
+//        });
+//        $("#custom3").search();
+//
+//        $("#custom4").autocomplete("<?php //echo site_url('items/suggest_custom4');?>//", {
+//            max: 100,
+//            minChars: 0,
+//            delay: 10
+//        });
+//        $("#custom4").result(function (event, data, formatted) {
+//        });
+//        $("#custom4").search();
+//
+//        $("#custom5").autocomplete("<?php //echo site_url('items/suggest_custom5');?>//", {
+//            max: 100,
+//            minChars: 0,
+//            delay: 10
+//        });
+//        $("#custom5").result(function (event, data, formatted) {
+//        });
+//        $("#custom5").search();
+//
+//        $("#custom6").autocomplete("<?php //echo site_url('items/suggest_custom6');?>//", {
+//            max: 100,
+//            minChars: 0,
+//            delay: 10
+//        });
+//        $("#custom6").result(function (event, data, formatted) {
+//        });
+//        $("#custom6").search();
+//
+//        $("#custom7").autocomplete("<?php //echo site_url('items/suggest_custom7');?>//", {
+//            max: 100,
+//            minChars: 0,
+//            delay: 10
+//        });
+//        $("#custom7").result(function (event, data, formatted) {
+//        });
+//        $("#custom7").search();
+//
+//        $("#custom8").autocomplete("<?php //echo site_url('items/suggest_custom8');?>//", {
+//            max: 100,
+//            minChars: 0,
+//            delay: 10
+//        });
+//        $("#custom8").result(function (event, data, formatted) {
+//        });
+//        $("#custom8").search();
+//
+//        $("#custom9").autocomplete("<?php //echo site_url('items/suggest_custom9');?>//", {
+//            max: 100,
+//            minChars: 0,
+//            delay: 10
+//        });
+//        $("#custom9").result(function (event, data, formatted) {
+//        });
+//        $("#custom9").search();
+//
+//        $("#custom10").autocomplete("<?php //echo site_url('items/suggest_custom10');?>//", {
+//            max: 100,
+//            minChars: 0,
+//            delay: 10
+//        });
+//        $("#custom10").result(function (event, data, formatted) {
+//        });
+//        $("#custom10").search();
+//        /** END GARRISON ADDED **/
+//
+//        $('#item_form').validate({
+//            submitHandler: function (form) {
+//                /*
+//                 make sure the hidden field #item_number gets set
+//                 to the visible scan_item_number value
+//                 */
+//                $('#item_number').val($('#scan_item_number').val());
+//                $(form).ajaxSubmit({
+//                    success: function (response) {
+//                        tb_remove();
+//                        post_item_form_submit(response);
+//                    },
+//                    dataType: 'json'
+//                });
+//
+//            },
+//            errorLabelContainer: "#error_message_box",
+//            wrapper: "li",
+//            rules: {
+//                name: "required",
+//                category: "required",
+//                cost_price: {
+//                    required: true,
+//                    number: true
+//                },
+//
+//                unit_price: {
+//                    required: true,
+//                    number: true
+//                },
+//                tax_percent: {
+//                    required: true,
+//                    number: true
+//                },
+//                reorder_level: {
+//                    required: true,
+//                    number: true
+//                }
+//
+//            },
+//            messages: {
+//                name: "<?php //echo $this->lang->line('items_name_required'); ?>//",
+//                category: "<?php //echo $this->lang->line('items_category_required'); ?>//",
+//                cost_price: {
+//                    required: "<?php //echo $this->lang->line('items_cost_price_required'); ?>//",
+//                    number: "<?php //echo $this->lang->line('items_cost_price_number'); ?>//"
+//                },
+//                unit_price: {
+//                    required: "<?php //echo $this->lang->line('items_unit_price_required'); ?>//",
+//                    number: "<?php //echo $this->lang->line('items_unit_price_number'); ?>//"
+//                },
+//                tax_percent: {
+//                    required: "<?php //echo $this->lang->line('items_tax_percent_required'); ?>//",
+//                    number: "<?php //echo $this->lang->line('items_tax_percent_number'); ?>//"
+//                },
+//                reorder_level: {
+//                    required: "<?php //echo $this->lang->line('items_reorder_level_required'); ?>//",
+//                    number: "<?php //echo $this->lang->line('items_reorder_level_number'); ?>//"
+//                }
+//
+//            }
+//        });
+//    });
 </script>

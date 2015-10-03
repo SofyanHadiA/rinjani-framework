@@ -9,14 +9,14 @@
 		<div class="col-md-6 col-sm-6 col-xs-12" >
 			<div id="module-icon-<?php echo $module->module_id;?>"  class="info-box">	
 				
-				<a href="<?php echo site_url("$module->module_id");?>" >		
+				<a href="#<?php echo $module->module_id;?>" >
 					<span class="info-box-icon bg-yellow">
 						<i class="fa <?php echo $module->icon; ?>"></i>
 					</span>
 				</a>
 				
 				<div class="info-box-content">	
-					<a href="<?php echo site_url("$module->module_id");?>" >				
+					<a href="#<?php echo $module->module_id;?>" >
 						<h3><?php echo $this->lang->line("module_".$module->module_id) ?></h3>	
 					</a>			
 					<?php echo $this->lang->line('module_'.$module->module_id.'_desc');?>

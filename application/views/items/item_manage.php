@@ -1,11 +1,14 @@
 <script>
     'use_script';
 
-    var items = {};
-
     $(function () {
+        var items = {};
+
+        $("pagetitle").html('<?php echo $title; ?>');
+        $("pagedescription").html('<?php echo $description; ?>');
+
         var table = '#manage-table ';
-        var tableGrid = app.tableGrid(table, "{base_url}items");
+        var tableGrid = app.tableGrid(table, "<?php echo base_url(); ?>items");
 
         items.tableGrid = tableGrid.render([
             {data: 'item_number'},

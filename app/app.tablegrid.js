@@ -96,7 +96,7 @@ app.tableGrid = function (table_container, controller_url) {
                 bootbox.confirm('Are you sure to delete selected data(s)?', function (result) {
                     if (result) {
                         do_delete(url);
-                        $(table + '#select-all').prop('checked', false);
+                        $(table_container + '#select-all').prop('checked', false);
                     }
                 });
             }
@@ -130,27 +130,6 @@ app.tableGrid = function (table_container, controller_url) {
 
     function do_delete(url) {
         var row_ids = get_selected_rows();
-        $.post(url, {'ids[]': row_ids}, function (response) {
-
-            if (response.success) {
-
-                vm.dataTable.ajax.reload();
-
-                $.notify({
-                    icon: 'fa fa-info-circle',
-                    message: response.message
-                }, {
-                    type: "info"
-                });
-            }
-            else {
-                $.notify({
-                    icon: 'fa fa-warning',
-                    message: response.message
-                }, {
-                    type: "danger"
-                });
-            }
-        }, "json");
+        app.http.post(url, {'ids[]': row_ids}, vm.dataTable.ajax.reload)
     }
 };
