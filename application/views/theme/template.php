@@ -48,7 +48,7 @@
     <script src="{base_url}app/core/app.tablegrid.js"></script>
     <script src="{base_url}app/core/app.form.js"></script>
     <script src="{base_url}app/core/service/app.http.js"></script>
-    <script src="{base_url}app/core/service/app.notification.service.js"></script>
+    <script src="{base_url}app/core/service/app.notify.js"></script>
 
     <script src="{base_url}app/config.js"></script>
     <script src="{base_url}app/people/customer.controller.js"></script>

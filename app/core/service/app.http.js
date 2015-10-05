@@ -1,16 +1,24 @@
 'use strict'
 
+// TODO: Update Token
+
 app.http = {};
 
 app.http.get = function(url, data, callback){
     $.get(url, data, function (response) {
-        if (!response.success) {
-            app.notify.warning(response.message);
+        //app.session.token = response.token; <----
+        
+        if (response.success) {
+            callback();
+            app.notify.info(response.message);
         }
         else {
-            callback();
+            app.notify.warning(response.message);
         }
-    }, "json");
+    }, "json")
+    .fail(function(xhr) {                
+        app.notify.danger("<b>" + xhr.status +"</b>" + " " +xhr.responseJSON.message);
+    });;
 };
 
 app.http.post = function(url, data, callback){
@@ -23,5 +31,8 @@ app.http.post = function(url, data, callback){
         else {
             app.notify.warning(response.message);
         }
-    }, "json");
+    }, "json")
+    .fail(function(xhr) {                
+        app.notify.danger("<b>" + xhr.status +"</b>" + " " +xhr.responseJSON.message);
+    });
 };
