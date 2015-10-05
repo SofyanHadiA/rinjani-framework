@@ -18,6 +18,7 @@ class Home extends Secure_area
 
 	function dashboard()
 	{
+		header('Content-Type: text/html');
 		$this->load->view('dashboard');
 	}
 
