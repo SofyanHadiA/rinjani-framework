@@ -40,6 +40,7 @@
     <script src="{base_url}packages/blueimp-file-upload/js/jquery.fileupload.js"></script>
     <script src="{base_url}packages/theme/dist/js/app.min.js"></script>
     <script src="{base_url}packages/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="{base_url}packages/handlebars/handlebars.js"></script>
 
     <script src="{base_url}app/core/app.js"></script>
     <script src="{base_url}app/core/app.loader.js"></script>
@@ -75,8 +76,20 @@
         <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
+    <div id="target">Loading...</div>
+   <script id="template" type="text/x-handlebars-template">
+       {{route}}
+   </script>
+   
+   <script>
+         var template = $('#template').html();        
+        var rendered = Handlebars.compile(template);
+        rendered = rendered({route: "test"})
+        $('#target').html(rendered);
+   </script>
 
-    {footer}
+    {footer}    
+
     {control_sidebar}
 </div>
 <!-- ./wrapper -->

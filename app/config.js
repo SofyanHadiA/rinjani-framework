@@ -14,7 +14,7 @@ app.language = new function () {
 app.route = {
     'home': {
         'template': app.config.baseUrl + 'home/dashboard',
-        'controller': 'customerController'
+        'controller': 'dashboardController'
     },
     'customers': {
         template: '../app/people/customer.html',

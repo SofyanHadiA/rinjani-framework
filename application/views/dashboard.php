@@ -1,4 +1,10 @@
 
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+
+<div class="box-body">
 <div id="home_module_list" class="row">
 	<?php
 	foreach($allowed_modules->result() as $module)
@@ -27,4 +33,8 @@
 		}
 	}
 	?>
+</div>
+</div>
+</div>
+</div>
 </div>
