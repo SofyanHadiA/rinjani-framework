@@ -11,22 +11,17 @@ $(function () {
     function hashchanged() {
         var hash = location.hash.replace(/^#/, '')
 
-        if (hash) {
-
+        if (hash) {            
+            // TODO: Use Spinner
+            $('app-view').html('Loading...');       
+                 
             $.get(app.route[hash].template, function (response) {
                 try {
-                    $('app-view').html('');
-                    var controller = new app.controller[app.route[hash].controller];
-
-                    var pattern = /\{\{(.*?)\}\}/g;
-                    var result = response;
-
-                    for(var parsed = pattern.exec(result); parsed; parsed = pattern.exec(result)){
-                        result = result.replace('{{'+parsed[1]+'}}', controller[parsed[1]]);
-                    }
-
-                    $('app-view').html(result);
-
+                    var controller = new app.controller[app.route[hash].controller];                    
+                    var template = response;        
+                    var rendered = Handlebars.compile(template);                   
+                    rendered = rendered(controller)
+                    $('app-view').html(rendered);
                     controller.load();
                 }
                 catch (e) {

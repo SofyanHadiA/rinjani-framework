@@ -70,26 +70,11 @@
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
-
-            <app-view></app-view>
-
-        <!-- /.content -->
+            <app-view>Loading...</app-view>        
     </div>
     <!-- /.content-wrapper -->
-    <div id="target">Loading...</div>
-   <script id="template" type="text/x-handlebars-template">
-       {{route}}
-   </script>
-   
-   <script>
-         var template = $('#template').html();        
-        var rendered = Handlebars.compile(template);
-        rendered = rendered({route: "test"})
-        $('#target').html(rendered);
-   </script>
 
     {footer}    
-
     {control_sidebar}
 </div>
 <!-- ./wrapper -->
