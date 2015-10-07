@@ -23,7 +23,8 @@ class AdminController extends Controller
         $employee_id = $this->Employee->get_logged_in_employee_info()->person_id;
 
         if (!$this->Employee->has_module_grant($module_id, $employee_id) ||
-            (isset($submodule_id) && !$this->Employee->has_module_grant($submodule_id, $employee_id))) {
+            (isset($submodule_id) && !$this->Employee->has_module_grant($submodule_id, $employee_id))
+        ) {
             header('Content-Type: application/json', true, 401);
             echo json_encode(array('success' => false,
                 'message' => $this->lang->line('error_no_permission_module')));
@@ -32,12 +33,19 @@ class AdminController extends Controller
 
         //load up global data
         $logged_in_employee_info = $this->Employee->get_logged_in_employee_info();
-        $data['allowed_modules'] = $this->Module->get_allowed_modules($logged_in_employee_info->person_id);
+        $modules = $this->Module->get_allowed_modules($logged_in_employee_info->person_id);
+
+        $this->data['allowed_modules'] = array();
+        foreach ($modules->result() as $module) {
+            $module->title = $this->data['lang']["module_" . $module->module_id];
+            $module->description = $this->data['lang']['module_' . $module->module_id . '_desc'];
+            $this->data['allowed_modules'][] = $module;
+        }
+
+        $data['allowed_modules'] = $this->data['allowed_modules'];
         $data['user_info'] = $logged_in_employee_info;
         $data['controller_name'] = $module_id;
-
-        // merge data
-        $this->data['controller_name'] = $module_id;
+        $data['controller_name'] = $module_id;
 
         $this->load->vars($data);
     }

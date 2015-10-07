@@ -8,8 +8,8 @@ app.controller.customerController = function () {
     customer.delete = app.language.delete;
     customer.load = onLoad;
 
-    var table = '#manage-table ';
-    var tableGrid = app.tableGrid(table, "../customers");
+    customer.table = '#manage-table ';
+    customer.tableGrid = app.tableGrid(table, "../customers");
 
     function onLoad() {
         customer.tableGrid = tableGrid.render([

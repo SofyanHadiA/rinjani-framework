@@ -24,9 +24,9 @@ app.template.dashboardContent = '{{#each data}}'+
                 '</a>' +
                 '<div class="info-box-content">' +
                     '<a href="#{{this.module_id}}" >' +
-                        '<h3>{{this.module_id}}</h3>' +
+                        '<h3>{{this.title}}</h3>' +
                     '</a>'+
-                    '{{this.desc_lang_key}}' +
+                    '{{this.description}}' +
                 '</div>' +
             '</div>' +
         '</div>'+

@@ -45,24 +45,19 @@
 
     <script src="{base_url}app/core/app.js"></script>
     <script src="{base_url}app/core/app.route.js"></script>
-    <script src="{base_url}app/core/app.loader.js"></script>    
+    <script src="{base_url}app/core/app.loader.js"></script>
     <script src="{base_url}app/core/app.modalform.js"></script>
     <script src="{base_url}app/core/app.tablegrid.js"></script>
     <script src="{base_url}app/core/app.form.js"></script>
     <script src="{base_url}app/core/service/app.http.js"></script>
     <script src="{base_url}app/core/service/app.notify.js"></script>
 
-    <script src="{base_url}app/config.js"></script>    
+    <script src="{base_url}app/config.js"></script>
     <script src="{base_url}app/home/dashboard.controller.js"></script>
     <script src="{base_url}app/home/dashboard.template.js"></script>
     <script src="{base_url}app/people/customer.controller.js"></script>
     <script src="{base_url}app/item/item.controller.js"></script>
 
-    <?php
-    foreach ($scripts as $script) {
-        echo '<script src="' . $script . '"></script>';
-    }
-    ?>
 </head>
 
 <body class="hold-transition skin-yellow sidebar-mini">
@@ -73,11 +68,11 @@
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
-            <app-view>Loading...</app-view>        
+            <app-view>Loading...</app-view>
     </div>
     <!-- /.content-wrapper -->
 
-    {footer}    
+    {footer}
     {control_sidebar}
 </div>
 <!-- ./wrapper -->

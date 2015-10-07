@@ -31,16 +31,17 @@
         <ul class="sidebar-menu">
             <li class="header">NAVIGATION</li>
             <?php
-            foreach ($allowed_modules->result() as $module) {
+
+            foreach ($allowed_modules as $module) {
                 if (sizeof(explode('_', $module->module_id)) == 1) {
                     ?>
-                    <li <?php if($module->module_id==$controller_name){?>class="active"<?php } ?>>
+                    <li <?php if ($module->module_id == $controller_name){ ?>class="active"<?php } ?>>
                         <a href="#<?php echo $module->module_id; ?>">
                             <i class="fa <?php echo $module->icon; ?>"></i>
                             <span><?php echo $this->lang->line("module_" . $module->module_id) ?>	</span>
                         </a>
                     </li>
-                <?php
+                    <?php
                 }
             }
             ?>
