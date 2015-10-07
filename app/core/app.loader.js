@@ -16,6 +16,7 @@ $(function () {
         }
 
         $('app-view').html('<div class="spinner text-center"><div class="dots-loader">Loading…</div></div>');
+        
         try {
             if (app.route[hash].templateUrl) {
                 $.get(app.route[hash].templateUrl, function (response) {

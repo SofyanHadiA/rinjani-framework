@@ -15,13 +15,9 @@ app.controller.dashboardController = function () {
 			try {
 				if (response.success) {
 					var template = app.template.dashboardContent; 
-
                     var rendered = Handlebars.compile(template);
                     rendered = rendered(response)
-
-					console.log(response);
-
-                    $('dashboard-content').html(rendered);
+                    $('dashboard-content').html(rendered); // TODO: make function: 	$('dashboard-content').render(template)									
 
 				} else {
 					app.notify.danger(response.message);
