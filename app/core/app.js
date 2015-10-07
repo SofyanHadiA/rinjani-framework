@@ -7,7 +7,8 @@ var app = {
 };
 
 app.controller = {};
+app.template = {};
 
 app.config = {
-    baseUrl : "http://localhost/pos/"
+    baseUrl : ""
 };

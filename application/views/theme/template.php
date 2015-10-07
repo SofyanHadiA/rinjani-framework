@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="{base_url}packages/datatables/media/css/dataTables.bootstrap.css">
     <link rel="stylesheet" href="{base_url}packages/pace/themes/yellow/pace-theme-loading-bar.css">
     <link rel="stylesheet" href="{base_url}packages/blueimp-file-upload/css/jquery.fileupload.css">
+    <link rel="stylesheet" href="{base_url}packages/css-spinners/css/spinner/dots.css">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -43,16 +44,17 @@
     <script src="{base_url}packages/handlebars/handlebars.js"></script>
 
     <script src="{base_url}app/core/app.js"></script>
-    <script src="{base_url}app/core/app.loader.js"></script>
     <script src="{base_url}app/core/app.route.js"></script>
+    <script src="{base_url}app/core/app.loader.js"></script>    
     <script src="{base_url}app/core/app.modalform.js"></script>
     <script src="{base_url}app/core/app.tablegrid.js"></script>
     <script src="{base_url}app/core/app.form.js"></script>
     <script src="{base_url}app/core/service/app.http.js"></script>
     <script src="{base_url}app/core/service/app.notify.js"></script>
 
-    <script src="{base_url}app/config.js"></script>
+    <script src="{base_url}app/config.js"></script>    
     <script src="{base_url}app/home/dashboard.controller.js"></script>
+    <script src="{base_url}app/home/dashboard.template.js"></script>
     <script src="{base_url}app/people/customer.controller.js"></script>
     <script src="{base_url}app/item/item.controller.js"></script>
 

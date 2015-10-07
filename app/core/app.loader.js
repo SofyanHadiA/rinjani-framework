@@ -11,29 +11,33 @@ $(function () {
     function hashchanged() {
         var hash = location.hash.replace(/^#/, '')
 
-        if (hash) {            
-            // TODO: Use Spinner
-            $('app-view').html('Loading...');       
-                 
-            $.get(app.route[hash].template, function (response) {
-                try {
-                    var controller = new app.controller[app.route[hash].controller];                    
-                    var template = response;        
-                    var rendered = Handlebars.compile(template);                   
-                    rendered = rendered(controller)
-                    
-                    $('app-view').html(rendered);
-                    
-                    controller.load();
-                }
-                catch (e) {
-                    app.notify.danger("Error on load page " + hash + "<br/>" + e);
-                }
-            });
+        if (!hash) {
+            hash = app.route.default;
         }
-        else {
-            $('app-view').load(app.route[app.route.default].template);
+
+        $('app-view').html('<div class="spinner text-center"><div class="dots-loader">Loading…</div></div>');
+        try {
+            if (app.route[hash].templateUrl) {
+                $.get(app.route[hash].templateUrl, function (response) {
+                    var controller = new app.controller[app.route[hash].controller];
+                    var template = response;
+                    render(controller, template)
+                });
+            }
+            else {
+                var controller = new app.controller[app.route[hash].controller];
+                var template = app.template[app.route[hash].template];
+                render(controller, template);
+            }
+        } catch (e) {
+            app.notify.danger("Error on load page " + hash + "<br/>" + e);
+        }
+
+        function render(controller, template) {
+            var rendered = Handlebars.compile(template);
+            rendered = rendered(controller);
+            $('app-view').html(rendered);
+            controller.load();
         }
     }
-})
-;
+});

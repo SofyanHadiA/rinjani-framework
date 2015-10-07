@@ -7,70 +7,29 @@ app.controller.dashboardController = function () {
     dashboard.description = app.language.dashboard.description;
     dashboard.delete = app.language.delete;
     dashboard.load = onLoad;
-	
+
+	return dashboard;
+
     function onLoad() {
-         $.get("../home/dashboard", function (response) {
-			     $('dashboard-content').html('Content');
-			 
-                try {                                    
-                    if(response.success){
-                    var template = '<div class="col-md-6 col-sm-6 col-xs-12" >' +
-						'<div id="module-icon-<?php echo $module->module_id;?>"  class="info-box">'+					
-							'<a href="#<?php echo $module->module_id;?>" >'+
-								'<span class="info-box-icon bg-yellow">'+
-									'<i class="fa <?php echo $module->icon; ?>"></i>'+
-								'</span>'+
-							'</a>'+				
-							'<div class="info-box-content">'+	
-								'<a href="#<?php echo $module->module_id;?>" >'+
-									'<h3><?php echo $this->lang->line("module_".$module->module_id) ?></h3>'+	
-								'</a>'+			
-								//'<?php echo $this->lang->line('module_'.$module->module_id.'_desc');?>'
-							'</div><!-- /.info-box-content -->'+
-						'</div><!-- /.info-box -->'	+		
-					'</div>'; //TODO: Fix template
-     /*               
-	foreach($allowed_modules->result() as $module)
-	{
-		if (sizeof(explode('_', $module->module_id)) == 1)
-		{
-	?>
-		<div class="col-md-6 col-sm-6 col-xs-12" >
-			<div id="module-icon-<?php echo $module->module_id;?>"  class="info-box">	
-				
-				<a href="#<?php echo $module->module_id;?>" >
-					<span class="info-box-icon bg-yellow">
-						<i class="fa <?php echo $module->icon; ?>"></i>
-					</span>
-				</a>
-				
-				<div class="info-box-content">	
-					<a href="#<?php echo $module->module_id;?>" >
-						<h3><?php echo $this->lang->line("module_".$module->module_id) ?></h3>	
-					</a>			
-					<?php echo $this->lang->line('module_'.$module->module_id.'_desc');?>
-				</div><!-- /.info-box-content -->
-			</div><!-- /.info-box -->			
-		</div>		
-	<?php
-		}
-	}
-    */
+		$.get("../home/dashboard", function (response) {
+			try {
+				if (response.success) {
+					var template = app.template.dashboardContent; 
 
-                    var rendered = Handlebars.compile(template);                   
-                    rendered = rendered(response.data)
-                    
-                    $('dashboard-conttent').html(rendered);
-                                        
-                    }else{
-                        app.notify.danger(response.message);
-                    }
-                }
-                catch (e) {
-                    app.notify.danger("Error on load page " + hash + "<br/>" + e);
-                }
-            });
-    }
+                    var rendered = Handlebars.compile(template);
+                    rendered = rendered(response)
 
-    return dashboard;
+					console.log(response);
+
+                    $('dashboard-content').html(rendered);
+
+				} else {
+					app.notify.danger(response.message);
+				}
+			}
+			catch (e) {
+				app.notify.danger("Error on load page " + hash + "<br/>" + e);
+			}
+		});
+    }    
 };
