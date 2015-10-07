@@ -18,8 +18,15 @@ class Home extends Secure_area
 
 	function dashboard()
 	{
-		header('Content-Type: text/html');
-		$this->load->view('dashboard');
+		 $logged_in_employee_info = $this->Employee->get_logged_in_employee_info();
+		
+		 echo json_encode(array('success' => true,
+		 		'data' =>  $this->Module->get_allowed_modules($logged_in_employee_info->person_id)->result()));
+		
+		//$allowed_modules->result();
+		
+		//header('Content-Type: text/html');
+		//$this->load->view('dashboard');
 	}
 
 	

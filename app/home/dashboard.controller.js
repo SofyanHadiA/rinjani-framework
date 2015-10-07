@@ -10,10 +10,25 @@ app.controller.dashboardController = function () {
 	
     function onLoad() {
          $.get("../home/dashboard", function (response) {
-                try {
-                                    
+			     $('dashboard-content').html('Content');
+			 
+                try {                                    
                     if(response.success){
-                    var template = "<div>{{data}}</div>"; //TODO: Fix template
+                    var template = '<div class="col-md-6 col-sm-6 col-xs-12" >' +
+						'<div id="module-icon-<?php echo $module->module_id;?>"  class="info-box">'+					
+							'<a href="#<?php echo $module->module_id;?>" >'+
+								'<span class="info-box-icon bg-yellow">'+
+									'<i class="fa <?php echo $module->icon; ?>"></i>'+
+								'</span>'+
+							'</a>'+				
+							'<div class="info-box-content">'+	
+								'<a href="#<?php echo $module->module_id;?>" >'+
+									'<h3><?php echo $this->lang->line("module_".$module->module_id) ?></h3>'+	
+								'</a>'+			
+								//'<?php echo $this->lang->line('module_'.$module->module_id.'_desc');?>'
+							'</div><!-- /.info-box-content -->'+
+						'</div><!-- /.info-box -->'	+		
+					'</div>'; //TODO: Fix template
      /*               
 	foreach($allowed_modules->result() as $module)
 	{
@@ -42,12 +57,10 @@ app.controller.dashboardController = function () {
 	}
     */
 
-                    
-                    
                     var rendered = Handlebars.compile(template);                   
                     rendered = rendered(response.data)
                     
-                    $('#dashboard-model').html(rendered);
+                    $('dashboard-conttent').html(rendered);
                                         
                     }else{
                         app.notify.danger(response.message);

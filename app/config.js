@@ -1,10 +1,17 @@
 'use strict'
-
+// TODO: Load from server
 app.language = new function () {
     return {
         delete: 'Delete',
-
+        dashboard:{
+            title: 'Dashboard',
+            description: 'Dashboars page description'
+        },
         customer:{
+            title: 'Customers',
+            description: 'Customers page description'
+        },
+        item:{
             title: 'Customers',
             description: 'Customers page description'
         }
@@ -13,7 +20,7 @@ app.language = new function () {
 
 app.route = {
     'home': {
-        'template': app.config.baseUrl + 'home/dashboard',
+        'template': '../app/home/dashboard.html',
         'controller': 'dashboardController'
     },
     'customers': {

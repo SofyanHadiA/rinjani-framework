@@ -52,6 +52,7 @@
     <script src="{base_url}app/core/service/app.notify.js"></script>
 
     <script src="{base_url}app/config.js"></script>
+    <script src="{base_url}app/home/dashboard.controller.js"></script>
     <script src="{base_url}app/people/customer.controller.js"></script>
     <script src="{base_url}app/item/item.controller.js"></script>
 

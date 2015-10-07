@@ -21,7 +21,9 @@ $(function () {
                     var template = response;        
                     var rendered = Handlebars.compile(template);                   
                     rendered = rendered(controller)
+                    
                     $('app-view').html(rendered);
+                    
                     controller.load();
                 }
                 catch (e) {
