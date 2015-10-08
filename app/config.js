@@ -4,7 +4,7 @@ app.language = app.http.get('../language');
 
 app.route = {
     home: {
-        template: 'dashboardHome',
+        template: dashboardHome,
         controller: 'dashboardController'
     },
     customers: {

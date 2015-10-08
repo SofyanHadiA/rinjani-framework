@@ -1,7 +1,7 @@
 'use strict'
 
 // Use javascript insted of HTML, to give better performance
-app.template.dashboardHome =  '<section class="content-header"></section>' +
+var dashboardHome =  '<section class="content-header"></section>' +
         '<section class="content">' +
             '<div class="row">' +
                 '<div class="col-md-12">' +
@@ -14,7 +14,7 @@ app.template.dashboardHome =  '<section class="content-header"></section>' +
             '</div>' +
         '</section>';
 
-app.template.dashboardContent = '{{#each data}}'+
+var dashboardContent = '{{#each data}}'+
         '<div class="col-md-6 col-sm-6 col-xs-12" >' +
             '<div id="module-icon-{{this.module_id}}>"  class="info-box">' +
                 '<a href="#{{this.module_id}}" >' +

@@ -25,39 +25,43 @@
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <!--<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>-->
+    <!--<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>-->
+    <!--<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>-->
     <![endif]-->
+    <script data-main="{base_url}app/main" src="{base_url}packages/requirejs/require.js"></script>
 
-    <!-- REQUIRED JS SCRIPTS -->
+    <!--    <!-- REQUIRED JS SCRIPTS -->
     <script src="{base_url}packages/jQuery/dist/jQuery.min.js"></script>
-    <script src="{base_url}packages/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="{base_url}packages/datatables/media/js/jquery.dataTables.js"></script>
-    <script src="{base_url}packages/datatables/media//js/dataTables.bootstrap.js"></script>
-    <script src="{base_url}packages/notify/dist/bootstrap-notify.js"></script>
-    <script src="{base_url}packages/bootbox.js/bootbox.js"></script>
-    <script src="{base_url}packages/pace/pace.js"></script>
-    <script src="{base_url}packages/blueimp-file-upload/js/vendor/jquery.ui.widget.js"></script>
-    <script src="{base_url}packages/blueimp-file-upload/js/jquery.fileupload.js"></script>
-    <script src="{base_url}packages/theme/dist/js/app.min.js"></script>
-    <script src="{base_url}packages/jquery-validation/dist/jquery.validate.js"></script>
-    <script src="{base_url}packages/handlebars/handlebars.js"></script>
-
-    <script src="{base_url}app/core/app.js"></script>
-    <script src="{base_url}app/core/app.route.js"></script>
-    <script src="{base_url}app/core/app.loader.js"></script>
-    <script src="{base_url}app/core/app.modalform.js"></script>
-    <script src="{base_url}app/core/app.tablegrid.js"></script>
-    <script src="{base_url}app/core/app.form.js"></script>
-    <script src="{base_url}app/core/service/app.http.js"></script>
-    <script src="{base_url}app/core/service/app.notify.js"></script>
-
-    <script src="{base_url}app/config.js"></script>
-    <script src="{base_url}app/home/dashboard.controller.js"></script>
-    <script src="{base_url}app/home/dashboard.template.js"></script>
-    <script src="{base_url}app/people/customer.controller.js"></script>
-    <script src="{base_url}app/item/item.controller.js"></script>
-    <script src="{base_url}app/language/en.js"></script>
+    <script src="{base_url}packages/angular/angular.min.js"></script>
+    <!--    <script src="{base_url}packages/bootstrap/dist/js/bootstrap.js"></script>-->
+    <!--    <script src="{base_url}packages/datatables/media/js/jquery.dataTables.js"></script>-->
+    <!--    <script src="{base_url}packages/datatables/media//js/dataTables.bootstrap.js"></script>-->
+    <!--    <script src="{base_url}packages/notify/dist/bootstrap-notify.js"></script>-->
+    <!--    <script src="{base_url}packages/bootbox.js/bootbox.js"></script>-->
+    <!--    <script src="{base_url}packages/pace/pace.js"></script>-->
+    <!--    <script src="{base_url}packages/blueimp-file-upload/js/vendor/jquery.ui.widget.js"></script>-->
+    <!--    <script src="{base_url}packages/blueimp-file-upload/js/jquery.fileupload.js"></script>-->
+    <!--    <script src="{base_url}packages/theme/dist/js/app.min.js"></script>-->
+    <!--    <script src="{base_url}packages/jquery-validation/dist/jquery.validate.js"></script>-->
+    <!--    <script src="{base_url}packages/handlebars/handlebars.js"></script>-->
+    <!--    <script src="{base_url}packages/requirejs/require.js"></script>-->
+    <!---->
+    <!--    <script src="{base_url}app/core/app.js"></script>-->
+    <!--    <script src="{base_url}app/core/app.route.js"></script>-->
+    <!--    <script src="{base_url}app/core/app.loader.js"></script>-->
+    <!--    <script src="{base_url}app/core/app.modalform.js"></script>-->
+    <!--    <script src="{base_url}app/core/app.tablegrid.js"></script>-->
+    <!--    <script src="{base_url}app/core/app.form.js"></script>-->
+    <!--    <script src="{base_url}app/core/service/app.http.js"></script>-->
+    <!--    <script src="{base_url}app/core/service/app.notify.js"></script>-->
+    <!---->
+    <!--    <script src="{base_url}app/language/en.js"></script>-->
+    <!--    <script src="{base_url}app/home/dashboard.controller.js"></script>-->
+    <!--    <script src="{base_url}app/home/dashboard.template.js"></script>-->
+    <!--    <script src="{base_url}app/people/customer.controller.js"></script>-->
+    <!--    <script src="{base_url}app/item/item.controller.js"></script>-->
+    <!---->
+    <!--    <script src="{base_url}app/config.js"></script>-->
 
 </head>
 
@@ -69,7 +73,7 @@
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
-            <app-view>Loading...</app-view>
+        <app-view>Loading...</app-view>
     </div>
     <!-- /.content-wrapper -->
 

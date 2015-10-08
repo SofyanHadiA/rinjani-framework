@@ -21,18 +21,18 @@
                         <div class="col-sm-6 ">
                             <div class="btn-group">
                                 <a href="../customers/delete" id="delete-selected" class="btn btn-sm btn-default">
-                                    <i class="fa fa-trash"></i> {{lang_delete}}
+                                    <i class="fa fa-trash"></i> {{lang.common_deletes}}
                                 </a>
                                 <button class="btn btn-sm btn-default" id="email">
-                                    <i class="fa fa-send"></i> Send Email
+                                    <i class="fa fa-send"></i> {{lang.common_email}}
                                 </button>
                             </div>
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <a class="btn btn-primary" id="add-data" href="../customers/view" data-target="#modal-container">
-                                <i class="fa fa-plus"></i> Add
-                            </a>
+                            <button class="btn btn-primary" onclick="app.controller.customerController.showModal('customerNewModal')">
+                                <i class="fa fa-plus"></i> {{lang.customers_new}}
+                            </button>
 
                             <a class="btn btn-success" id="import-excel" href="../customers/excel_import" data-target="#modal-container">
                                 <i class="fa fa-file-excel-o"></i> Excel Import

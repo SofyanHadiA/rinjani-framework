@@ -1,24 +1,20 @@
 'use strict';
 
-app.controller = app.controller || {};
 
-app.controller.customerController = function () {
-    var customer = {
-        event : event || {}        
-    };
+var customerController = function ($language) {
+    var customer = this;
 
-    customer.title = app.language.module_customers;
-    customer.description = app.language.module_customers_desc;
-    customer.delete = app.language.delete;
     customer.load = onLoad;
-    
+    customer.showModal = showModal;
     customer.tableGrid = {};
 
     customer.table = '#manage-table ';
-    customer.tableGrid = app.tableGrid(table, "../customers");
+    customer.tableGrid = app.tableGrid(customer.table, "../customers");
+
+    return customer;
 
     function onLoad() {
-        customer.tableGrid = tableGrid.render([
+        customer.tableGrid = customer.tableGrid.render([
             {data: 'last_name'},
             {data: 'first_name'},
             {data: 'email'},
@@ -26,9 +22,13 @@ app.controller.customerController = function () {
         ], 'person_id');
     }
     
-    function showModal() {
-        // Show Forma Modal
+    function showModal(id) {
+        new app.modalForm();
     };
 
-    return customer;
 };
+
+
+app.injector.register('customerController', customerController);
+
+console.log(app.injector.dependencies);
