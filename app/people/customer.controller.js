@@ -1,12 +1,18 @@
 'use strict';
 
+app.controller = app.controller || {};
+
 app.controller.customerController = function () {
-    var customer = {};
+    var customer = {
+        event : event || {}        
+    };
 
     customer.title = app.language.customer.title;
     customer.description = app.language.customer.description;
     customer.delete = app.language.delete;
     customer.load = onLoad;
+    
+    customer.tableGrid = {};
 
     var table = '#manage-table ';
     var tableGrid = app.tableGrid(table, "../customers");
@@ -19,6 +25,10 @@ app.controller.customerController = function () {
             {data: 'phone_number'}
         ], 'person_id');
     }
+    
+    function showModal() {
+        // Show Forma Modal
+    };
 
     return customer;
 };

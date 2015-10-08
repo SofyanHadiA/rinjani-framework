@@ -1,10 +1,6 @@
 'use strict'
 
-var app = {
-    active: {
-        controller: {}
-    }
-};
+var app = app || {};
 
 app.controller = {};
 app.template = {};

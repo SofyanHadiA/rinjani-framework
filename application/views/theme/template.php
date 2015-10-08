@@ -57,6 +57,7 @@
     <script src="{base_url}app/home/dashboard.template.js"></script>
     <script src="{base_url}app/people/customer.controller.js"></script>
     <script src="{base_url}app/item/item.controller.js"></script>
+    <script src="{base_url}app/language/en.js"></script>
 
     <?php
     foreach ($scripts as $script) {

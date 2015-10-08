@@ -1,20 +1,6 @@
 'use strict'
 // TODO: Load from server
-app.language = {
-    delete: 'Delete',
-    dashboard: {
-        title: 'Dashboard',
-        description: 'Dashboars page description'
-    },
-    customer: {
-        title: 'Customers',
-        description: 'Customers page description'
-    },
-    item: {
-        title: 'Customers',
-        description: 'Customers page description'
-    }
-};
+app.language = app.http.get('../language');
 
 app.route = {
     home: {

@@ -1,8 +1,12 @@
 
 'use strict';
 
+
+// TODO Depedency injection function ($language)
 app.controller.itemController = function () {
-    var items = {};
+    var items = {
+        lang: app.language // $language        
+    };
 
     $("pagetitle").html('<?php echo $title; ?>');
     $("pagedescription").html('<?php echo $description; ?>');
