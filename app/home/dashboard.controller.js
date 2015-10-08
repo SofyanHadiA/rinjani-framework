@@ -3,9 +3,7 @@
 app.controller.dashboardController = function () {
     var dashboard = {};
 
-    dashboard.title = app.language.dashboard.title;
-    dashboard.description = app.language.dashboard.description;
-    dashboard.delete = app.language.delete;
+    dashboard.title = app.language.module_home;    
     dashboard.load = onLoad;
 
 	return dashboard;

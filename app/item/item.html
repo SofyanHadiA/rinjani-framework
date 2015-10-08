@@ -1,4 +1,16 @@
-<h1>{{title}}</h1>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        {{lang.item.title}}
+        <small>
+            {{lang.item.description}}
+        </small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i>{{lang.dashboard.title}}</a></li>
+        <li class="active">{{lang.item.title}}</li>
+    </ol>
+</section>
 
 <div class="row">
     <div class="col-md-12">
@@ -8,27 +20,21 @@
                     <div class="col-sm-6 ">
                         <div class="btn-group">
                             <a href="../items/delete" id="delete-selected" class="btn btn-sm btn-default">
-                                <i class="fa fa-trash"></i>
-                                <?php echo $this->lang->line("common_delete") ?>
+                                <i class="fa fa-trash"></i> {{lang.common_delete}}
                             </a>
                             <button class="btn btn-sm btn-default" id="email">
-                                <i class="fa fa-send"></i>
-                                <?php echo $this->lang->line("common_email"); ?>
+                                <i class="fa fa-send"></i> {{lang.common_email}}
                             </button>
                         </div>
                     </div>
 
                     <div class="col-sm-6 text-right">
-                        <a class="btn btn-primary" id="add-data"
-                           href="<?php echo base_url() . " index.php/" . "$controller_name/view"; ?>"
-                        data-target="#modal-container">
-                        <i class="fa fa-plus"></i> <?php echo $this->lang->line($controller_name . '_new'); ?>
+                        <a class="btn btn-primary" id="add-data" href="../items/view" data-target="#modal-container">
+                        <i class="fa fa-plus"></i> {{lang.item.new}}
                         </a>
 
-                        <a class="btn btn-success" id="import-excel"
-                           href="<?php echo base_url() . " index.php/" . "$controller_name/excel_import"; ?>"
-                        data-target="#modal-container">
-                        <i class="fa fa-file-excel-o"></i> Excel Import
+                        <a class="btn btn-success" id="import-excel" href="../items/excel_import" data-target="#modal-container">
+                        <i class="fa fa-file-excel-o"></i> {{lang.item.excelImport}}
                         </a>
                     </div>
                 </div>

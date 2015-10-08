@@ -18,8 +18,9 @@ $(function () {
         $('app-view').html('<div class="spinner text-center"><div class="dots-loader">Loading…</div></div>');
         
         try {
-            if (app.route[hash].templateUrl) {
-                $.get(app.route[hash].templateUrl, function (response) {
+            if (app.route[hash].templateUrl) {                
+               app.http.get(app.route[hash].templateUrl)
+               .then(function(response) {
                     var controller = new app.controller[app.route[hash].controller];
                     var template = response;
                     render(controller, template)
@@ -38,6 +39,7 @@ $(function () {
             var rendered = Handlebars.compile(template);
             rendered = rendered(controller);
             $('app-view').html(rendered);
+            
             controller.load();
         }
     }

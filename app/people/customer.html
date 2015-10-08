@@ -6,12 +6,10 @@
             {{description}}
         </small>
     </h1>
-
-     <ol class="breadcrumb">
-         <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
-         <li class="active">{{title}}</li>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+        <li class="active">{{title}}</li>
     </ol>
-
 </section>
 
 <section class="content">
@@ -22,9 +20,8 @@
                     <div class="row">
                         <div class="col-sm-6 ">
                             <div class="btn-group">
-                                <a href="../customers/delete" id="delete-selected"
-                                   class="btn btn-sm btn-default">
-                                    <i class="fa fa-trash"></i> {{delete}}
+                                <a href="../customers/delete" id="delete-selected" class="btn btn-sm btn-default">
+                                    <i class="fa fa-trash"></i> {{lang_delete}}
                                 </a>
                                 <button class="btn btn-sm btn-default" id="email">
                                     <i class="fa fa-send"></i> Send Email
@@ -33,13 +30,11 @@
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <a class="btn btn-primary" id="add-data" href="../customers/view"
-                               data-target="#modal-container">
+                            <a class="btn btn-primary" id="add-data" href="../customers/view" data-target="#modal-container">
                                 <i class="fa fa-plus"></i> Add
                             </a>
 
-                            <a class="btn btn-success" id="import-excel" href="../customers/excel_import"
-                               data-target="#modal-container">
+                            <a class="btn btn-success" id="import-excel" href="../customers/excel_import" data-target="#modal-container">
                                 <i class="fa fa-file-excel-o"></i> Excel Import
                             </a>
                         </div>
@@ -49,14 +44,16 @@
                 <div class="box-body ">
                     <table id="manage-table" class="table table-bordered table-hover">
                         <thead>
-                        <tr>
-                            <th width="10px"><input type="checkbox" id="select-all"/></th>
-                            <th>Last Name</th>
-                            <th>First Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th width="50px">Action</th>
-                        </tr>
+                            <tr>
+                                <th width="10px">
+                                    <input type="checkbox" id="select-all" />
+                                </th>
+                                <th>Last Name</th>
+                                <th>First Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th width="50px">Action</th>
+                            </tr>
                         </thead>
                     </table>
                 </div>
