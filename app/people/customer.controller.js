@@ -7,8 +7,8 @@ app.controller.customerController = function () {
         event : event || {}        
     };
 
-    customer.title = app.language.customer.title;
-    customer.description = app.language.customer.description;
+    customer.title = app.language.module_customers;
+    customer.description = app.language.module_customers_desc;
     customer.delete = app.language.delete;
     customer.load = onLoad;
     
