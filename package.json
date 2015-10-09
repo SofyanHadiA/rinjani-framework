@@ -1,0 +1,19 @@
+{
+  "name": "RinjaniPOS",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app/app.js",
+  "dependencies": {
+    "browserify": "^11.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org/Sofyan_A/pos"
+  },
+  "author": "Sofyan Hadi A.",
+  "license": "ISC"
+}

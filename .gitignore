@@ -16,3 +16,4 @@ vendor/
 .idea/*
 packages/
 application/config/database.php
+node_modules/
