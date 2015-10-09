@@ -17,7 +17,7 @@
     <!--    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">-->
     <!-- Theme style -->
     <link rel="stylesheet" href="{base_url}packages/theme/dist/css/AdminLTE.css">
-    <link rel="stylesheet" href="{base_url}packages/theme/dist/css/skins/skin-yellow.css">
+    <link rel="stylesheet" href="{base_url}packages/theme/dist/css/skins/skin-blue.css">
     <link rel="stylesheet" href="{base_url}packages/datatables/media/css/dataTables.bootstrap.css">
     <link rel="stylesheet" href="{base_url}packages/pace/themes/yellow/pace-theme-loading-bar.css">
     <link rel="stylesheet" href="{base_url}packages/blueimp-file-upload/css/jquery.fileupload.css">
@@ -28,11 +28,12 @@
     <!--<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>-->
     <!--<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>-->
     <![endif]-->
-    <script data-main="{base_url}app/main" src="{base_url}packages/requirejs/require.js"></script>
+    <!--<script data-main="{base_url}app/main" src="{base_url}packages/requirejs/require.js"></script>-->
+       
 
     <!--    <!-- REQUIRED JS SCRIPTS -->
-    <script src="{base_url}packages/jQuery/dist/jQuery.min.js"></script>
-    <script src="{base_url}packages/angular/angular.min.js"></script>
+    <!--<script src="{base_url}packages/jQuery/dist/jQuery.min.js"></script>
+    <script src="{base_url}packages/angular/angular.min.js"></script>-->
     <!--    <script src="{base_url}packages/bootstrap/dist/js/bootstrap.js"></script>-->
     <!--    <script src="{base_url}packages/datatables/media/js/jquery.dataTables.js"></script>-->
     <!--    <script src="{base_url}packages/datatables/media//js/dataTables.bootstrap.js"></script>-->
@@ -65,7 +66,7 @@
 
 </head>
 
-<body class="hold-transition skin-yellow sidebar-mini">
+<body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
     {header}
@@ -87,5 +88,6 @@
      user experience. Slimscroll is required when using the
      fixed layout. -->
 
+<script src="../dist/bundle.js"></script>
 </body>
 </html>

@@ -1,10 +1,9 @@
 'use strict'
 
-$(function () {
+module.exports = function () {
 
-    // Bind the event.
     window.onhashchange = hashchanged;
-
+    
     // Trigger the event (useful on page load).
     hashchanged();
 
@@ -50,4 +49,4 @@ $(function () {
             controller.load();
         }
     }
-});
+};

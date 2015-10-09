@@ -22,13 +22,8 @@ var customerController = function ($language) {
         ], 'person_id');
     }
     
-    function showModal(id) {
-        new app.modalForm();
-    };
+    // function showModal(id) {
+    //     new app.modalForm();
+    // };
 
 };
-
-
-app.injector.register('customerController', customerController);
-
-console.log(app.injector.dependencies);

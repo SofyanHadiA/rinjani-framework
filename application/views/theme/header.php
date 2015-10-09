@@ -4,9 +4,9 @@
     <!-- Logo -->
     <a href="#home" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
-        <span class="logo-mini"><b>ERP</b></span>
+        <span class="logo-mini"><b>MTR</b></span>
         <!-- logo for regular state and mobile devices -->
-        <span class="logo-lg"><b>RIN</b>JANI</span>
+        <span class="logo-lg"><b>MIT</b>RAIS</span>
     </a>
 
     <!-- Header Navbar -->

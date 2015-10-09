@@ -1,6 +1,6 @@
 'use strict'
 
-app.modalForm = function (url, size, modalId) {
+module.exports = function (url, size, modalId) {
 
     if (!modalId) {
         modalId = "modal-container";
