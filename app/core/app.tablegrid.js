@@ -2,7 +2,7 @@
 
 var modal = require('./app.modal.js');
 
-module.exports = function (table_container, controller_url) {
+module.exports = function (app.modal, table_container, controller_url) {
     var vm = {};
     vm.table = table_container;
     vm.dataTable = {};
