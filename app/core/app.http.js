@@ -2,7 +2,7 @@
 
 // TODO: Update Token
 
-var httpService = function () {
+module.export =  function () {
 
     var httpService = {
         post: post,
@@ -53,5 +53,3 @@ var httpService = function () {
 
     return httpService;
 };
-
-app.http = new httpService();

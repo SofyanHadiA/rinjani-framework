@@ -1,14 +1,16 @@
-app.injector = {
-    dependencies: {},
+'use strict';
+
+var $module = {
+    modules: {},
     register: function (key, value) {
-        this.dependencies[key] = value;
+        this.modules[key] = value;
     },
     resolve: function (deps, func, scope) {
         var args = [];
         scope = scope || {};
         for (var i = 0; i < deps.length, d = deps[i]; i++) {
-            if (this.dependencies[d]) {
-                scope[d] = this.dependencies[d];
+            if (this.modules[d]) {
+                scope[d] = this.modules[d];
             } else {
                 throw new Error('Can\'t resolve ' + d);
             }
@@ -19,3 +21,4 @@ app.injector = {
     }
 };
 
+module.exports = $module;

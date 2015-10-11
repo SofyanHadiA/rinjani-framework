@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 
-var modal = require('./app.modal.js');
+var $ = require('jquery');
 
-module.exports = function (app.modal, table_container, controller_url) {
+module.exports = function ($modal, table_container, controller_url) {
     var vm = {};
     vm.table = table_container;
     vm.dataTable = {};
@@ -50,8 +50,8 @@ module.exports = function (app.modal, table_container, controller_url) {
                         icon: 'fa fa-info-circle',
                         message: error.message
                     }, {
-                        type: "info"
-                    });
+                            type: "info"
+                        });
                 }
             }
         });
@@ -107,8 +107,8 @@ module.exports = function (app.modal, table_container, controller_url) {
                     icon: 'fa fa-warning',
                     message: 'No data selected',
                 }, {
-                    type: "danger"
-                });
+                        type: "danger"
+                    });
             }
         });
 
@@ -132,6 +132,6 @@ module.exports = function (app.modal, table_container, controller_url) {
 
     function do_delete(url) {
         var row_ids = get_selected_rows();
-        app.http.post(url, {'ids[]': row_ids}, vm.dataTable.ajax.reload)
+        app.http.post(url, { 'ids[]': row_ids }, vm.dataTable.ajax.reload)
     }
 };

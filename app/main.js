@@ -1,7 +1,19 @@
 'use strict'
+$app = require('./core/app.js');
 
-var $ = require('jquery');
+// set config here
+// $app.$config = {
+// 	
+// };
 
-var app = require('./core/app.js');
+// load module here
+// $app.$module.register('object' || require('filepath'));
 
-console.log(app);
+// start the application
+$app.start();
+
+
+// for debuging purpose
+global.app = $app
+
+console.log($app);

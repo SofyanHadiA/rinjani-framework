@@ -1,15 +1,20 @@
 'use strict'
 
-module.exports = function (formContainer) {
+var $ = global.jQuery = require('jquery');
+require('../../node_modules/jquery-validation/dist/jquery.validate.js');
+var $config = require('./../config.js');
+
+module.exports = function ($config, formContainer) {
 
     var form = {
-        container: formContainer,         
+        container: formContainer || "#modal-form",         
         config: config,
+        validation: validation,
         onSubmit: onSubmit
     };
     
     form.validation();
-    
+        
     return form;
 
     function validation() {

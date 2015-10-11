@@ -1,5 +1,8 @@
 'use strict'
 
+var $ = require('jquery');
+var bootstrap = require('./../../node_modules/bootstrap/dist/js/bootstrap.js');
+
 module.exports = function (url, size, modalId) {
 
     if (!modalId) {
