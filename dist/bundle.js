@@ -346,27 +346,22 @@ var config = {
 module.exports = config;
 
 },{}],5:[function(require,module,exports){
-(function (global){
 'use strict'
 
-var $ = global.jQuery = require('jquery');
 require('../../node_modules/jquery-validation/dist/jquery.validate.js');
-var $config = require('./../config.js');
 
-module.exports = function ($config, formContainer) {
+module.exports = function ($) {
 
     var form = {
-        container: formContainer || "#modal-form",         
+        create: create,
         config: config,
-        validation: validation,
         onSubmit: onSubmit
     };
-    
-    form.validation();
-        
+
     return form;
 
-    function validation() {
+    function create(formContainer) {
+        form.container = formContainer || "#modal-form-" + (Math.random() + 1).toString(36).substring(7),
         $(form.container).validate({
             errorClass: "error text-red",
             errorPlacement: function (error, element) {
@@ -379,11 +374,11 @@ module.exports = function ($config, formContainer) {
                 element.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
             },
         })
-        
-       return form;
+
+        return form;
     };
 
-   function config(config) {
+    function config(config) {
         $.extend(form.validation.settings, config);
         return form;
     };
@@ -395,24 +390,23 @@ module.exports = function ($config, formContainer) {
 };
 
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../node_modules/jquery-validation/dist/jquery.validate.js":60,"./../config.js":4,"jquery":61}],6:[function(require,module,exports){
+},{"../../node_modules/jquery-validation/dist/jquery.validate.js":62}],6:[function(require,module,exports){
 'use strict'
 
 // TODO: Update Token
 
-module.export =  function () {
+function http($) {
 
     var httpService = {
         post: post,
-        token: token
+        get: get
     };
     
-
     //TODO: Get first token
-    var token = {};// app.http.get('../token');
+    httpService.token = {};// app.http.get('../token');
+    httpService.cachedScriptPromises = {};
 
-    var cachedScriptPromises = {};
+    return httpService;
 
     var deferFactory = function (requestFunction) {
         var cache = {};
@@ -422,41 +416,37 @@ module.export =  function () {
                     requestFunction(defer, key);
                 }).promise();
             }
-
             return cache[key].done(callback);
         };
     };
 
-    httpService.get = deferFactory(function (defer, url) {
-        $.get(url, app.http.token).then(
-            defer.resolve, 
-            defer.reject)
-    });    
-
-    function post(url, data, callback) {
-        // TODO: MERGE DATA WITH TOKEN
-        $.post(url, data, function (response) {
-
-            if (response.success) {
-                callback(response);
-                app.notify.info(response.message);
-            }
-            else {
-                app.notify.warning(response.message);
-            }
-        }, "json")
-            .fail(function (xhr) {
-                app.notify.danger("<b>" + xhr.status + "</b>" + " " + xhr.responseJSON.message);
-            });
+    function get(url) {
+        deferFactory(function (defer, url) {
+            $.get(url, httpService.http.token).then(
+                defer.resolve,
+                defer.reject)
+        });
     };
 
-    return httpService;
+    function post(url, data) {
+        deferFactory(function (defer, url) {
+            // TODO: MERGE DATA WITH TOKEN
+            $.post(url, data, function (response) {
+                defer.resolve(response)
+            }).then(defer.resolve,
+                defer.reject);
+        });
+    };
 };
+
+module.export = http;
 },{}],7:[function(require,module,exports){
 (function (global){
 'use strict'
 
 var $ = global.jQuery = require('jquery');
+
+require('./../../node_modules/bootstrap/dist/js/bootstrap.js');
 
 var $config = require('./../config.js');
 var $form = require('./app.form.js');
@@ -469,95 +459,128 @@ var $module = require('./app.module.js');
 var $language = require('./../language/en.js');
 var $handlebars = require('handlebars');
 
-var $app = {        
+var $app = {
+    $: $,
     $config: $config,
-    $handlebars: $handlebars,    
-    $form: $form,
-    $loader: $loader,
-    $modal: $modal,
+    $handlebars: $handlebars,
+    $form: $form($),
+    $modal: $modal($),
     $tablegrid: $tablegrid,
-    $notify: $notify,
+    $notify: $notify($),
     $http: $http,
-    $language: $language,    
+    $language: $language,
     $module: $module
 }
 
-window.onhashchange = $app.$loader($app.$notify, $app.$http, $app.$handlebars, $app.$config);
+$app.start = function (config) {
+
+    $app.$loader = $loader($, $app.$notify, $app.$http, $app.$handlebars, $app.$module, $app.$config),
+    
+    // constructor
+    window.onhashchange = $app.$loader.load; // $app.$notify, $app.$_http, $.app.$handlebars, $app.$config
+    
+    $app.$loader.load();
+
+    var app = {
+        $config: config || $config,
+        $form: $form($config),
+        $module: $module
+    }
+
+    return app;
+}
 
 module.exports = $app;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./../config.js":4,"./../language/en.js":13,"./app.form.js":5,"./app.http.js":6,"./app.loader.js":8,"./app.modal.js":9,"./app.module.js":10,"./app.notify.js":11,"./app.tablegrid.js":12,"handlebars":46,"jquery":61}],8:[function(require,module,exports){
+},{"./../../node_modules/bootstrap/dist/js/bootstrap.js":18,"./../config.js":4,"./../language/en.js":15,"./app.form.js":5,"./app.http.js":6,"./app.loader.js":8,"./app.modal.js":9,"./app.module.js":10,"./app.notify.js":11,"./app.tablegrid.js":12,"handlebars":48,"jquery":63}],8:[function(require,module,exports){
 'use strict'
 
-var $ = require('jquery');
+module.exports = function ($, $notify, $http, $handlebars, $module, $config) {
 
-module.exports = function ($notify, $http, $handlebars, $config) {
+    var loader = {
+        load: load
+    }
 
-    var hash = location.hash.replace(/^#/, '');
+    return loader;
 
-    if (!hash) {
-        hash = $config.route.default;
+    function load() {
+        var hash = location.hash.replace(/^#/, '');
+
+        if (!hash) {
+            hash = $config.route.default;
+        };
+
+        $('app-view').html('<div class="spinner text-center"><div class="dots-loader">Loading…</div></div>');
+
+        try {
+            var _module = $module.resolve(hash);
+
+            var controller = _module.controller;
+
+            if (_module.templateUrl) {
+                $http.get(_module.templateUrl).then(function (response) {
+                    var template = response;
+                    render(controller, template)
+                });
+            }
+            else {
+                var template = _module.template;
+                render(controller, template)
+            }
+
+        } catch (e) {
+            $notify.danger("Error on load page " + hash + "<br/>" + e);
+        }
+
+        function render(model, template) {
+
+            var rendered = $handlebars.compile(template);
+            rendered = rendered(model);
+            $('app-view').html(rendered);
+        
+            //controller.load();
+        }
+    };
+};
+},{}],9:[function(require,module,exports){
+'use strict'
+
+module.exports = function ($) {
+
+    var modal = {
+        show: show
     };
 
-    $('app-view').html('<div class="spinner text-center"><div class="dots-loader">Loading…</div></div>');
+    return modal;
 
-    // try {        
-        var controller = $config.route[hash].controller();
+    function show(url, size, modalId) {       
+        var defer = $.Deferred
+        
+        modalId = modalId || "modal-container-" + (Math.random() + 1).toString(36).substring(7);
 
-        if ($config.route[hash].templateUrl) {
-            $http.get($config.route[hash].templateUrl).then(function (response) {
-                var template = response;
-                render(controller, template)
+        $('body').append('<div class="modal fade" id="' + modalId + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">'
+            + '<div class="modal-dialog modal-' + size + '">'
+            + '<div class="modal-content">'
+            + '</div></div></div>'
+            );
+
+        $('#' + modalId).removeData('modal')
+            .modal({
+                remote: url,
+                show: true
             });
-        }
-        else {
-            var template = $config.route[hash].template;
-            render(controller, template)
-        }
 
-    // } catch (e) {
-    //     $notify.danger("Error on load page " + hash + "<br/>" + e);
-    // }
-
-    function render(model, template) {
-        
-        var rendered = $handlebars.compile(template);
-        rendered = rendered(model);
-        $('app-view').html(rendered);
-        
-        //controller.load();
-    }
-};
-},{"jquery":61}],9:[function(require,module,exports){
-'use strict'
-
-var $ = require('jquery');
-var bootstrap = require('./../../node_modules/bootstrap/dist/js/bootstrap.js');
-
-module.exports = function (url, size, modalId) {
-
-    if (!modalId) {
-        modalId = "modal-container";
-    }
-
-    $('body').append('<div class="modal fade" id="' + modalId + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">'
-        + '<div class="modal-dialog modal-' + size + '">'
-        + '<div class="modal-content">'
-        + '</div></div></div>'
-    );
-
-    $('#' + modalId).removeData('modal')
-        .modal({
-            remote: url,
-            show: true
+        $(document).on('hidden.bs.modal', '#' + modalId, function () {
+            console.log('hide '+modalId);
+            $('#' + modalId).remove();
+            
+            defer.done();
         });
 
-    $(document).on('hidden.bs.modal', '#' + modalId, function () {
-        console.log('hide');
-        $('#' + modalId).remove();
-    });
+        return defer.promise();
+    };
 }
-},{"./../../node_modules/bootstrap/dist/js/bootstrap.js":16,"jquery":61}],10:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 var $module = {
@@ -565,49 +588,63 @@ var $module = {
     register: function (key, value) {
         this.modules[key] = value;
     },
-    resolve: function (deps, func, scope) {
-        var args = [];
-        scope = scope || {};
-        for (var i = 0; i < deps.length, d = deps[i]; i++) {
-            if (this.modules[d]) {
-                scope[d] = this.modules[d];
-            } else {
-                throw new Error('Can\'t resolve ' + d);
-            }
-        }
-        return function () {
-            func.apply(scope || {}, Array.prototype.slice.call(arguments, 0));
-        }
+    resolve: function (key) {
+        return this.modules[key];
     }
+    // resolve: function (deps, func, scope) {
+    //     var args = [];
+    //     var d;
+    //     scope = scope || {};
+    //     for (var i = 0; i < deps.length, d = deps[i]; i++) {
+    //         if (this.modules[d]) {
+    //             scope[d] = this.modules[d];
+    //         } else {
+    //             throw new Error('Can\'t resolve ' + d);
+    //         }
+    //     }
+    //     return function () {
+    //         func.apply(scope || {}, Array.prototype.slice.call(arguments, 0));
+    //     }
+    // }
 };
 
 module.exports = $module;
 },{}],11:[function(require,module,exports){
 'use strict'
 
-var $  = require('jquery');
 require('bootstrap-notify');
 
-var notify = {
-    info: function (message) {
+function notify($) {
+
+    var notify = {
+        info: info,
+        warning: warning,
+        danger: danger
+    }
+
+    return notify;
+
+    function info(message) {
         return $.notify(
             { icon: 'fa fa-info-circle', message: message },
             { type: 'info', z_index: 1100 });
-    },
-    warning: function (message) {
+    };
+
+    function warning(message) {
         return $.notify(
             { icon: 'fa fa-exclamation', message: message },
             { type: 'warning', z_index: 1100 });
-    },
-    danger: function (message) {
+    };
+
+    function danger(message) {
         return $.notify(
             { icon: 'fa fa-warning', message: message },
             { type: 'danger', z_index: 1100 });
-    }
+    };
 }
 
 module.exports = notify; 
-},{"bootstrap-notify":15,"jquery":61}],12:[function(require,module,exports){
+},{"bootstrap-notify":17}],12:[function(require,module,exports){
 'use strict'
 
 var $ = require('jquery');
@@ -745,10 +782,72 @@ module.exports = function ($modal, table_container, controller_url) {
         app.http.post(url, { 'ids[]': row_ids }, vm.dataTable.ajax.reload)
     }
 };
-},{"jquery":61}],13:[function(require,module,exports){
+},{"jquery":63}],13:[function(require,module,exports){
+'use strict';
+
+var $ = require('jquery');
+
+module.exports = function ($, $language) {
+	
+    var dashboard = {
+		title: $language.module_home,
+		load: onLoad
+	};
+
+	return dashboard;
+
+    function onLoad() {
+		$.get("../home/dashboard", function (response) {
+			try {
+				if (response.success) {
+					var template = app.template.dashboardContent;
+                    var rendered = Handlebars.compile(template);
+                    rendered = rendered(response)
+                    $('dashboard-content').html(rendered); // TODO: make function: 	$('dashboard-content').render(template)									
+
+				} else {
+					app.notify.danger(response.message);
+				}
+			}
+			catch (e) {
+				app.notify.danger("Error on load page " + hash + "<br/>" + e);
+			}
+		});
+    }
+};
+
+},{"jquery":63}],14:[function(require,module,exports){
+var homeController = require('./home.controller.js');
+
+function home($app) {
+	return {
+		'controller': homeController($app.$, $app.$language),
+		'model': [
+			{
+				name: "homeModel"
+			}
+		],
+		'template':  '<section class="content-header"></section>' +
+				'<section class="content">' +
+					'<div class="row">' +
+					'<h1>{{title}}</h1>'+
+						'<div class="col-md-12">' +
+							'<div class="box">' +
+								'<div class="box-body">' +
+									'<dashboard-content/>' +
+								'</div>' +
+							'</div>' +
+						'</div>' +
+					'</div>' +
+				'</section>'
+	}
+};
+
+module.exports = home;
+},{"./home.controller.js":13}],15:[function(require,module,exports){
 'use strict'
 
-var $language = {
+module.exports = {
 	alpha: "The %s field may only contain alphabetical characters."
 	, alpha_dash: "The %s field may only contain alpha-numeric characters, underscores, and dashes."
 	, alpha_numeric: "The %s field may only contain alpha-numeric characters."
@@ -1365,14 +1464,28 @@ var $language = {
 //app.injector.register('$language', $language);
 
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 (function (global){
 'use strict'
-global.$app = require('./core/app.js');
+var $app = require('./core/app.js');
+
+// for debuging purpose
+global.app = $app
 
 console.log($app);
+
+// set config here
+// $app.$config = {
+// 	
+// };
+
+// load module here
+$app.$module.register('home', require('./home/home.js')($app));
+
+// start the application
+$app.start();
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./core/app.js":7}],15:[function(require,module,exports){
+},{"./core/app.js":7,"./home/home.js":14}],17:[function(require,module,exports){
 /*
 * Project: Bootstrap Notify = v3.1.3
 * Description: Turns standard Bootstrap alerts into "Growl-like" notifications.
@@ -1727,7 +1840,7 @@ console.log($app);
 
 }));
 
-},{"jquery":61}],16:[function(require,module,exports){
+},{"jquery":63}],18:[function(require,module,exports){
 /*!
  * Bootstrap v3.3.5 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -4092,7 +4205,7 @@ if (typeof jQuery === 'undefined') {
 
 }(jQuery);
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4159,7 +4272,7 @@ exports['default'] = inst;
 module.exports = exports['default'];
 
 
-},{"./handlebars.runtime":18,"./handlebars/compiler/ast":20,"./handlebars/compiler/base":21,"./handlebars/compiler/compiler":23,"./handlebars/compiler/javascript-compiler":25,"./handlebars/compiler/visitor":28,"./handlebars/no-conflict":42}],18:[function(require,module,exports){
+},{"./handlebars.runtime":20,"./handlebars/compiler/ast":22,"./handlebars/compiler/base":23,"./handlebars/compiler/compiler":25,"./handlebars/compiler/javascript-compiler":27,"./handlebars/compiler/visitor":30,"./handlebars/no-conflict":44}],20:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4228,7 +4341,7 @@ exports['default'] = inst;
 module.exports = exports['default'];
 
 
-},{"./handlebars/base":19,"./handlebars/exception":32,"./handlebars/no-conflict":42,"./handlebars/runtime":43,"./handlebars/safe-string":44,"./handlebars/utils":45}],19:[function(require,module,exports){
+},{"./handlebars/base":21,"./handlebars/exception":34,"./handlebars/no-conflict":44,"./handlebars/runtime":45,"./handlebars/safe-string":46,"./handlebars/utils":47}],21:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4334,7 +4447,7 @@ exports.createFrame = _utils.createFrame;
 exports.logger = _logger2['default'];
 
 
-},{"./decorators":30,"./exception":32,"./helpers":33,"./logger":41,"./utils":45}],20:[function(require,module,exports){
+},{"./decorators":32,"./exception":34,"./helpers":35,"./logger":43,"./utils":47}],22:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4367,7 +4480,7 @@ exports['default'] = AST;
 module.exports = exports['default'];
 
 
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4417,7 +4530,7 @@ function parse(input, options) {
 }
 
 
-},{"../utils":45,"./helpers":24,"./parser":26,"./whitespace-control":29}],22:[function(require,module,exports){
+},{"../utils":47,"./helpers":26,"./parser":28,"./whitespace-control":31}],24:[function(require,module,exports){
 /* global define */
 'use strict';
 
@@ -4585,7 +4698,7 @@ exports['default'] = CodeGen;
 module.exports = exports['default'];
 
 
-},{"../utils":45,"source-map":47}],23:[function(require,module,exports){
+},{"../utils":47,"source-map":49}],25:[function(require,module,exports){
 /* eslint-disable new-cap */
 
 'use strict';
@@ -5159,7 +5272,7 @@ function transformLiteralToPath(sexpr) {
 }
 
 
-},{"../exception":32,"../utils":45,"./ast":20}],24:[function(require,module,exports){
+},{"../exception":34,"../utils":47,"./ast":22}],26:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -5391,7 +5504,7 @@ function preparePartialBlock(open, program, close, locInfo) {
 }
 
 
-},{"../exception":32}],25:[function(require,module,exports){
+},{"../exception":34}],27:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -6519,7 +6632,7 @@ exports['default'] = JavaScriptCompiler;
 module.exports = exports['default'];
 
 
-},{"../base":19,"../exception":32,"../utils":45,"./code-gen":22}],26:[function(require,module,exports){
+},{"../base":21,"../exception":34,"../utils":47,"./code-gen":24}],28:[function(require,module,exports){
 /* istanbul ignore next */
 /* Jison generated parser */
 "use strict";
@@ -7259,7 +7372,7 @@ var handlebars = (function () {
 exports['default'] = handlebars;
 
 
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /* eslint-disable new-cap */
 'use strict';
 
@@ -7447,7 +7560,7 @@ PrintVisitor.prototype.HashPair = function (pair) {
 /* eslint-enable new-cap */
 
 
-},{"./visitor":28}],28:[function(require,module,exports){
+},{"./visitor":30}],30:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7589,7 +7702,7 @@ exports['default'] = Visitor;
 module.exports = exports['default'];
 
 
-},{"../exception":32}],29:[function(require,module,exports){
+},{"../exception":34}],31:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7812,7 +7925,7 @@ exports['default'] = WhitespaceControl;
 module.exports = exports['default'];
 
 
-},{"./visitor":28}],30:[function(require,module,exports){
+},{"./visitor":30}],32:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7830,7 +7943,7 @@ function registerDefaultDecorators(instance) {
 }
 
 
-},{"./decorators/inline":31}],31:[function(require,module,exports){
+},{"./decorators/inline":33}],33:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7861,7 +7974,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":45}],32:[function(require,module,exports){
+},{"../utils":47}],34:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7903,7 +8016,7 @@ exports['default'] = Exception;
 module.exports = exports['default'];
 
 
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7951,7 +8064,7 @@ function registerDefaultHelpers(instance) {
 }
 
 
-},{"./helpers/block-helper-missing":34,"./helpers/each":35,"./helpers/helper-missing":36,"./helpers/if":37,"./helpers/log":38,"./helpers/lookup":39,"./helpers/with":40}],34:[function(require,module,exports){
+},{"./helpers/block-helper-missing":36,"./helpers/each":37,"./helpers/helper-missing":38,"./helpers/if":39,"./helpers/log":40,"./helpers/lookup":41,"./helpers/with":42}],36:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7992,7 +8105,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":45}],35:[function(require,module,exports){
+},{"../utils":47}],37:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8088,7 +8201,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../exception":32,"../utils":45}],36:[function(require,module,exports){
+},{"../exception":34,"../utils":47}],38:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8115,7 +8228,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../exception":32}],37:[function(require,module,exports){
+},{"../exception":34}],39:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8146,7 +8259,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":45}],38:[function(require,module,exports){
+},{"../utils":47}],40:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8174,7 +8287,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8188,7 +8301,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8223,7 +8336,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":45}],41:[function(require,module,exports){
+},{"../utils":47}],43:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8272,7 +8385,7 @@ exports['default'] = logger;
 module.exports = exports['default'];
 
 
-},{"./utils":45}],42:[function(require,module,exports){
+},{"./utils":47}],44:[function(require,module,exports){
 (function (global){
 /* global window */
 'use strict';
@@ -8295,7 +8408,7 @@ module.exports = exports['default'];
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],43:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8589,7 +8702,7 @@ function executeDecorators(fn, prog, container, depths, data, blockParams) {
 }
 
 
-},{"./base":19,"./exception":32,"./utils":45}],44:[function(require,module,exports){
+},{"./base":21,"./exception":34,"./utils":47}],46:[function(require,module,exports){
 // Build out our basic SafeString type
 'use strict';
 
@@ -8606,7 +8719,7 @@ exports['default'] = SafeString;
 module.exports = exports['default'];
 
 
-},{}],45:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8732,7 +8845,7 @@ function appendContextPath(contextPath, id) {
 }
 
 
-},{}],46:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 // USAGE:
 // var handlebars = require('handlebars');
 /* eslint-disable no-var */
@@ -8759,7 +8872,7 @@ if (typeof require !== 'undefined' && require.extensions) {
   require.extensions['.hbs'] = extension;
 }
 
-},{"../dist/cjs/handlebars":17,"../dist/cjs/handlebars/compiler/printer":27,"fs":1}],47:[function(require,module,exports){
+},{"../dist/cjs/handlebars":19,"../dist/cjs/handlebars/compiler/printer":29,"fs":1}],49:[function(require,module,exports){
 /*
  * Copyright 2009-2011 Mozilla Foundation and contributors
  * Licensed under the New BSD license. See LICENSE.txt or:
@@ -8769,7 +8882,7 @@ exports.SourceMapGenerator = require('./source-map/source-map-generator').Source
 exports.SourceMapConsumer = require('./source-map/source-map-consumer').SourceMapConsumer;
 exports.SourceNode = require('./source-map/source-node').SourceNode;
 
-},{"./source-map/source-map-consumer":54,"./source-map/source-map-generator":55,"./source-map/source-node":56}],48:[function(require,module,exports){
+},{"./source-map/source-map-consumer":56,"./source-map/source-map-generator":57,"./source-map/source-node":58}],50:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -8878,7 +8991,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./util":57,"amdefine":58}],49:[function(require,module,exports){
+},{"./util":59,"amdefine":60}],51:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -9026,7 +9139,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./base64":50,"amdefine":58}],50:[function(require,module,exports){
+},{"./base64":52,"amdefine":60}],52:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -9101,7 +9214,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":58}],51:[function(require,module,exports){
+},{"amdefine":60}],53:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -9220,7 +9333,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":58}],52:[function(require,module,exports){
+},{"amdefine":60}],54:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2014 Mozilla Foundation and contributors
@@ -9308,7 +9421,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./util":57,"amdefine":58}],53:[function(require,module,exports){
+},{"./util":59,"amdefine":60}],55:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -9430,7 +9543,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":58}],54:[function(require,module,exports){
+},{"amdefine":60}],56:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -10509,7 +10622,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":48,"./base64-vlq":49,"./binary-search":51,"./quick-sort":53,"./util":57,"amdefine":58}],55:[function(require,module,exports){
+},{"./array-set":50,"./base64-vlq":51,"./binary-search":53,"./quick-sort":55,"./util":59,"amdefine":60}],57:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -10910,7 +11023,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":48,"./base64-vlq":49,"./mapping-list":52,"./util":57,"amdefine":58}],56:[function(require,module,exports){
+},{"./array-set":50,"./base64-vlq":51,"./mapping-list":54,"./util":59,"amdefine":60}],58:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -11326,7 +11439,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./source-map-generator":55,"./util":57,"amdefine":58}],57:[function(require,module,exports){
+},{"./source-map-generator":57,"./util":59,"amdefine":60}],59:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -11698,7 +11811,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":58}],58:[function(require,module,exports){
+},{"amdefine":60}],60:[function(require,module,exports){
 (function (process,__filename){
 /** vim: et:ts=4:sw=4:sts=4
  * @license amdefine 1.0.0 Copyright (c) 2011-2015, The Dojo Foundation All Rights Reserved.
@@ -12003,7 +12116,7 @@ function amdefine(module, requireFn) {
 module.exports = amdefine;
 
 }).call(this,require('_process'),"/node_modules\\handlebars\\node_modules\\source-map\\node_modules\\amdefine\\amdefine.js")
-},{"_process":3,"path":2}],59:[function(require,module,exports){
+},{"_process":3,"path":2}],61:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -21215,7 +21328,7 @@ return jQuery;
 
 }));
 
-},{}],60:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 (function (global){
 
 ; require("jQuery");
@@ -22621,6 +22734,6 @@ if ( $.ajaxPrefilter ) {
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jQuery":59}],61:[function(require,module,exports){
-arguments[4][59][0].apply(exports,arguments)
-},{"dup":59}]},{},[14]);
+},{"jQuery":61}],63:[function(require,module,exports){
+arguments[4][61][0].apply(exports,arguments)
+},{"dup":61}]},{},[16]);

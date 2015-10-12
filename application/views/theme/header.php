@@ -4,9 +4,9 @@
     <!-- Logo -->
     <a href="#home" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
-        <span class="logo-mini"><b>MTR</b></span>
+        <span class="logo-mini"><b>CMP</b></span>
         <!-- logo for regular state and mobile devices -->
-        <span class="logo-lg"><b>MIT</b>RAIS</span>
+        <span class="logo-lg"><b>CAMP</b> v.0.2</span>
     </a>
 
     <!-- Header Navbar -->

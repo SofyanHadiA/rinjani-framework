@@ -1,10 +1,13 @@
 'use strict';
 
-app.controller.dashboardController = function () {
-    var dashboard = {};
+var $ = require('jquery');
 
-    dashboard.title = app.language.module_home;    
-    dashboard.load = onLoad;
+module.exports = function ($, $language) {
+	
+    var dashboard = {
+		title: $language.module_home,
+		load: onLoad
+	};
 
 	return dashboard;
 
@@ -12,7 +15,7 @@ app.controller.dashboardController = function () {
 		$.get("../home/dashboard", function (response) {
 			try {
 				if (response.success) {
-					var template = app.template.dashboardContent; 
+					var template = app.template.dashboardContent;
                     var rendered = Handlebars.compile(template);
                     rendered = rendered(response)
                     $('dashboard-content').html(rendered); // TODO: make function: 	$('dashboard-content').render(template)									
@@ -25,5 +28,5 @@ app.controller.dashboardController = function () {
 				app.notify.danger("Error on load page " + hash + "<br/>" + e);
 			}
 		});
-    }    
+    }
 };

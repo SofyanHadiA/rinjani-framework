@@ -2,6 +2,8 @@
 
 var $ = global.jQuery = require('jquery');
 
+require('./../../node_modules/bootstrap/dist/js/bootstrap.js');
+
 var $config = require('./../config.js');
 var $form = require('./app.form.js');
 var $loader = require('./app.loader.js');
@@ -14,23 +16,34 @@ var $language = require('./../language/en.js');
 var $handlebars = require('handlebars');
 
 var $app = {
+    $: $,
     $config: $config,
     $handlebars: $handlebars,
-    $form: $form,
-    $loader: $loader,
-    $modal: $modal,
+    $form: $form($),
+    $modal: $modal($),
     $tablegrid: $tablegrid,
-    $notify: $notify,
+    $notify: $notify($),
     $http: $http,
     $language: $language,
     $module: $module
 }
 
 $app.start = function (config) {
-    window.onhashchange = $app.$loader($app.$notify, $app.$http, $app.$handlebars, $app.$config);
-    this.$config = config || $config;  
+
+    $app.$loader = $loader($, $app.$notify, $app.$http, $app.$handlebars, $app.$module, $app.$config),
     
-    // inisiate the all the module here 
+    // constructor
+    window.onhashchange = $app.$loader.load; // $app.$notify, $app.$_http, $.app.$handlebars, $app.$config
+    
+    $app.$loader.load();
+
+    var app = {
+        $config: config || $config,
+        $form: $form($config),
+        $module: $module
+    }
+
+    return app;
 }
 
 module.exports = $app;

@@ -1,5 +1,10 @@
 'use strict'
-$app = require('./core/app.js');
+var $app = require('./core/app.js');
+
+// for debuging purpose
+global.app = $app
+
+console.log($app);
 
 // set config here
 // $app.$config = {
@@ -7,13 +12,7 @@ $app = require('./core/app.js');
 // };
 
 // load module here
-// $app.$module.register('object' || require('filepath'));
+$app.$module.register('home', require('./home/home.js')($app));
 
 // start the application
 $app.start();
-
-
-// for debuging purpose
-global.app = $app
-
-console.log($app);

@@ -2,18 +2,18 @@
 
 // TODO: Update Token
 
-module.export =  function () {
+function http($) {
 
     var httpService = {
         post: post,
-        token: token
+        get: get
     };
     
-
     //TODO: Get first token
-    var token = {};// app.http.get('../token');
+    httpService.token = {};// app.http.get('../token');
+    httpService.cachedScriptPromises = {};
 
-    var cachedScriptPromises = {};
+    return httpService;
 
     var deferFactory = function (requestFunction) {
         var cache = {};
@@ -23,33 +23,27 @@ module.export =  function () {
                     requestFunction(defer, key);
                 }).promise();
             }
-
             return cache[key].done(callback);
         };
     };
 
-    httpService.get = deferFactory(function (defer, url) {
-        $.get(url, app.http.token).then(
-            defer.resolve, 
-            defer.reject)
-    });    
-
-    function post(url, data, callback) {
-        // TODO: MERGE DATA WITH TOKEN
-        $.post(url, data, function (response) {
-
-            if (response.success) {
-                callback(response);
-                app.notify.info(response.message);
-            }
-            else {
-                app.notify.warning(response.message);
-            }
-        }, "json")
-            .fail(function (xhr) {
-                app.notify.danger("<b>" + xhr.status + "</b>" + " " + xhr.responseJSON.message);
-            });
+    function get(url) {
+        deferFactory(function (defer, url) {
+            $.get(url, httpService.http.token).then(
+                defer.resolve,
+                defer.reject)
+        });
     };
 
-    return httpService;
+    function post(url, data) {
+        deferFactory(function (defer, url) {
+            // TODO: MERGE DATA WITH TOKEN
+            $.post(url, data, function (response) {
+                defer.resolve(response)
+            }).then(defer.resolve,
+                defer.reject);
+        });
+    };
 };
+
+module.export = http;

@@ -1,23 +1,19 @@
 'use strict'
 
-var $ = global.jQuery = require('jquery');
 require('../../node_modules/jquery-validation/dist/jquery.validate.js');
-var $config = require('./../config.js');
 
-module.exports = function ($config, formContainer) {
+module.exports = function ($) {
 
     var form = {
-        container: formContainer || "#modal-form",         
+        create: create,
         config: config,
-        validation: validation,
         onSubmit: onSubmit
     };
-    
-    form.validation();
-        
+
     return form;
 
-    function validation() {
+    function create(formContainer) {
+        form.container = formContainer || "#modal-form-" + (Math.random() + 1).toString(36).substring(7),
         $(form.container).validate({
             errorClass: "error text-red",
             errorPlacement: function (error, element) {
@@ -30,11 +26,11 @@ module.exports = function ($config, formContainer) {
                 element.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
             },
         })
-        
-       return form;
+
+        return form;
     };
 
-   function config(config) {
+    function config(config) {
         $.extend(form.validation.settings, config);
         return form;
     };

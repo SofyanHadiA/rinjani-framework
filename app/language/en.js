@@ -1,6 +1,6 @@
 'use strict'
 
-var $language = {
+module.exports = {
 	alpha: "The %s field may only contain alphabetical characters."
 	, alpha_dash: "The %s field may only contain alpha-numeric characters, underscores, and dashes."
 	, alpha_numeric: "The %s field may only contain alpha-numeric characters."

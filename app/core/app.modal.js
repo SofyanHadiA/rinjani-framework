@@ -1,28 +1,37 @@
 'use strict'
 
-var $ = require('jquery');
-var bootstrap = require('./../../node_modules/bootstrap/dist/js/bootstrap.js');
+module.exports = function ($) {
 
-module.exports = function (url, size, modalId) {
+    var modal = {
+        show: show
+    };
 
-    if (!modalId) {
-        modalId = "modal-container";
-    }
+    return modal;
 
-    $('body').append('<div class="modal fade" id="' + modalId + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">'
-        + '<div class="modal-dialog modal-' + size + '">'
-        + '<div class="modal-content">'
-        + '</div></div></div>'
-    );
+    function show(url, size, modalId) {       
+        var defer = $.Deferred
+        
+        modalId = modalId || "modal-container-" + (Math.random() + 1).toString(36).substring(7);
 
-    $('#' + modalId).removeData('modal')
-        .modal({
-            remote: url,
-            show: true
+        $('body').append('<div class="modal fade" id="' + modalId + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">'
+            + '<div class="modal-dialog modal-' + size + '">'
+            + '<div class="modal-content">'
+            + '</div></div></div>'
+            );
+
+        $('#' + modalId).removeData('modal')
+            .modal({
+                remote: url,
+                show: true
+            });
+
+        $(document).on('hidden.bs.modal', '#' + modalId, function () {
+            console.log('hide '+modalId);
+            $('#' + modalId).remove();
+            
+            defer.done();
         });
 
-    $(document).on('hidden.bs.modal', '#' + modalId, function () {
-        console.log('hide');
-        $('#' + modalId).remove();
-    });
+        return defer.promise();
+    };
 }
