@@ -34,7 +34,7 @@
        <!--<script src="{base_url}packages/jQuery/dist/jQuery.min.js"></script>    
         <script src="{base_url}packages/bootstrap/dist/js/bootstrap.js"></script>
         <script src="{base_url}packages/datatables/media/js/jquery.dataTables.js"></script>
-        <script src="{base_url}packages/datatables/media//js/dataTables.bootstrap.js"></script>
+        <script src="{base_url}packages/datatables/media/js/dataTables.bootstrap.js"></script>
         <script src="{base_url}packages/notify/dist/bootstrap-notify.js"></script>
         <script src="{base_url}packages/bootbox.js/bootbox.js"></script>
         <script src="{base_url}packages/pace/pace.js"></script>

@@ -1,5 +1,3 @@
-var $ = require('jquery');
-
 module.exports = function ($, $language, $notify, $handlebars) {
 
     var dashboard = {
@@ -14,11 +12,11 @@ module.exports = function ($, $language, $notify, $handlebars) {
 
 			try {
 				if (response.success) {
-					var template = require('./dashboard/dashboard.template.js');
+					var dashboard = require('./dashboard/dashboard.js');
 
-                    var rendered = $handlebars.compile(template);
+                    var rendered = $handlebars.compile(dashboard.template);
                     rendered = rendered(response)
-                    $('dashboard-content').html(rendered); // TODO: make function: 	$('dashboard-content').render(template)									
+                    $('dashboard-content').html(rendered);
 
 				} else {
 					$notify.danger(response.message);

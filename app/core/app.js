@@ -2,7 +2,7 @@
 
 var $ = global.jQuery = require('jquery');
 
-require('./../../node_modules/bootstrap/dist/js/bootstrap.js');
+require('bootstrap');
 
 var $config = require('./../config.js');
 var $form = require('./app.form.js');
@@ -21,7 +21,7 @@ var $app = {
     $handlebars: $handlebars,
     $form: $form($),
     $modal: $modal($),
-    $tablegrid: $tablegrid,
+    $tablegrid: $tablegrid($modal, $http),
     $notify: $notify($),
     $http: $http,
     $language: $language,
