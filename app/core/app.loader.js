@@ -20,17 +20,21 @@ module.exports = function ($, $notify, $http, $handlebars, $module, $config) {
         try {
             var _module = $module.resolve(hash);
 
-            var controller = _module.controller;
+            var model = _module.model;
 
             if (_module.templateUrl) {
                 $http.get(_module.templateUrl).then(function (response) {
                     var template = response;
-                    render(controller, template)
+                    render(model, template)
+
+                    _module.controller.load()
                 });
             }
             else {
                 var template = _module.template;
-                render(controller, template)
+                render(model, template)
+
+                _module.controller.load()
             }
 
         } catch (e) {
@@ -42,8 +46,6 @@ module.exports = function ($, $notify, $http, $handlebars, $module, $config) {
             var rendered = $handlebars.compile(template);
             rendered = rendered(model);
             $('app-view').html(rendered);
-        
-            //controller.load();
         }
     };
 };

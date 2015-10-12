@@ -1,4 +1,5 @@
 'use strict'
+
 var $app = require('./core/app.js');
 
 // for debuging purpose

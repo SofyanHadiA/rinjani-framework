@@ -1,11 +1,8 @@
-'use strict';
-
 var $ = require('jquery');
 
-module.exports = function ($, $language) {
-	
+module.exports = function ($, $language, $notify, $handlebars) {
+
     var dashboard = {
-		title: $language.module_home,
 		load: onLoad
 	};
 
@@ -13,19 +10,22 @@ module.exports = function ($, $language) {
 
     function onLoad() {
 		$.get("../home/dashboard", function (response) {
+			var hash = location.hash.replace(/^#/, '');
+
 			try {
 				if (response.success) {
-					var template = app.template.dashboardContent;
-                    var rendered = Handlebars.compile(template);
+					var template = require('./dashboard/dashboard.template.js');
+
+                    var rendered = $handlebars.compile(template);
                     rendered = rendered(response)
                     $('dashboard-content').html(rendered); // TODO: make function: 	$('dashboard-content').render(template)									
 
 				} else {
-					app.notify.danger(response.message);
+					$notify.danger(response.message);
 				}
 			}
 			catch (e) {
-				app.notify.danger("Error on load page " + hash + "<br/>" + e);
+				$notify.danger("Error on load page " + hash + "<br/>" + e);
 			}
 		});
     }

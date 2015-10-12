@@ -40,7 +40,7 @@
         <script src="{base_url}packages/pace/pace.js"></script>
         <script src="{base_url}packages/blueimp-file-upload/js/vendor/jquery.ui.widget.js"></script>
         <script src="{base_url}packages/blueimp-file-upload/js/jquery.fileupload.js"></script>
-        <script src="{base_url}packages/theme/dist/js/app.min.js"></script>-->
+      
         <!--<script src="{base_url}packages/jquery-validation/dist/jquery.validate.js"></script>-->
         <!--<script src="{base_url}packages/handlebars/handlebars.js"></script>-->
     <!---->
@@ -87,5 +87,8 @@
      fixed layout. -->
 
 <script src="../dist/bundle.js"></script>
+<script src="{base_url}packages/jQuery/dist/jQuery.min.js"></script>    
+<script src="{base_url}packages/theme/dist/js/app.js"></script>
+
 </body>
 </html>
