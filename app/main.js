@@ -1,7 +1,8 @@
 'use strict'
 
+global.di = require('di4js');
+
 var $app = require('./core/app.js');
-global.$injector = $app.$injector
 
 console.log($app);
 
