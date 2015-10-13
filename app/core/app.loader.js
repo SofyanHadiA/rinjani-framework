@@ -17,7 +17,7 @@ module.exports = function ($, $notify, $http, $handlebars, $module, $config) {
 
         $('app-view').html('<div class="spinner text-center"><div class="dots-loader">Loading…</div></div>');
 
-        try {
+        // try {
             var _module = $module.resolve(hash);
 
             var model = _module.model;
@@ -37,9 +37,9 @@ module.exports = function ($, $notify, $http, $handlebars, $module, $config) {
                 _module.controller.load()
             }
 
-        } catch (e) {
-            $notify.danger("Error on load page " + hash + "<br/>" + e);
-        }
+        // } catch (e) {
+        //     $notify.danger("Error on load page " + hash + "<br/>" + e);
+        // }
 
         function render(model, template) {
 

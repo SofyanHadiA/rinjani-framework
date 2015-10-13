@@ -1,11 +1,8 @@
 'use strict'
 
 var $ = global.jQuery = require('jquery');
-
 require('bootstrap');
 
-global.$injector = require('./injector.js');
-$injector.register('$', $);
 
 var $config = require('./app.config_default.js');
 var $form = require('./app.form.js');
@@ -18,47 +15,38 @@ var $module = require('./app.module.js');
 var $language = require('./../language/en.js');
 var $handlebars = require('handlebars');
 
-$injector.register('$config', $config);
-$injector.register('$handlebars', $handlebars);
-$injector.register('$form', $form);
-$injector.register('$modal', $modal);
-$injector.register('$tablegrid', $tablegrid);
-$injector.register('$notify', $notify);
-$injector.register('$http', $http);
-$injector.register('$language', $language);
-$injector.register('$module', $module);
-
+di.register('$').instance($);
+di.register('$handlebars').instance($handlebars);
+di.register('$form').as($form);
+di.register('$modal').as($modal);
+di.register('$tablegrid').as($tablegrid);
+di.register('$notify').as($notify);
+di.register('$http').instance($http);
+di.register('$language').instance($language);
+di.register('$module').instance($module);
 
 var $app = {
+    di: di,
     $: $,
     $config: $config,
     $handlebars: $handlebars,
-    $form: $form($),
+    $form: di.resolve('$form'),
     $modal: $modal($),
     $tablegrid: $tablegrid($modal, $http),
     $notify: $notify($),
     $http: $http,
     $language: $language,
     $module: $module,
-    $injector: $injector
 }
 
 $app.start = function (config) {
-
-    $app.$loader = $loader($, $app.$notify, $app.$http, $app.$handlebars, $app.$module, $app.$config),
-    
-    // constructor
-    window.onhashchange = $app.$loader.load; // $app.$notify, $app.$_http, $.app.$handlebars, $app.$config
+    $app.$config = $.merge($app.$config, config);
+    $app.$loader = $loader($, $app.$notify, $app.$http, $app.$handlebars, $app.$module, config),    
+    window.onhashchange = $app.$loader.load; 
     
     $app.$loader.load();
 
-    var app = {
-        $config: config || $config,
-        $form: $form($config),
-        $module: $module
-    }
-
-    return app;
+    return $app;
 }
 
 module.exports = $app;

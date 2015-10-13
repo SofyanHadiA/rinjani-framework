@@ -322,16 +322,40 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],4:[function(require,module,exports){
+'use strict'
+
+var config = {
+    route: {
+        default: 'home',
+        home: {
+            template: 'dashboardHome',
+            controller: 'dashboardController'
+        },
+        customers: {
+            templateUrl: '../app/people/customer.html',
+            controller: 'customerController',
+            model: ''
+        },
+        items: {
+            templateUrl: '../app/item/item.html',
+            controller: 'itemController'
+        }
+    }
+}
+
+module.exports = config;
+
+},{}],5:[function(require,module,exports){
 arguments[4][1][0].apply(exports,arguments)
-},{"dup":1}],5:[function(require,module,exports){
+},{"dup":1}],6:[function(require,module,exports){
 /*
  * App Form Module 
  */
 
 require('../../node_modules/jquery-validation/dist/jquery.validate.js');
 
-module.exports = $injector.resolve(['$'], function ($) {
-
+module.exports = function ($) {  
+    
     var form = {
         create: create,
         config: config,
@@ -367,10 +391,10 @@ module.exports = $injector.resolve(['$'], function ($) {
         form.validation.settings.submitHandler = callBack;
         return form;
     };
-});
+};
 
 
-},{"../../node_modules/jquery-validation/dist/jquery.validate.js":87}],6:[function(require,module,exports){
+},{"../../node_modules/jquery-validation/dist/jquery.validate.js":85}],7:[function(require,module,exports){
 'use strict'
 
 // TODO: Update Token
@@ -420,16 +444,13 @@ function http($) {
 };
 
 module.export = http;
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function (global){
 'use strict'
 
 var $ = global.jQuery = require('jquery');
-
 require('bootstrap');
 
-global.$injector = require('./injector.js');
-$injector.register('$', $);
 
 var $config = require('./app.config_default.js');
 var $form = require('./app.form.js');
@@ -442,52 +463,43 @@ var $module = require('./app.module.js');
 var $language = require('./../language/en.js');
 var $handlebars = require('handlebars');
 
-$injector.register('$config', $config);
-$injector.register('$handlebars', $handlebars);
-$injector.register('$form', $form);
-$injector.register('$modal', $modal);
-$injector.register('$tablegrid', $tablegrid);
-$injector.register('$notify', $notify);
-$injector.register('$http', $http);
-$injector.register('$language', $language);
-$injector.register('$module', $module);
-
+di.register('$').instance($);
+di.register('$handlebars').instance($handlebars);
+di.register('$form').as($form);
+di.register('$modal').as($modal);
+di.register('$tablegrid').as($tablegrid);
+di.register('$notify').as($notify);
+di.register('$http').instance($http);
+di.register('$language').instance($language);
+di.register('$module').instance($module);
 
 var $app = {
+    di: di,
     $: $,
     $config: $config,
     $handlebars: $handlebars,
-    $form: $form($),
+    $form: di.resolve('$form'),
     $modal: $modal($),
     $tablegrid: $tablegrid($modal, $http),
     $notify: $notify($),
     $http: $http,
     $language: $language,
     $module: $module,
-    $injector: $injector
 }
 
 $app.start = function (config) {
-
-    $app.$loader = $loader($, $app.$notify, $app.$http, $app.$handlebars, $app.$module, $app.$config),
-    
-    // constructor
-    window.onhashchange = $app.$loader.load; // $app.$notify, $app.$_http, $.app.$handlebars, $app.$config
+    $app.$config = $.merge($app.$config, config);
+    $app.$loader = $loader($, $app.$notify, $app.$http, $app.$handlebars, $app.$module, config),    
+    window.onhashchange = $app.$loader.load; 
     
     $app.$loader.load();
 
-    var app = {
-        $config: config || $config,
-        $form: $form($config),
-        $module: $module
-    }
-
-    return app;
+    return $app;
 }
 
 module.exports = $app;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./../language/en.js":24,"./app.config_default.js":4,"./app.form.js":5,"./app.http.js":6,"./app.loader.js":8,"./app.modal.js":9,"./app.module.js":10,"./app.notify.js":11,"./app.tablegrid.js":12,"./injector.js":13,"bootstrap":27,"handlebars":71,"jquery":88}],8:[function(require,module,exports){
+},{"./../language/en.js":22,"./app.config_default.js":5,"./app.form.js":6,"./app.http.js":7,"./app.loader.js":9,"./app.modal.js":10,"./app.module.js":11,"./app.notify.js":12,"./app.tablegrid.js":13,"bootstrap":25,"handlebars":69,"jquery":86}],9:[function(require,module,exports){
 'use strict'
 
 module.exports = function ($, $notify, $http, $handlebars, $module, $config) {
@@ -507,7 +519,7 @@ module.exports = function ($, $notify, $http, $handlebars, $module, $config) {
 
         $('app-view').html('<div class="spinner text-center"><div class="dots-loader">Loading…</div></div>');
 
-        try {
+        // try {
             var _module = $module.resolve(hash);
 
             var model = _module.model;
@@ -527,9 +539,9 @@ module.exports = function ($, $notify, $http, $handlebars, $module, $config) {
                 _module.controller.load()
             }
 
-        } catch (e) {
-            $notify.danger("Error on load page " + hash + "<br/>" + e);
-        }
+        // } catch (e) {
+        //     $notify.danger("Error on load page " + hash + "<br/>" + e);
+        // }
 
         function render(model, template) {
 
@@ -539,7 +551,7 @@ module.exports = function ($, $notify, $http, $handlebars, $module, $config) {
         }
     };
 };
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict'
 
 module.exports = function ($) {
@@ -577,7 +589,7 @@ module.exports = function ($) {
         return defer.promise();
     };
 }
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 var $module = {
@@ -606,7 +618,7 @@ var $module = {
 };
 
 module.exports = $module;
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict'
 
 require('bootstrap-notify');
@@ -641,7 +653,7 @@ function notify($) {
 }
 
 module.exports = notify; 
-},{"bootstrap-notify":26}],12:[function(require,module,exports){
+},{"bootstrap-notify":24}],13:[function(require,module,exports){
 'use strict'
 
 var $ = require('jquery');
@@ -785,34 +797,7 @@ module.exports = function ($modal, $http) {
         $http.post(url, { 'ids[]': row_ids }, tablegrid.dataTable.ajax.reload)
     }
 };
-},{"./../../packages/datatables/media/js/dataTables.bootstrap.js":89,"./../../packages/datatables/media/js/jquery.dataTables.js":90,"jquery":88}],13:[function(require,module,exports){
-module.exports = {
-    dependencies: {},
-    register: function (key, value) {
-        this.dependencies[key] = value;
-    },
-    resolve: function () {
-        var func, deps, scope, args = [], self = this;
-        if (typeof arguments[0] === 'string') {
-            func = arguments[1];
-            deps = arguments[0].replace(/ /g, '').split(',');
-            scope = arguments[2] || {};
-        } else {
-            func = arguments[0];
-            deps = func.toString().match(/^function\s*[^\(]*\(\s*([^\)]*)\)/m)[1].replace(/ /g, '').split(',');
-            scope = arguments[1] || {};
-        }
-        return function () {
-            var a = Array.prototype.slice.call(arguments, 0);
-            for (var i = 0; i < deps.length; i++) {
-                var d = deps[i];
-                args.push(self.dependencies[d] && d != '' ? self.dependencies[d] : a.shift());
-            }
-            func.apply(scope || {}, args);
-        }
-    }
-}
-},{}],14:[function(require,module,exports){
+},{"./../../packages/datatables/media/js/dataTables.bootstrap.js":87,"./../../packages/datatables/media/js/jquery.dataTables.js":88,"jquery":86}],14:[function(require,module,exports){
 'use strict';
 
 module.exports = function ($, $notify, $tablegrid, $modal, $form) {
@@ -886,7 +871,7 @@ module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":f
     + "\r\n                            </button>\r\n\r\n                            <a class=\"btn btn-success\" id=\"import-excel\" href=\"../customers/excel_import\" data-target=\"#modal-container\">\r\n                                <i class=\"fa fa-file-excel-o\"></i> Excel Import\r\n                            </a>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"box-body \">\r\n                    <table id=\"customer-table\" class=\"table table-bordered table-hover\">\r\n                        <thead>\r\n                            <tr>\r\n                                <th width=\"10px\">\r\n                                    <input type=\"checkbox\" id=\"select-all\" />\r\n                                </th>\r\n                                <th>Last Name</th>\r\n                                <th>First Name</th>\r\n                                <th>Email</th>\r\n                                <th>Phone</th>\r\n                                <th width=\"50px\">Action</th>\r\n                            </tr>\r\n                        </thead>\r\n                    </table>\r\n                </div>\r\n\r\n                <div id=\"feedback_bar\"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</section>";
 },"useData":true});
 
-},{"hbsfy/runtime":85}],18:[function(require,module,exports){
+},{"hbsfy/runtime":83}],18:[function(require,module,exports){
 module.exports = {
 	controller: {},
 	model:{},
@@ -911,76 +896,43 @@ module.exports = '{{#each data}}'+
         '</div>'+
         '{{/each}}';
 },{}],20:[function(require,module,exports){
-module.exports = $injector.resolve(['$', '$language', '$notify', '$handlebars'],
-	function ($, $language, $notify, $handlebars) {
+module.exports = di.inject(function ($, $language, $notify, $handlebars) {
+	this.load = onLoad;
+	return this;
 
-		var dashboard = {
-			load: onLoad
-		};
+	function onLoad() {
+		$.get("../home/dashboard", function (response) {
+			var hash = location.hash.replace(/^#/, '');
 
-		return dashboard;
+			try {
+				if (response.success) {
+					var dashboard = require('./dashboard/dashboard.js');
 
-		function onLoad() {
-			$.get("../home/dashboard", function (response) {
-				var hash = location.hash.replace(/^#/, '');
+					var rendered = $handlebars.compile(dashboard.template);
+					rendered = rendered(response)
+					$('dashboard-content').html(rendered);
 
-				try {
-					if (response.success) {
-						var dashboard = require('./dashboard/dashboard.js');
-
-						var rendered = $handlebars.compile(dashboard.template);
-						rendered = rendered(response)
-						$('dashboard-content').html(rendered);
-
-					} else {
-						$notify.danger(response.message);
-					}
+				} else {
+					$notify.danger(response.message);
 				}
-				catch (e) {
-					$notify.danger("Error on load page " + hash + "<br/>" + e);
-				}
-			});
-		}
-	});
-
+			}
+			catch (e) {
+				$notify.danger("Error on load page " + hash + "<br/>" + e);
+			}
+		});
+	}
+});
 },{"./dashboard/dashboard.js":18}],21:[function(require,module,exports){
-var homeController = require('./home.controller.js');
-var homeTemplate = require('./home.template.js');
-var homeModel = require('./home.model.js');
-
 function home($app) {
 	return {
-		'controller': homeController(),
-		'model': homeModel($app.$language),
-		'template': homeTemplate
+		'controller': require('./home.controller.js')(),
+		'model': homeDi.resolve('homeModel'),
+		'template': homeDi.resolve('homeTemplate')
 	}
 };
 
 module.exports = home;
-},{"./home.controller.js":20,"./home.model.js":22,"./home.template.js":23}],22:[function(require,module,exports){
-module.exports = function($language){
-	var home = {
-		title: $language.module_home,
-	};
-	
-	return home;
-};
-},{}],23:[function(require,module,exports){
-module.exports =  '<section class="content-header"></section>' +
-        '<section class="content">' +
-            '<div class="row">' +
-                '<div class="col-md-12">' +
-                    '<div class="box">' +
-                        '<div class="box-body">' +
-                            '<dashboard-content/>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-            '</div>' +
-        '</section>';
-
-
-},{}],24:[function(require,module,exports){
+},{"./home.controller.js":20}],22:[function(require,module,exports){
 'use strict'
 
 module.exports = {
@@ -1600,7 +1552,7 @@ module.exports = {
 //app.injector.register('$language', $language);
 
 
-},{}],25:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 (function (global){
 'use strict'
 
@@ -1619,10 +1571,12 @@ console.log($app);
 $app.$module.register('home', require('./home/home.js')($app));
 $app.$module.register('customers', require('./customer/customer.js')($app));
 
+var config = require('./config.js');
+
 // start the application
-$app.start();
+$app.start(config);
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./core/app.js":7,"./customer/customer.js":15,"./home/home.js":21,"di4js":41}],26:[function(require,module,exports){
+},{"./config.js":4,"./core/app.js":8,"./customer/customer.js":15,"./home/home.js":21,"di4js":39}],24:[function(require,module,exports){
 /*
 * Project: Bootstrap Notify = v3.1.3
 * Description: Turns standard Bootstrap alerts into "Growl-like" notifications.
@@ -1977,7 +1931,7 @@ $app.start();
 
 }));
 
-},{"jquery":88}],27:[function(require,module,exports){
+},{"jquery":86}],25:[function(require,module,exports){
 // This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
 require('../../js/transition.js')
 require('../../js/alert.js')
@@ -1991,7 +1945,7 @@ require('../../js/popover.js')
 require('../../js/scrollspy.js')
 require('../../js/tab.js')
 require('../../js/affix.js')
-},{"../../js/affix.js":28,"../../js/alert.js":29,"../../js/button.js":30,"../../js/carousel.js":31,"../../js/collapse.js":32,"../../js/dropdown.js":33,"../../js/modal.js":34,"../../js/popover.js":35,"../../js/scrollspy.js":36,"../../js/tab.js":37,"../../js/tooltip.js":38,"../../js/transition.js":39}],28:[function(require,module,exports){
+},{"../../js/affix.js":26,"../../js/alert.js":27,"../../js/button.js":28,"../../js/carousel.js":29,"../../js/collapse.js":30,"../../js/dropdown.js":31,"../../js/modal.js":32,"../../js/popover.js":33,"../../js/scrollspy.js":34,"../../js/tab.js":35,"../../js/tooltip.js":36,"../../js/transition.js":37}],26:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: affix.js v3.3.5
  * http://getbootstrap.com/javascript/#affix
@@ -2155,7 +2109,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],29:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: alert.js v3.3.5
  * http://getbootstrap.com/javascript/#alerts
@@ -2251,7 +2205,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],30:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: button.js v3.3.5
  * http://getbootstrap.com/javascript/#buttons
@@ -2373,7 +2327,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],31:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: carousel.js v3.3.5
  * http://getbootstrap.com/javascript/#carousel
@@ -2612,7 +2566,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],32:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: collapse.js v3.3.5
  * http://getbootstrap.com/javascript/#collapse
@@ -2825,7 +2779,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],33:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: dropdown.js v3.3.5
  * http://getbootstrap.com/javascript/#dropdowns
@@ -2992,7 +2946,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],34:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: modal.js v3.3.5
  * http://getbootstrap.com/javascript/#modals
@@ -3331,7 +3285,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],35:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: popover.js v3.3.5
  * http://getbootstrap.com/javascript/#popovers
@@ -3441,7 +3395,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],36:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: scrollspy.js v3.3.5
  * http://getbootstrap.com/javascript/#scrollspy
@@ -3615,7 +3569,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],37:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: tab.js v3.3.5
  * http://getbootstrap.com/javascript/#tabs
@@ -3772,7 +3726,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],38:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: tooltip.js v3.3.5
  * http://getbootstrap.com/javascript/#tooltip
@@ -4288,7 +4242,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],39:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: transition.js v3.3.5
  * http://getbootstrap.com/javascript/#transitions
@@ -4349,7 +4303,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],40:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /*! DataTables 1.10.9
  * ©2008-2015 SpryMedia Ltd - datatables.net/license
  */
@@ -19480,7 +19434,7 @@ require('../../js/affix.js')
 }(window, document));
 
 
-},{"jquery":88}],41:[function(require,module,exports){
+},{"jquery":86}],39:[function(require,module,exports){
 'use strict';
 
 var exports = {};
@@ -21154,7 +21108,7 @@ Object.defineProperty(exports, 'dispose', {
 });
 
 module.exports = exports;
-},{}],42:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -21221,7 +21175,7 @@ exports['default'] = inst;
 module.exports = exports['default'];
 
 
-},{"./handlebars.runtime":43,"./handlebars/compiler/ast":45,"./handlebars/compiler/base":46,"./handlebars/compiler/compiler":48,"./handlebars/compiler/javascript-compiler":50,"./handlebars/compiler/visitor":53,"./handlebars/no-conflict":67}],43:[function(require,module,exports){
+},{"./handlebars.runtime":41,"./handlebars/compiler/ast":43,"./handlebars/compiler/base":44,"./handlebars/compiler/compiler":46,"./handlebars/compiler/javascript-compiler":48,"./handlebars/compiler/visitor":51,"./handlebars/no-conflict":65}],41:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -21290,7 +21244,7 @@ exports['default'] = inst;
 module.exports = exports['default'];
 
 
-},{"./handlebars/base":44,"./handlebars/exception":57,"./handlebars/no-conflict":67,"./handlebars/runtime":68,"./handlebars/safe-string":69,"./handlebars/utils":70}],44:[function(require,module,exports){
+},{"./handlebars/base":42,"./handlebars/exception":55,"./handlebars/no-conflict":65,"./handlebars/runtime":66,"./handlebars/safe-string":67,"./handlebars/utils":68}],42:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -21396,7 +21350,7 @@ exports.createFrame = _utils.createFrame;
 exports.logger = _logger2['default'];
 
 
-},{"./decorators":55,"./exception":57,"./helpers":58,"./logger":66,"./utils":70}],45:[function(require,module,exports){
+},{"./decorators":53,"./exception":55,"./helpers":56,"./logger":64,"./utils":68}],43:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -21429,7 +21383,7 @@ exports['default'] = AST;
 module.exports = exports['default'];
 
 
-},{}],46:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -21479,7 +21433,7 @@ function parse(input, options) {
 }
 
 
-},{"../utils":70,"./helpers":49,"./parser":51,"./whitespace-control":54}],47:[function(require,module,exports){
+},{"../utils":68,"./helpers":47,"./parser":49,"./whitespace-control":52}],45:[function(require,module,exports){
 /* global define */
 'use strict';
 
@@ -21647,7 +21601,7 @@ exports['default'] = CodeGen;
 module.exports = exports['default'];
 
 
-},{"../utils":70,"source-map":72}],48:[function(require,module,exports){
+},{"../utils":68,"source-map":70}],46:[function(require,module,exports){
 /* eslint-disable new-cap */
 
 'use strict';
@@ -22221,7 +22175,7 @@ function transformLiteralToPath(sexpr) {
 }
 
 
-},{"../exception":57,"../utils":70,"./ast":45}],49:[function(require,module,exports){
+},{"../exception":55,"../utils":68,"./ast":43}],47:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -22453,7 +22407,7 @@ function preparePartialBlock(open, program, close, locInfo) {
 }
 
 
-},{"../exception":57}],50:[function(require,module,exports){
+},{"../exception":55}],48:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -23581,7 +23535,7 @@ exports['default'] = JavaScriptCompiler;
 module.exports = exports['default'];
 
 
-},{"../base":44,"../exception":57,"../utils":70,"./code-gen":47}],51:[function(require,module,exports){
+},{"../base":42,"../exception":55,"../utils":68,"./code-gen":45}],49:[function(require,module,exports){
 /* istanbul ignore next */
 /* Jison generated parser */
 "use strict";
@@ -24321,7 +24275,7 @@ var handlebars = (function () {
 exports['default'] = handlebars;
 
 
-},{}],52:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 /* eslint-disable new-cap */
 'use strict';
 
@@ -24509,7 +24463,7 @@ PrintVisitor.prototype.HashPair = function (pair) {
 /* eslint-enable new-cap */
 
 
-},{"./visitor":53}],53:[function(require,module,exports){
+},{"./visitor":51}],51:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24651,7 +24605,7 @@ exports['default'] = Visitor;
 module.exports = exports['default'];
 
 
-},{"../exception":57}],54:[function(require,module,exports){
+},{"../exception":55}],52:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24874,7 +24828,7 @@ exports['default'] = WhitespaceControl;
 module.exports = exports['default'];
 
 
-},{"./visitor":53}],55:[function(require,module,exports){
+},{"./visitor":51}],53:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24892,7 +24846,7 @@ function registerDefaultDecorators(instance) {
 }
 
 
-},{"./decorators/inline":56}],56:[function(require,module,exports){
+},{"./decorators/inline":54}],54:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24923,7 +24877,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":70}],57:[function(require,module,exports){
+},{"../utils":68}],55:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24965,7 +24919,7 @@ exports['default'] = Exception;
 module.exports = exports['default'];
 
 
-},{}],58:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25013,7 +24967,7 @@ function registerDefaultHelpers(instance) {
 }
 
 
-},{"./helpers/block-helper-missing":59,"./helpers/each":60,"./helpers/helper-missing":61,"./helpers/if":62,"./helpers/log":63,"./helpers/lookup":64,"./helpers/with":65}],59:[function(require,module,exports){
+},{"./helpers/block-helper-missing":57,"./helpers/each":58,"./helpers/helper-missing":59,"./helpers/if":60,"./helpers/log":61,"./helpers/lookup":62,"./helpers/with":63}],57:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25054,7 +25008,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":70}],60:[function(require,module,exports){
+},{"../utils":68}],58:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25150,7 +25104,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../exception":57,"../utils":70}],61:[function(require,module,exports){
+},{"../exception":55,"../utils":68}],59:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25177,7 +25131,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../exception":57}],62:[function(require,module,exports){
+},{"../exception":55}],60:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25208,7 +25162,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":70}],63:[function(require,module,exports){
+},{"../utils":68}],61:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25236,7 +25190,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{}],64:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25250,7 +25204,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{}],65:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25285,7 +25239,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":70}],66:[function(require,module,exports){
+},{"../utils":68}],64:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25334,7 +25288,7 @@ exports['default'] = logger;
 module.exports = exports['default'];
 
 
-},{"./utils":70}],67:[function(require,module,exports){
+},{"./utils":68}],65:[function(require,module,exports){
 (function (global){
 /* global window */
 'use strict';
@@ -25357,7 +25311,7 @@ module.exports = exports['default'];
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],68:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25651,7 +25605,7 @@ function executeDecorators(fn, prog, container, depths, data, blockParams) {
 }
 
 
-},{"./base":44,"./exception":57,"./utils":70}],69:[function(require,module,exports){
+},{"./base":42,"./exception":55,"./utils":68}],67:[function(require,module,exports){
 // Build out our basic SafeString type
 'use strict';
 
@@ -25668,7 +25622,7 @@ exports['default'] = SafeString;
 module.exports = exports['default'];
 
 
-},{}],70:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25794,7 +25748,7 @@ function appendContextPath(contextPath, id) {
 }
 
 
-},{}],71:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 // USAGE:
 // var handlebars = require('handlebars');
 /* eslint-disable no-var */
@@ -25821,7 +25775,7 @@ if (typeof require !== 'undefined' && require.extensions) {
   require.extensions['.hbs'] = extension;
 }
 
-},{"../dist/cjs/handlebars":42,"../dist/cjs/handlebars/compiler/printer":52,"fs":1}],72:[function(require,module,exports){
+},{"../dist/cjs/handlebars":40,"../dist/cjs/handlebars/compiler/printer":50,"fs":1}],70:[function(require,module,exports){
 /*
  * Copyright 2009-2011 Mozilla Foundation and contributors
  * Licensed under the New BSD license. See LICENSE.txt or:
@@ -25831,7 +25785,7 @@ exports.SourceMapGenerator = require('./source-map/source-map-generator').Source
 exports.SourceMapConsumer = require('./source-map/source-map-consumer').SourceMapConsumer;
 exports.SourceNode = require('./source-map/source-node').SourceNode;
 
-},{"./source-map/source-map-consumer":79,"./source-map/source-map-generator":80,"./source-map/source-node":81}],73:[function(require,module,exports){
+},{"./source-map/source-map-consumer":77,"./source-map/source-map-generator":78,"./source-map/source-node":79}],71:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -25940,7 +25894,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./util":82,"amdefine":83}],74:[function(require,module,exports){
+},{"./util":80,"amdefine":81}],72:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -26088,7 +26042,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./base64":75,"amdefine":83}],75:[function(require,module,exports){
+},{"./base64":73,"amdefine":81}],73:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -26163,7 +26117,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":83}],76:[function(require,module,exports){
+},{"amdefine":81}],74:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -26282,7 +26236,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":83}],77:[function(require,module,exports){
+},{"amdefine":81}],75:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2014 Mozilla Foundation and contributors
@@ -26370,7 +26324,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./util":82,"amdefine":83}],78:[function(require,module,exports){
+},{"./util":80,"amdefine":81}],76:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -26492,7 +26446,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":83}],79:[function(require,module,exports){
+},{"amdefine":81}],77:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -27571,7 +27525,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":73,"./base64-vlq":74,"./binary-search":76,"./quick-sort":78,"./util":82,"amdefine":83}],80:[function(require,module,exports){
+},{"./array-set":71,"./base64-vlq":72,"./binary-search":74,"./quick-sort":76,"./util":80,"amdefine":81}],78:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -27972,7 +27926,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":73,"./base64-vlq":74,"./mapping-list":77,"./util":82,"amdefine":83}],81:[function(require,module,exports){
+},{"./array-set":71,"./base64-vlq":72,"./mapping-list":75,"./util":80,"amdefine":81}],79:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -28388,7 +28342,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./source-map-generator":80,"./util":82,"amdefine":83}],82:[function(require,module,exports){
+},{"./source-map-generator":78,"./util":80,"amdefine":81}],80:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -28760,7 +28714,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":83}],83:[function(require,module,exports){
+},{"amdefine":81}],81:[function(require,module,exports){
 (function (process,__filename){
 /** vim: et:ts=4:sw=4:sts=4
  * @license amdefine 1.0.0 Copyright (c) 2011-2015, The Dojo Foundation All Rights Reserved.
@@ -29065,15 +29019,15 @@ function amdefine(module, requireFn) {
 module.exports = amdefine;
 
 }).call(this,require('_process'),"/node_modules\\handlebars\\node_modules\\source-map\\node_modules\\amdefine\\amdefine.js")
-},{"_process":3,"path":2}],84:[function(require,module,exports){
+},{"_process":3,"path":2}],82:[function(require,module,exports){
 // Create a simple path alias to allow browserify to resolve
 // the runtime on a supported path.
 module.exports = require('./dist/cjs/handlebars.runtime')['default'];
 
-},{"./dist/cjs/handlebars.runtime":43}],85:[function(require,module,exports){
+},{"./dist/cjs/handlebars.runtime":41}],83:[function(require,module,exports){
 module.exports = require("handlebars/runtime")["default"];
 
-},{"handlebars/runtime":84}],86:[function(require,module,exports){
+},{"handlebars/runtime":82}],84:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -38285,7 +38239,7 @@ return jQuery;
 
 }));
 
-},{}],87:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 (function (global){
 
 ; require("jQuery");
@@ -39691,9 +39645,9 @@ if ( $.ajaxPrefilter ) {
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jQuery":86}],88:[function(require,module,exports){
-arguments[4][86][0].apply(exports,arguments)
-},{"dup":86}],89:[function(require,module,exports){
+},{"jQuery":84}],86:[function(require,module,exports){
+arguments[4][84][0].apply(exports,arguments)
+},{"dup":84}],87:[function(require,module,exports){
 /*! DataTables Bootstrap 3 integration
  * ©2011-2014 SpryMedia Ltd - datatables.net/license
  */
@@ -39901,6 +39855,6 @@ else if ( jQuery ) {
 })(window, document);
 
 
-},{"datatables":40,"jquery":88}],90:[function(require,module,exports){
-arguments[4][40][0].apply(exports,arguments)
-},{"dup":40,"jquery":88}]},{},[25]);
+},{"datatables":38,"jquery":86}],88:[function(require,module,exports){
+arguments[4][38][0].apply(exports,arguments)
+},{"dup":38,"jquery":86}]},{},[23]);

@@ -1,31 +1,26 @@
-module.exports = $injector.resolve(['$', '$language', '$notify', '$handlebars'],
-	function ($, $language, $notify, $handlebars) {
+module.exports = di.inject(function ($, $language, $notify, $handlebars) {
+	this.load = onLoad;
+	return this;
 
-		var dashboard = {
-			load: onLoad
-		};
+	function onLoad() {
+		$.get("../home/dashboard", function (response) {
+			var hash = location.hash.replace(/^#/, '');
 
-		return dashboard;
+			try {
+				if (response.success) {
+					var dashboard = require('./dashboard/dashboard.js');
 
-		function onLoad() {
-			$.get("../home/dashboard", function (response) {
-				var hash = location.hash.replace(/^#/, '');
+					var rendered = $handlebars.compile(dashboard.template);
+					rendered = rendered(response)
+					$('dashboard-content').html(rendered);
 
-				try {
-					if (response.success) {
-						var dashboard = require('./dashboard/dashboard.js');
-
-						var rendered = $handlebars.compile(dashboard.template);
-						rendered = rendered(response)
-						$('dashboard-content').html(rendered);
-
-					} else {
-						$notify.danger(response.message);
-					}
+				} else {
+					$notify.danger(response.message);
 				}
-				catch (e) {
-					$notify.danger("Error on load page " + hash + "<br/>" + e);
-				}
-			});
-		}
-	});
+			}
+			catch (e) {
+				$notify.danger("Error on load page " + hash + "<br/>" + e);
+			}
+		});
+	}
+});

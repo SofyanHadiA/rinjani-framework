@@ -4,8 +4,8 @@
 
 require('../../node_modules/jquery-validation/dist/jquery.validate.js');
 
-module.exports = $injector.resolve(['$'], function ($) {
-
+module.exports = function ($) {  
+    
     var form = {
         create: create,
         config: config,
@@ -41,5 +41,5 @@ module.exports = $injector.resolve(['$'], function ($) {
         form.validation.settings.submitHandler = callBack;
         return form;
     };
-});
+};
 
