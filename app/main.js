@@ -1,9 +1,7 @@
 'use strict'
 
 var $app = require('./core/app.js');
-
-// for debuging purpose
-global.app = $app
+global.$injector = $app.$injector
 
 console.log($app);
 

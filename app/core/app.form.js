@@ -1,8 +1,10 @@
-'use strict'
+/*
+ * App Form Module 
+ */
 
 require('../../node_modules/jquery-validation/dist/jquery.validate.js');
 
-module.exports = function ($) {
+module.exports = $injector.resolve(['$'], function ($) {
 
     var form = {
         create: create,
@@ -39,5 +41,5 @@ module.exports = function ($) {
         form.validation.settings.submitHandler = callBack;
         return form;
     };
-};
+});
 

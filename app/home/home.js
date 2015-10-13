@@ -4,7 +4,7 @@ var homeModel = require('./home.model.js');
 
 function home($app) {
 	return {
-		'controller': homeController($app.$, $app.$language, $app.$notify, $app.$handlebars),
+		'controller': homeController(),
 		'model': homeModel($app.$language),
 		'template': homeTemplate
 	}

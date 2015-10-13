@@ -4,7 +4,10 @@ var $ = global.jQuery = require('jquery');
 
 require('bootstrap');
 
-var $config = require('./../config.js');
+global.$injector = require('./injector.js');
+$injector.register('$', $);
+
+var $config = require('./app.config_default.js');
 var $form = require('./app.form.js');
 var $loader = require('./app.loader.js');
 var $modal = require('./app.modal.js');
@@ -14,6 +17,17 @@ var $http = require('./app.http.js');
 var $module = require('./app.module.js');
 var $language = require('./../language/en.js');
 var $handlebars = require('handlebars');
+
+$injector.register('$config', $config);
+$injector.register('$handlebars', $handlebars);
+$injector.register('$form', $form);
+$injector.register('$modal', $modal);
+$injector.register('$tablegrid', $tablegrid);
+$injector.register('$notify', $notify);
+$injector.register('$http', $http);
+$injector.register('$language', $language);
+$injector.register('$module', $module);
+
 
 var $app = {
     $: $,
@@ -25,7 +39,8 @@ var $app = {
     $notify: $notify($),
     $http: $http,
     $language: $language,
-    $module: $module
+    $module: $module,
+    $injector: $injector
 }
 
 $app.start = function (config) {
