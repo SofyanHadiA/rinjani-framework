@@ -1,21 +1,22 @@
 /*
- * App Form Module 
+ * Application Form Core Module 
  */
 
+var $ = jQuery;
 require('../../node_modules/jquery-validation/dist/jquery.validate.js');
 
-module.exports = function ($) {  
-    
+var formModule = function () {
+
     var form = {
         create: create,
         config: config,
-        onSubmit: onSubmit
+        onSubmit: submit
     };
 
     return form;
 
-    function create(formContainer) {
-        form.container = formContainer || "#modal-form-" + (Math.random() + 1).toString(36).substring(7),
+    function create(formId) {
+        form.container = formId
         $(form.container).validate({
             errorClass: "error text-red",
             errorPlacement: function (error, element) {
@@ -37,9 +38,11 @@ module.exports = function ($) {
         return form;
     };
 
-    function onSubmit(callBack) {
+    function submit(callBack) {
         form.validation.settings.submitHandler = callBack;
         return form;
     };
 };
 
+
+module.exports = formModule();

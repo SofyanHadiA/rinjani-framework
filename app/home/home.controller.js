@@ -1,6 +1,17 @@
-module.exports = di.inject(function ($, $language, $notify, $handlebars) {
-	this.load = onLoad;
-	return this;
+function homeController () {
+	
+	var $ = $app.$; 
+	var $language = $app.$language;
+	var $notify = $app.$notify;
+	var $handlebars = $app.$handlebars;
+	
+	var self = {
+		load: onLoad
+	};
+	
+	self.load();
+	
+	return self;
 
 	function onLoad() {
 		$.get("../home/dashboard", function (response) {
@@ -23,4 +34,6 @@ module.exports = di.inject(function ($, $language, $notify, $handlebars) {
 			}
 		});
 	}
-});
+};
+
+module.exports = homeController;

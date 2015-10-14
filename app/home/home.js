@@ -1,8 +1,11 @@
-function home($app) {
+function home($app) {	
+		
+	global.$app = $app;
+			
 	return {
-		'controller': require('./home.controller.js')(),
-		'model': homeDi.resolve('homeModel'),
-		'template': homeDi.resolve('homeTemplate')
+		'model': require('./home.model.js'),
+		'controller': require('./home.controller.js'),		
+		'template': require('./home.template.js'),
 	}
 };
 

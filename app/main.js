@@ -1,21 +1,19 @@
 'use strict'
 
-global.di = require('di4js');
+/*
+ * main.js
+ */
 
 var $app = require('./core/app.js');
 
-console.log($app);
-
-// set config here
-// $app.$config = {
-// 	
-// };
-
-// load module here
+// load modules
 $app.$module.register('home', require('./home/home.js')($app));
 $app.$module.register('customers', require('./customer/customer.js')($app));
 
+// load config
 var config = require('./config.js');
 
 // start the application
 $app.start(config);
+
+console.log($app)

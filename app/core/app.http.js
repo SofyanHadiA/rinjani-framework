@@ -1,19 +1,24 @@
-'use strict'
+/*
+ * 
+ */
+
+var $ = jQuery;
 
 // TODO: Update Token
 
-function http($) {
+function httpModule() {
 
-    var httpService = {
+    var self = {
+        getToken: undefined,
         post: post,
         get: get
     };
     
-    //TODO: Get first token
-    httpService.token = {};// app.http.get('../token');
-    httpService.cachedScriptPromises = {};
+    //TODO: Get token first before doing any request
+    self.token = {};// app.http.get('../token');
+    self.cachedScriptPromises = {};
 
-    return httpService;
+    return self;
 
     var deferFactory = function (requestFunction) {
         var cache = {};
@@ -29,7 +34,7 @@ function http($) {
 
     function get(url) {
         deferFactory(function (defer, url) {
-            $.get(url, httpService.http.token).then(
+            $.get(url, self.http.token).then(
                 defer.resolve,
                 defer.reject)
         });
@@ -46,4 +51,4 @@ function http($) {
     };
 };
 
-module.export = http;
+module.exports = httpModule();

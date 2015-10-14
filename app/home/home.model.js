@@ -1,7 +1,7 @@
-module.exports = function($language){
-	var home = {
-		title: $language.module_home,
-	};
-	
-	return home;
+function homeModel(){
+	return {
+		title: $app.$language.module_home,
+	};		
 };
+
+module.exports = homeModel();

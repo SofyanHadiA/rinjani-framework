@@ -59,8 +59,7 @@
     <!--    <script src="{base_url}app/people/customer.controller.js"></script>-->
     <!--    <script src="{base_url}app/item/item.controller.js"></script>-->
     <!---->
-    <!--    <script src="{base_url}app/config.js"></script>-->
-        <script src="{base_url}dist/bundle.js"></script>
+    <!--    <script src="{base_url}app/config.js"></script>-->        
 
 </head>
 
@@ -89,6 +88,7 @@
 <script src="../dist/bundle.js"></script>
 <script src="{base_url}packages/jQuery/dist/jQuery.min.js"></script>    
 <script src="{base_url}packages/theme/dist/js/app.js"></script>
+<script src="{base_url}packages/pace/pace.js"></script>
 
 </body>
 </html>

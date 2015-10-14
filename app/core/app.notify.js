@@ -1,16 +1,16 @@
-'use strict'
 
+var $ = jQuery;
 require('bootstrap-notify');
 
-function notify($) {
+function notifyModule() {
 
-    var notify = {
+    var self = {
         info: info,
         warning: warning,
         danger: danger
     }
 
-    return notify;
+    return self;
 
     function info(message) {
         return $.notify(
@@ -31,4 +31,4 @@ function notify($) {
     };
 }
 
-module.exports = notify; 
+module.exports = notifyModule(); 

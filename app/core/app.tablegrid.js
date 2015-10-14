@@ -1,11 +1,15 @@
-'use strict'
 
-var $ = require('jquery');
+
+var $ = jQuery;
+
+var bootbox = require('bootbox');
+
+// load from bower since npm datatables package version does not include dataTables.bootstrap.js
 require('./../../packages/datatables/media/js/jquery.dataTables.js');
 require('./../../packages/datatables/media/js/dataTables.bootstrap.js');
 
-module.exports = function ($modal, $http) {
-    
+function tableGridModule($modal, $http) {
+
     var tablegrid = {
         table: "",
         dataTable: {},
@@ -16,10 +20,10 @@ module.exports = function ($modal, $http) {
 
     return tablegrid;
 
-    function render(tableContainer, serviceUrl, tableConfig, columnId) {                
-        
+    function render(tableContainer, serviceUrl, tableConfig, columnId) {
+
         tablegrid.table = tableContainer;
-        
+
         tableConfig = [{
             sortable: false,
             data: columnId,
@@ -141,3 +145,6 @@ module.exports = function ($modal, $http) {
         $http.post(url, { 'ids[]': row_ids }, tablegrid.dataTable.ajax.reload)
     }
 };
+
+
+module.exports = tableGridModule();

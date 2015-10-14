@@ -346,26 +346,33 @@ var config = {
 module.exports = config;
 
 },{}],5:[function(require,module,exports){
-arguments[4][1][0].apply(exports,arguments)
-},{"dup":1}],6:[function(require,module,exports){
+var config = {
+	view: {
+		appView: 'app-view'
+	}
+};
+
+module.exports = config;
+},{}],6:[function(require,module,exports){
 /*
- * App Form Module 
+ * Application Form Core Module 
  */
 
+var $ = jQuery;
 require('../../node_modules/jquery-validation/dist/jquery.validate.js');
 
-module.exports = function ($) {  
-    
+var formModule = function () {
+
     var form = {
         create: create,
         config: config,
-        onSubmit: onSubmit
+        onSubmit: submit
     };
 
     return form;
 
-    function create(formContainer) {
-        form.container = formContainer || "#modal-form-" + (Math.random() + 1).toString(36).substring(7),
+    function create(formId) {
+        form.container = formId
         $(form.container).validate({
             errorClass: "error text-red",
             errorPlacement: function (error, element) {
@@ -387,30 +394,37 @@ module.exports = function ($) {
         return form;
     };
 
-    function onSubmit(callBack) {
+    function submit(callBack) {
         form.validation.settings.submitHandler = callBack;
         return form;
     };
 };
 
 
-},{"../../node_modules/jquery-validation/dist/jquery.validate.js":85}],7:[function(require,module,exports){
-'use strict'
+module.exports = formModule();
+
+},{"../../node_modules/jquery-validation/dist/jquery.validate.js":91}],7:[function(require,module,exports){
+/*
+ * 
+ */
+
+var $ = jQuery;
 
 // TODO: Update Token
 
-function http($) {
+function httpModule() {
 
-    var httpService = {
+    var self = {
+        getToken: undefined,
         post: post,
         get: get
     };
     
-    //TODO: Get first token
-    httpService.token = {};// app.http.get('../token');
-    httpService.cachedScriptPromises = {};
+    //TODO: Get token first before doing any request
+    self.token = {};// app.http.get('../token');
+    self.cachedScriptPromises = {};
 
-    return httpService;
+    return self;
 
     var deferFactory = function (requestFunction) {
         var cache = {};
@@ -426,7 +440,7 @@ function http($) {
 
     function get(url) {
         deferFactory(function (defer, url) {
-            $.get(url, httpService.http.token).then(
+            $.get(url, self.http.token).then(
                 defer.resolve,
                 defer.reject)
         });
@@ -443,15 +457,18 @@ function http($) {
     };
 };
 
-module.export = http;
+module.exports = httpModule();
 },{}],8:[function(require,module,exports){
 (function (global){
-'use strict'
+/*
+* Application core object
+*/
 
+// Load jQuery and register it to globl and load bootstrap
 var $ = global.jQuery = require('jquery');
 require('bootstrap');
 
-
+// Load core modules
 var $config = require('./app.config_default.js');
 var $form = require('./app.form.js');
 var $loader = require('./app.loader.js');
@@ -462,47 +479,54 @@ var $http = require('./app.http.js');
 var $module = require('./app.module.js');
 var $language = require('./../language/en.js');
 var $handlebars = require('handlebars');
+// End load core modules
 
-di.register('$').instance($);
-di.register('$handlebars').instance($handlebars);
-di.register('$form').as($form);
-di.register('$modal').as($modal);
-di.register('$tablegrid').as($tablegrid);
-di.register('$notify').as($notify);
-di.register('$http').instance($http);
-di.register('$language').instance($language);
-di.register('$module').instance($module);
-
+// Core application instance
 var $app = {
-    di: di,
-    $: $,
+    
+    // register module
+    $:$,
     $config: $config,
     $handlebars: $handlebars,
-    $form: di.resolve('$form'),
-    $modal: $modal($),
-    $tablegrid: $tablegrid($modal, $http),
-    $notify: $notify($),
+    $form: $form,
+    $modal: $modal,
+    $loader: $loader,
+    $tablegrid: $tablegrid,
+    $notify: $notify,
     $http: $http,
     $language: $language,
     $module: $module,
-}
 
-$app.start = function (config) {
-    $app.$config = $.merge($app.$config, config);
-    $app.$loader = $loader($, $app.$notify, $app.$http, $app.$handlebars, $app.$module, config),    
-    window.onhashchange = $app.$loader.load; 
-    
-    $app.$loader.load();
+    // Start application and bund url cahnages to loader
+    start: function (config) {
+        // merge default application config with custom comfig
+        $app.$config = $.extend($app.$config, config);
+        
+        // bind loader to window on hash change
+        window.onhashchange = $app.$loader.load;
+        
+        // load default controller
+        $app.$loader.load($app.$config );
 
-    return $app;
+        return $app;
+    }
 }
 
 module.exports = $app;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./../language/en.js":22,"./app.config_default.js":5,"./app.form.js":6,"./app.http.js":7,"./app.loader.js":9,"./app.modal.js":10,"./app.module.js":11,"./app.notify.js":12,"./app.tablegrid.js":13,"bootstrap":25,"handlebars":69,"jquery":86}],9:[function(require,module,exports){
-'use strict'
+},{"./../language/en.js":28,"./app.config_default.js":5,"./app.form.js":6,"./app.http.js":7,"./app.loader.js":9,"./app.modal.js":10,"./app.module.js":11,"./app.notify.js":12,"./app.tablegrid.js":13,"bootstrap":32,"handlebars":75,"jquery":92}],9:[function(require,module,exports){
+/*
+* Page loader core module 
+*/
 
-module.exports = function ($, $notify, $http, $handlebars, $module, $config) {
+var $ = jQuery;
+var $notify = require('./app.notify.js');
+var $http = require('./app.http.js');
+var $module = require('./app.module.js');
+var $handlebars = require('handlebars');
+var $view = require('./app.view.js');
+
+function loaderModule() {
 
     var loader = {
         load: load
@@ -511,50 +535,42 @@ module.exports = function ($, $notify, $http, $handlebars, $module, $config) {
     return loader;
 
     function load() {
-        var hash = location.hash.replace(/^#/, '');
 
-        if (!hash) {
-            hash = $config.route.default;
-        };
+        var config = $app.$config;
 
-        $('app-view').html('<div class="spinner text-center"><div class="dots-loader">Loading…</div></div>');
+        var hash = location.hash.replace(/^#/, '') || config.route.default;
 
-        // try {
-            var _module = $module.resolve(hash);
+        var appView = config.view.appView || 'app-view';
 
-            var model = _module.model;
+        $(appView).html('<div class="spinner text-center"><div class="dots-loader">Loading…</div></div>');
 
-            if (_module.templateUrl) {
-                $http.get(_module.templateUrl).then(function (response) {
-                    var template = response;
-                    render(model, template)
+        try {
+            var module = $module.resolve(hash);
 
-                    _module.controller.load()
+            if (module.templateUrl) {
+                $http.get(module.templateUrl).then(function (response) {
+                    module.template = response;
+                    $view.render(module.template, module.model, appView);
+                    module.controller();
                 });
             }
             else {
-                var template = _module.template;
-                render(model, template)
-
-                _module.controller.load()
+                $view.render(module.template, module.model, appView);
+                module.controller();
             }
-
-        // } catch (e) {
-        //     $notify.danger("Error on load page " + hash + "<br/>" + e);
-        // }
-
-        function render(model, template) {
-
-            var rendered = $handlebars.compile(template);
-            rendered = rendered(model);
-            $('app-view').html(rendered);
+        } catch (e) {
+            $notify.danger("Error on load page " + hash + "<br/>" + e);
         }
+        
     };
 };
-},{}],10:[function(require,module,exports){
-'use strict'
 
-module.exports = function ($) {
+module.exports = loaderModule();
+},{"./app.http.js":7,"./app.module.js":11,"./app.notify.js":12,"./app.view.js":14,"handlebars":75}],10:[function(require,module,exports){
+var $ = jQuery;
+var $view = require('./app.view.js');
+
+function modalModule() {
 
     var modal = {
         show: show
@@ -562,76 +578,73 @@ module.exports = function ($) {
 
     return modal;
 
-    function show(url, size, modalId) {       
-        var defer = $.Deferred
-        
-        modalId = modalId || "modal-container-" + (Math.random() + 1).toString(36).substring(7);
+    function show(template, model, config) {
+        var defer = $.Deferred();
 
-        $('body').append('<div class="modal fade" id="' + modalId + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">'
-            + '<div class="modal-dialog modal-' + size + '">'
+        var modalId = config.modalId || "modal-container-" + (Math.random() + 1).toString(36).substring(7);
+
+        $('body').append('<div class="modal fade" id="' + modalId + '" tabindex="-1" role="dialog">'
+            + '<div class="modal-dialog modal-' + config.size + '">'
             + '<div class="modal-content">'
-            + '</div></div></div>'
-            );
+            // load template
+            + $view.render(template)
+            + '</div></div></div>');
 
         $('#' + modalId).removeData('modal')
             .modal({
-                remote: url,
                 show: true
             });
 
         $(document).on('hidden.bs.modal', '#' + modalId, function () {
-            console.log('hide '+modalId);
+            console.log('hide ' + modalId);
             $('#' + modalId).remove();
-            
+
             defer.done();
         });
 
         return defer.promise();
     };
-}
-},{}],11:[function(require,module,exports){
-'use strict';
-
-var $module = {
-    modules: {},
-    register: function (key, value) {
-        this.modules[key] = value;
-    },
-    resolve: function (key) {
-        return this.modules[key];
-    }
-    // resolve: function (deps, func, scope) {
-    //     var args = [];
-    //     var d;
-    //     scope = scope || {};
-    //     for (var i = 0; i < deps.length, d = deps[i]; i++) {
-    //         if (this.modules[d]) {
-    //             scope[d] = this.modules[d];
-    //         } else {
-    //             throw new Error('Can\'t resolve ' + d);
-    //         }
-    //     }
-    //     return function () {
-    //         func.apply(scope || {}, Array.prototype.slice.call(arguments, 0));
-    //     }
-    // }
 };
 
-module.exports = $module;
-},{}],12:[function(require,module,exports){
-'use strict'
+module.exports = modalModule();
+},{"./app.view.js":14}],11:[function(require,module,exports){
+/*
+ *
+ */
 
+function moduleModule() {
+    var self = {
+        modules: {},
+        register: register,
+        resolve: resolve
+    };
+
+    return self;
+
+    function register(key, value) {
+        this.modules[key] = value;
+    };
+    function resolve(key) {
+        return this.modules[key];
+    };
+
+};
+
+module.exports = moduleModule();
+},{}],12:[function(require,module,exports){
+
+var $ = jQuery;
 require('bootstrap-notify');
 
-function notify($) {
+function notifyModule() {
 
-    var notify = {
+    var self = {
         info: info,
         warning: warning,
         danger: danger
     }
 
-    return notify;
+    return self;
 
     function info(message) {
         return $.notify(
@@ -652,16 +665,20 @@ function notify($) {
     };
 }
 
-module.exports = notify; 
-},{"bootstrap-notify":24}],13:[function(require,module,exports){
-'use strict'
+module.exports = notifyModule(); 
+},{"bootstrap-notify":31}],13:[function(require,module,exports){
 
-var $ = require('jquery');
+
+var $ = jQuery;
+
+var bootbox = require('bootbox');
+
+// load from bower since npm datatables package version does not include dataTables.bootstrap.js
 require('./../../packages/datatables/media/js/jquery.dataTables.js');
 require('./../../packages/datatables/media/js/dataTables.bootstrap.js');
 
-module.exports = function ($modal, $http) {
-    
+function tableGridModule($modal, $http) {
+
     var tablegrid = {
         table: "",
         dataTable: {},
@@ -672,10 +689,10 @@ module.exports = function ($modal, $http) {
 
     return tablegrid;
 
-    function render(tableContainer, serviceUrl, tableConfig, columnId) {                
-        
+    function render(tableContainer, serviceUrl, tableConfig, columnId) {
+
         tablegrid.table = tableContainer;
-        
+
         tableConfig = [{
             sortable: false,
             data: columnId,
@@ -797,22 +814,63 @@ module.exports = function ($modal, $http) {
         $http.post(url, { 'ids[]': row_ids }, tablegrid.dataTable.ajax.reload)
     }
 };
-},{"./../../packages/datatables/media/js/dataTables.bootstrap.js":87,"./../../packages/datatables/media/js/jquery.dataTables.js":88,"jquery":86}],14:[function(require,module,exports){
-'use strict';
 
-module.exports = function ($, $notify, $tablegrid, $modal, $form) {
-    var customer = {};
 
-    customer.load = onLoad;
-    //customer.showModal = showModal;
-    customer.tableGrid = {};
-    customer.table = '#manage-table ';
+module.exports = tableGridModule();
+},{"./../../packages/datatables/media/js/dataTables.bootstrap.js":93,"./../../packages/datatables/media/js/jquery.dataTables.js":94,"bootbox":30}],14:[function(require,module,exports){
+var $ = jQuery;
+var $handlebars = require('handlebars');
+var $language = require('./../language/en.js');
 
-    return customer;
+function viewModule() {
+
+        var self = {
+                render: render
+        }
+
+        return self;
+
+        function render(template, model, viewContainer) {
+                var rendered = $handlebars.compile(template);
+
+                model = $.extend(model, $language);
+
+                rendered = rendered(model);
+
+                if (viewContainer) {
+                        $(viewContainer).html(rendered);
+                }
+
+                return rendered;
+        }
+}
+
+module.exports = viewModule();
+},{"./../language/en.js":28,"handlebars":75}],15:[function(require,module,exports){
+function customerController() {
+
+    var $ = $app.$;
+    var $notify = $app.$notify;
+    var $tablegrid = $app.$tablegrid;
+    var $modal = $app.$modal;
+    var $form = $app.$form;
+    var customerForm = require('./form/customer.form.js')($app);
+
+    var self = {
+        tableGrid: {},
+        table: '#manage-table ',
+        customerForm: customerForm,
+        load: onLoad,
+        showForm: showForm,
+    };
+
+    self.load();
+
+    return self;
 
     function onLoad() {
 
-        customer.tableGrid = $tablegrid.render("#customer-table", 'customers',
+        self.tableGrid = $tablegrid.render("#customer-table", 'customers',
             [
                 { data: 'last_name' },
                 { data: 'first_name' },
@@ -821,63 +879,152 @@ module.exports = function ($, $notify, $tablegrid, $modal, $form) {
             ], 'person_id');
 
         $('body').on('click', '#customer-add', function () {
-            //$modal.show('customers/view', 'lg');
-            //var customerForm = customerFormController.load();
+            self.showForm();
         });
-    }
-    
-    // function showModal(id) {
-    //     new app.modalForm();
-    // };
+    };
 
+    function showForm() {
+        self.customerForm.controller();
+    };
 };
-},{}],15:[function(require,module,exports){
-var controller = require('./customer.controller.js');
-var template = require('./customer.template.hbs');
-var model = require('./customer.model.js');
 
-module.exports = function ($app) {
+module.exports = customerController;
+},{"./form/customer.form.js":20}],16:[function(require,module,exports){
+(function (global){
+
+function customerModule ($app) {
+	
+	global.$app = $app;
+	
 	return {
-		'controller': controller($app.$, $app.$notify, $app.$tablegrid, $app.$modal, $app.$form),
-		'model': model($app.$language),
-		'template': template()
+		'model': require('./customer.model.js'),
+		'controller': require('./customer.controller.js'),		
+		'template': require('./customer.template.hbs')(),
 	}
 };
 
-},{"./customer.controller.js":14,"./customer.model.js":16,"./customer.template.hbs":17}],16:[function(require,module,exports){
-module.exports = function($language){
-	return {
-		lang: $language		
-	};		
+module.exports = customerModule; 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./customer.controller.js":15,"./customer.model.js":17,"./customer.template.hbs":18}],17:[function(require,module,exports){
+function customerModel() {
+	return {		
+	};
 };
-},{}],17:[function(require,module,exports){
+
+module.exports = customerModel();
+},{}],18:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression, alias5=container.lambda;
 
-  return "<!-- Content Header (Page header) -->\r\n<section class=\"content-header\">\r\n    <h1>\r\n        "
+  return "\n<section class=\"content-header\">\n    <h1>\n        "
     + alias4(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"title","hash":{},"data":data}) : helper)))
-    + "\r\n        <small>\r\n            "
+    + "\n        <small>\n            "
     + alias4(((helper = (helper = helpers.description || (depth0 != null ? depth0.description : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"description","hash":{},"data":data}) : helper)))
-    + "\r\n        </small>\r\n    </h1>\r\n    <ol class=\"breadcrumb\">\r\n        <li><a href=\"#\"><i class=\"fa fa-dashboard\"></i>Home</a></li>\r\n        <li class=\"active\">"
+    + "\n        </small>\n    </h1>\n    <ol class=\"breadcrumb\">\n        <li><a href=\"#\"><i class=\"fa fa-dashboard\"></i>Home</a></li>\n        <li class=\"active\">"
     + alias4(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"title","hash":{},"data":data}) : helper)))
-    + "</li>\r\n    </ol>\r\n</section>\r\n\r\n<section class=\"content\">\r\n    <div class=\"row\">\r\n        <div class=\"col-md-12\">\r\n            <div class=\"box\">\r\n                <div class=\"box-header\">\r\n                    <div class=\"row\">\r\n                        <div class=\"col-sm-6 \">\r\n                            <div class=\"btn-group\">\r\n                                <a href=\"../customers/delete\" id=\"delete-selected\" class=\"btn btn-sm btn-default\">\r\n                                    <i class=\"fa fa-trash\"></i> "
-    + alias4(alias5(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.common_deletes : stack1), depth0))
-    + "\r\n                                </a>\r\n                                <button class=\"btn btn-sm btn-default\" id=\"email\">\r\n                                    <i class=\"fa fa-send\"></i> "
+    + "</li>\n    </ol>\n</section>\n\n<section class=\"content\">\n    <div class=\"row\">\n        <div class=\"col-md-12\">\n            <div class=\"box\">\n                <div class=\"box-header\">\n                    <div class=\"row\">\n                        <div class=\"col-sm-6 \">\n                            <div class=\"btn-group\">\n                                <a href=\"../customers/delete\" id=\"delete-selected\" class=\"btn btn-sm btn-default\">\n                                    <i class=\"fa fa-trash\"></i> "
+    + alias4(alias5(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.common_delete : stack1), depth0))
+    + "\n                                </a>\n                                <button class=\"btn btn-sm btn-default\" id=\"email\">\n                                    <i class=\"fa fa-send\"></i> "
     + alias4(alias5(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.common_email : stack1), depth0))
-    + "\r\n                                </button>\r\n                            </div>\r\n                        </div>\r\n\r\n                        <div class=\"col-sm-6 text-right\">\r\n                            <button id=\"customer-add\" class=\"btn btn-primary\">\r\n                                <i class=\"fa fa-plus\"></i> "
+    + "\n                                </button>\n                            </div>\n                        </div>\n\n                        <div class=\"col-sm-6 text-right\">\n                            <button id=\"customer-add\" class=\"btn btn-primary\">\n                                <i class=\"fa fa-plus\"></i> "
     + alias4(alias5(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.customers_new : stack1), depth0))
-    + "\r\n                            </button>\r\n\r\n                            <a class=\"btn btn-success\" id=\"import-excel\" href=\"../customers/excel_import\" data-target=\"#modal-container\">\r\n                                <i class=\"fa fa-file-excel-o\"></i> Excel Import\r\n                            </a>\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n\r\n                <div class=\"box-body \">\r\n                    <table id=\"customer-table\" class=\"table table-bordered table-hover\">\r\n                        <thead>\r\n                            <tr>\r\n                                <th width=\"10px\">\r\n                                    <input type=\"checkbox\" id=\"select-all\" />\r\n                                </th>\r\n                                <th>Last Name</th>\r\n                                <th>First Name</th>\r\n                                <th>Email</th>\r\n                                <th>Phone</th>\r\n                                <th width=\"50px\">Action</th>\r\n                            </tr>\r\n                        </thead>\r\n                    </table>\r\n                </div>\r\n\r\n                <div id=\"feedback_bar\"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</section>";
+    + "\n                            </button>\n\n                            <a class=\"btn btn-success\" id=\"import-excel\" href=\"../customers/excel_import\" data-target=\"#modal-container\">\n                                <i class=\"fa fa-file-excel-o\"></i> Excel Import\n                            </a>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"box-body \">\n                    <table id=\"customer-table\" class=\"table table-bordered table-hover\">\n                        <thead>\n                            <tr>\n                                <th width=\"10px\">\n                                    <input type=\"checkbox\" id=\"select-all\" />\n                                </th>\n                                <th>Last Name</th>\n                                <th>First Name</th>\n                                <th>Email</th>\n                                <th>Phone</th>\n                                <th width=\"50px\">Action</th>\n                            </tr>\n                        </thead>\n                    </table>\n                </div>\n\n                <div id=\"feedback_bar\"></div>\n            </div>\n        </div>\n    </div>\n</section>";
 },"useData":true});
 
-},{"hbsfy/runtime":83}],18:[function(require,module,exports){
+},{"hbsfy/runtime":89}],19:[function(require,module,exports){
+function customerFormController() {
+
+    var $modal = $app.$modal;
+    var $form = $app.$form;
+
+    var self = {
+        load: onLoad,
+        formConfig: {
+            rules: {
+                first_name: {
+                    minlength: 3,
+                    required: true
+                },
+                last_name: {
+                    minlength: 3,
+                    required: true
+                },
+                email: {
+                    email: true
+                }
+            }
+        }
+    }
+
+    self.load();
+
+    return self;
+
+    function onLoad() {
+
+        var modalConfig = {
+            size: 'lg'
+        }
+
+        var template = require('./customer.form.template.hbs')();
+
+        $modal.show(template, {}, modalConfig);
+
+        $form.create()
+            .config(self.formConfig)
+            .onSubmit(function () {
+                var url = $(form).attr('action');
+                var data = $(form).serialize();
+                app.http.post(url, data, function () {
+                    $('#modal-container').modal('hide');
+                    app.controller.customerController.tableGrid.ajax.reload();
+                });
+            });
+    }
+};
+
+module.exports = customerFormController;
+},{"./customer.form.template.hbs":21}],20:[function(require,module,exports){
+(function (global){
+
+function customerFormModule ($app) {
+	
+	global.$app = $app;
+	
+	return {		
+		'controller': require('./customer.form.controller.js'),		
+		'template': require('./customer.form.template.hbs')(),
+	}
+};
+
+module.exports = customerFormModule; 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./customer.form.controller.js":19,"./customer.form.template.hbs":21}],21:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1, alias1=container.lambda, alias2=container.escapeExpression;
+
+  return "<div class=\"modal-header\">\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">&times;</button>\n    <h4 class=\"modal-title\"> "
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.customers_basic_information : stack1), depth0))
+    + "</h4>\n</div>\n\n<div class=\"modal-body\">\n    <form id=\"customer-form\" name=\"customer-form\"  action=\"../customers/save\" method=\"post\" class =\"form-horizontal\">\n    <!--<?php echo form_open('customers/save/' . $person_info->person_id,\n        array('name' => 'customer_form', 'id' => 'customer_form', \"class\" => 'form-horizontal')); ?>-->\n    <span class=\"small\">"
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.common_fields_required_message : stack1), depth0))
+    + "</span>\n\n    <ul id=\"error_message_box\" class=\"warning\"></ul>\n\n    <fieldset id=\"customer_basic_info\">\n\n        <div class=\"row\">\n            <div class=\"col-sm-6\">\n                <div class=\"form-group\">\n                    <label for=\"account_number\" class=\"col-sm-4 control-label\">"
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.customers_account_number : stack1), depth0))
+    + "</label>                                        \n                    <div class='col-sm-8'>\n                        <input name=\"account_number\" id=\"account_number\" class=\"form-control\" value=\""
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.person_info : depth0)) != null ? stack1.account_number : stack1), depth0))
+    + "\" />                        \n                    </div>\n                </div>\n            </div>\n\n            <?php $this->load->view(\"people/form_basic_info\"); ?>\n\n            <div class=\"col-sm-6\">\n                <div class=\"form-group\">\n                    <?php echo form_label($this->lang->line('customers_taxable'), 'taxable', array('class' => 'col-sm-4 control-label')); ?>\n                    <div class='col-sm-8'>\n                        <div class=\"checkbox\">\n                            <label>\n                                <?php echo form_checkbox('taxable', '1', $person_info->taxable == '' ? TRUE : (boolean)$person_info->taxable); ?>\n                            </label>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n\n    </fieldset>    \n    </form>    \n</div>\n\n<div class=\"modal-footer\">\n    <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n    <button type=\"submit\" form=\"customer_form\" class=\"btn btn-primary\">Save changes</button>\n</div>\n\n";
+},"useData":true});
+
+},{"hbsfy/runtime":89}],22:[function(require,module,exports){
 module.exports = {
 	controller: {},
 	model:{},
 	template: require('./dashboard.template.js')
 }
-},{"./dashboard.template.js":19}],19:[function(require,module,exports){
+},{"./dashboard.template.js":23}],23:[function(require,module,exports){
 module.exports = '{{#each data}}'+
         '<div class="col-md-6 col-sm-6 col-xs-12" >' +
             '<div id="module-icon-{{this.module_id}}>"  class="info-box">' +
@@ -895,10 +1042,21 @@ module.exports = '{{#each data}}'+
             '</div>' +
         '</div>'+
         '{{/each}}';
-},{}],20:[function(require,module,exports){
-module.exports = di.inject(function ($, $language, $notify, $handlebars) {
-	this.load = onLoad;
-	return this;
+},{}],24:[function(require,module,exports){
+function homeController () {
+	
+	var $ = $app.$; 
+	var $language = $app.$language;
+	var $notify = $app.$notify;
+	var $handlebars = $app.$handlebars;
+	
+	var self = {
+		load: onLoad
+	};
+	
+	self.load();
+	
+	return self;
 
 	function onLoad() {
 		$.get("../home/dashboard", function (response) {
@@ -921,19 +1079,48 @@ module.exports = di.inject(function ($, $language, $notify, $handlebars) {
 			}
 		});
 	}
-});
-},{"./dashboard/dashboard.js":18}],21:[function(require,module,exports){
-function home($app) {
+};
+
+module.exports = homeController;
+},{"./dashboard/dashboard.js":22}],25:[function(require,module,exports){
+(function (global){
+function home($app) {	
+		
+	global.$app = $app;
+			
 	return {
-		'controller': require('./home.controller.js')(),
-		'model': homeDi.resolve('homeModel'),
-		'template': homeDi.resolve('homeTemplate')
+		'model': require('./home.model.js'),
+		'controller': require('./home.controller.js'),		
+		'template': require('./home.template.js'),
 	}
 };
 
 module.exports = home;
-},{"./home.controller.js":20}],22:[function(require,module,exports){
-'use strict'
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./home.controller.js":24,"./home.model.js":26,"./home.template.js":27}],26:[function(require,module,exports){
+function homeModel(){
+	return {
+		title: $app.$language.module_home,
+	};		
+};
+
+module.exports = homeModel();
+},{}],27:[function(require,module,exports){
+module.exports =  '<section class="content-header"></section>' +
+        '<section class="content">' +
+            '<div class="row">' +
+                '<div class="col-md-12">' +
+                    '<div class="box">' +
+                        '<div class="box-body">' +
+                            '<dashboard-content/>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+        '</section>';
+
+
+},{}],28:[function(require,module,exports){
 
 module.exports = {
 	alpha: "The %s field may only contain alphabetical characters."
@@ -1548,35 +1735,1014 @@ module.exports = {
 	, valid_url: "The %s field must contain a valid URL."
 	, validation_form_error: "Please fill all required fields and make sure input is in correct format."
 };
-
-//app.injector.register('$language', $language);
-
-
-},{}],23:[function(require,module,exports){
-(function (global){
+},{}],29:[function(require,module,exports){
 'use strict'
 
-global.di = require('di4js');
+/*
+ * main.js
+ */
 
 var $app = require('./core/app.js');
 
-console.log($app);
-
-// set config here
-// $app.$config = {
-// 	
-// };
-
-// load module here
+// load modules
 $app.$module.register('home', require('./home/home.js')($app));
 $app.$module.register('customers', require('./customer/customer.js')($app));
 
+// load config
 var config = require('./config.js');
 
 // start the application
 $app.start(config);
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./config.js":4,"./core/app.js":8,"./customer/customer.js":15,"./home/home.js":21,"di4js":39}],24:[function(require,module,exports){
+
+console.log($app)
+},{"./config.js":4,"./core/app.js":8,"./customer/customer.js":16,"./home/home.js":25}],30:[function(require,module,exports){
+/**
+ * bootbox.js [v4.4.0]
+ *
+ * http://bootboxjs.com/license.txt
+ */
+
+// @see https://github.com/makeusabrew/bootbox/issues/180
+// @see https://github.com/makeusabrew/bootbox/issues/186
+(function (root, factory) {
+
+  "use strict";
+  if (typeof define === "function" && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(["jquery"], factory);
+  } else if (typeof exports === "object") {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory(require("jquery"));
+  } else {
+    // Browser globals (root is window)
+    root.bootbox = factory(root.jQuery);
+  }
+
+}(this, function init($, undefined) {
+
+  "use strict";
+
+  // the base DOM structure needed to create a modal
+  var templates = {
+    dialog:
+      "<div class='bootbox modal' tabindex='-1' role='dialog'>" +
+        "<div class='modal-dialog'>" +
+          "<div class='modal-content'>" +
+            "<div class='modal-body'><div class='bootbox-body'></div></div>" +
+          "</div>" +
+        "</div>" +
+      "</div>",
+    header:
+      "<div class='modal-header'>" +
+        "<h4 class='modal-title'></h4>" +
+      "</div>",
+    footer:
+      "<div class='modal-footer'></div>",
+    closeButton:
+      "<button type='button' class='bootbox-close-button close' data-dismiss='modal' aria-hidden='true'>&times;</button>",
+    form:
+      "<form class='bootbox-form'></form>",
+    inputs: {
+      text:
+        "<input class='bootbox-input bootbox-input-text form-control' autocomplete=off type=text />",
+      textarea:
+        "<textarea class='bootbox-input bootbox-input-textarea form-control'></textarea>",
+      email:
+        "<input class='bootbox-input bootbox-input-email form-control' autocomplete='off' type='email' />",
+      select:
+        "<select class='bootbox-input bootbox-input-select form-control'></select>",
+      checkbox:
+        "<div class='checkbox'><label><input class='bootbox-input bootbox-input-checkbox' type='checkbox' /></label></div>",
+      date:
+        "<input class='bootbox-input bootbox-input-date form-control' autocomplete=off type='date' />",
+      time:
+        "<input class='bootbox-input bootbox-input-time form-control' autocomplete=off type='time' />",
+      number:
+        "<input class='bootbox-input bootbox-input-number form-control' autocomplete=off type='number' />",
+      password:
+        "<input class='bootbox-input bootbox-input-password form-control' autocomplete='off' type='password' />"
+    }
+  };
+
+  var defaults = {
+    // default language
+    locale: "en",
+    // show backdrop or not. Default to static so user has to interact with dialog
+    backdrop: "static",
+    // animate the modal in/out
+    animate: true,
+    // additional class string applied to the top level dialog
+    className: null,
+    // whether or not to include a close button
+    closeButton: true,
+    // show the dialog immediately by default
+    show: true,
+    // dialog container
+    container: "body"
+  };
+
+  // our public object; augmented after our private API
+  var exports = {};
+
+  /**
+   * @private
+   */
+  function _t(key) {
+    var locale = locales[defaults.locale];
+    return locale ? locale[key] : locales.en[key];
+  }
+
+  function processCallback(e, dialog, callback) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    // by default we assume a callback will get rid of the dialog,
+    // although it is given the opportunity to override this
+
+    // so, if the callback can be invoked and it *explicitly returns false*
+    // then we'll set a flag to keep the dialog active...
+    var preserveDialog = $.isFunction(callback) && callback.call(dialog, e) === false;
+
+    // ... otherwise we'll bin it
+    if (!preserveDialog) {
+      dialog.modal("hide");
+    }
+  }
+
+  function getKeyLength(obj) {
+    // @TODO defer to Object.keys(x).length if available?
+    var k, t = 0;
+    for (k in obj) {
+      t ++;
+    }
+    return t;
+  }
+
+  function each(collection, iterator) {
+    var index = 0;
+    $.each(collection, function(key, value) {
+      iterator(key, value, index++);
+    });
+  }
+
+  function sanitize(options) {
+    var buttons;
+    var total;
+
+    if (typeof options !== "object") {
+      throw new Error("Please supply an object of options");
+    }
+
+    if (!options.message) {
+      throw new Error("Please specify a message");
+    }
+
+    // make sure any supplied options take precedence over defaults
+    options = $.extend({}, defaults, options);
+
+    if (!options.buttons) {
+      options.buttons = {};
+    }
+
+    buttons = options.buttons;
+
+    total = getKeyLength(buttons);
+
+    each(buttons, function(key, button, index) {
+
+      if ($.isFunction(button)) {
+        // short form, assume value is our callback. Since button
+        // isn't an object it isn't a reference either so re-assign it
+        button = buttons[key] = {
+          callback: button
+        };
+      }
+
+      // before any further checks make sure by now button is the correct type
+      if ($.type(button) !== "object") {
+        throw new Error("button with key " + key + " must be an object");
+      }
+
+      if (!button.label) {
+        // the lack of an explicit label means we'll assume the key is good enough
+        button.label = key;
+      }
+
+      if (!button.className) {
+        if (total <= 2 && index === total-1) {
+          // always add a primary to the main option in a two-button dialog
+          button.className = "btn-primary";
+        } else {
+          button.className = "btn-default";
+        }
+      }
+    });
+
+    return options;
+  }
+
+  /**
+   * map a flexible set of arguments into a single returned object
+   * if args.length is already one just return it, otherwise
+   * use the properties argument to map the unnamed args to
+   * object properties
+   * so in the latter case:
+   * mapArguments(["foo", $.noop], ["message", "callback"])
+   * -> { message: "foo", callback: $.noop }
+   */
+  function mapArguments(args, properties) {
+    var argn = args.length;
+    var options = {};
+
+    if (argn < 1 || argn > 2) {
+      throw new Error("Invalid argument length");
+    }
+
+    if (argn === 2 || typeof args[0] === "string") {
+      options[properties[0]] = args[0];
+      options[properties[1]] = args[1];
+    } else {
+      options = args[0];
+    }
+
+    return options;
+  }
+
+  /**
+   * merge a set of default dialog options with user supplied arguments
+   */
+  function mergeArguments(defaults, args, properties) {
+    return $.extend(
+      // deep merge
+      true,
+      // ensure the target is an empty, unreferenced object
+      {},
+      // the base options object for this type of dialog (often just buttons)
+      defaults,
+      // args could be an object or array; if it's an array properties will
+      // map it to a proper options object
+      mapArguments(
+        args,
+        properties
+      )
+    );
+  }
+
+  /**
+   * this entry-level method makes heavy use of composition to take a simple
+   * range of inputs and return valid options suitable for passing to bootbox.dialog
+   */
+  function mergeDialogOptions(className, labels, properties, args) {
+    //  build up a base set of dialog properties
+    var baseOptions = {
+      className: "bootbox-" + className,
+      buttons: createLabels.apply(null, labels)
+    };
+
+    // ensure the buttons properties generated, *after* merging
+    // with user args are still valid against the supplied labels
+    return validateButtons(
+      // merge the generated base properties with user supplied arguments
+      mergeArguments(
+        baseOptions,
+        args,
+        // if args.length > 1, properties specify how each arg maps to an object key
+        properties
+      ),
+      labels
+    );
+  }
+
+  /**
+   * from a given list of arguments return a suitable object of button labels
+   * all this does is normalise the given labels and translate them where possible
+   * e.g. "ok", "confirm" -> { ok: "OK, cancel: "Annuleren" }
+   */
+  function createLabels() {
+    var buttons = {};
+
+    for (var i = 0, j = arguments.length; i < j; i++) {
+      var argument = arguments[i];
+      var key = argument.toLowerCase();
+      var value = argument.toUpperCase();
+
+      buttons[key] = {
+        label: _t(value)
+      };
+    }
+
+    return buttons;
+  }
+
+  function validateButtons(options, buttons) {
+    var allowedButtons = {};
+    each(buttons, function(key, value) {
+      allowedButtons[value] = true;
+    });
+
+    each(options.buttons, function(key) {
+      if (allowedButtons[key] === undefined) {
+        throw new Error("button key " + key + " is not allowed (options are " + buttons.join("\n") + ")");
+      }
+    });
+
+    return options;
+  }
+
+  exports.alert = function() {
+    var options;
+
+    options = mergeDialogOptions("alert", ["ok"], ["message", "callback"], arguments);
+
+    if (options.callback && !$.isFunction(options.callback)) {
+      throw new Error("alert requires callback property to be a function when provided");
+    }
+
+    /**
+     * overrides
+     */
+    options.buttons.ok.callback = options.onEscape = function() {
+      if ($.isFunction(options.callback)) {
+        return options.callback.call(this);
+      }
+      return true;
+    };
+
+    return exports.dialog(options);
+  };
+
+  exports.confirm = function() {
+    var options;
+
+    options = mergeDialogOptions("confirm", ["cancel", "confirm"], ["message", "callback"], arguments);
+
+    /**
+     * overrides; undo anything the user tried to set they shouldn't have
+     */
+    options.buttons.cancel.callback = options.onEscape = function() {
+      return options.callback.call(this, false);
+    };
+
+    options.buttons.confirm.callback = function() {
+      return options.callback.call(this, true);
+    };
+
+    // confirm specific validation
+    if (!$.isFunction(options.callback)) {
+      throw new Error("confirm requires a callback");
+    }
+
+    return exports.dialog(options);
+  };
+
+  exports.prompt = function() {
+    var options;
+    var defaults;
+    var dialog;
+    var form;
+    var input;
+    var shouldShow;
+    var inputOptions;
+
+    // we have to create our form first otherwise
+    // its value is undefined when gearing up our options
+    // @TODO this could be solved by allowing message to
+    // be a function instead...
+    form = $(templates.form);
+
+    // prompt defaults are more complex than others in that
+    // users can override more defaults
+    // @TODO I don't like that prompt has to do a lot of heavy
+    // lifting which mergeDialogOptions can *almost* support already
+    // just because of 'value' and 'inputType' - can we refactor?
+    defaults = {
+      className: "bootbox-prompt",
+      buttons: createLabels("cancel", "confirm"),
+      value: "",
+      inputType: "text"
+    };
+
+    options = validateButtons(
+      mergeArguments(defaults, arguments, ["title", "callback"]),
+      ["cancel", "confirm"]
+    );
+
+    // capture the user's show value; we always set this to false before
+    // spawning the dialog to give us a chance to attach some handlers to
+    // it, but we need to make sure we respect a preference not to show it
+    shouldShow = (options.show === undefined) ? true : options.show;
+
+    /**
+     * overrides; undo anything the user tried to set they shouldn't have
+     */
+    options.message = form;
+
+    options.buttons.cancel.callback = options.onEscape = function() {
+      return options.callback.call(this, null);
+    };
+
+    options.buttons.confirm.callback = function() {
+      var value;
+
+      switch (options.inputType) {
+        case "text":
+        case "textarea":
+        case "email":
+        case "select":
+        case "date":
+        case "time":
+        case "number":
+        case "password":
+          value = input.val();
+          break;
+
+        case "checkbox":
+          var checkedItems = input.find("input:checked");
+
+          // we assume that checkboxes are always multiple,
+          // hence we default to an empty array
+          value = [];
+
+          each(checkedItems, function(_, item) {
+            value.push($(item).val());
+          });
+          break;
+      }
+
+      return options.callback.call(this, value);
+    };
+
+    options.show = false;
+
+    // prompt specific validation
+    if (!options.title) {
+      throw new Error("prompt requires a title");
+    }
+
+    if (!$.isFunction(options.callback)) {
+      throw new Error("prompt requires a callback");
+    }
+
+    if (!templates.inputs[options.inputType]) {
+      throw new Error("invalid prompt type");
+    }
+
+    // create the input based on the supplied type
+    input = $(templates.inputs[options.inputType]);
+
+    switch (options.inputType) {
+      case "text":
+      case "textarea":
+      case "email":
+      case "date":
+      case "time":
+      case "number":
+      case "password":
+        input.val(options.value);
+        break;
+
+      case "select":
+        var groups = {};
+        inputOptions = options.inputOptions || [];
+
+        if (!$.isArray(inputOptions)) {
+          throw new Error("Please pass an array of input options");
+        }
+
+        if (!inputOptions.length) {
+          throw new Error("prompt with select requires options");
+        }
+
+        each(inputOptions, function(_, option) {
+
+          // assume the element to attach to is the input...
+          var elem = input;
+
+          if (option.value === undefined || option.text === undefined) {
+            throw new Error("given options in wrong format");
+          }
+
+          // ... but override that element if this option sits in a group
+
+          if (option.group) {
+            // initialise group if necessary
+            if (!groups[option.group]) {
+              groups[option.group] = $("<optgroup/>").attr("label", option.group);
+            }
+
+            elem = groups[option.group];
+          }
+
+          elem.append("<option value='" + option.value + "'>" + option.text + "</option>");
+        });
+
+        each(groups, function(_, group) {
+          input.append(group);
+        });
+
+        // safe to set a select's value as per a normal input
+        input.val(options.value);
+        break;
+
+      case "checkbox":
+        var values   = $.isArray(options.value) ? options.value : [options.value];
+        inputOptions = options.inputOptions || [];
+
+        if (!inputOptions.length) {
+          throw new Error("prompt with checkbox requires options");
+        }
+
+        if (!inputOptions[0].value || !inputOptions[0].text) {
+          throw new Error("given options in wrong format");
+        }
+
+        // checkboxes have to nest within a containing element, so
+        // they break the rules a bit and we end up re-assigning
+        // our 'input' element to this container instead
+        input = $("<div/>");
+
+        each(inputOptions, function(_, option) {
+          var checkbox = $(templates.inputs[options.inputType]);
+
+          checkbox.find("input").attr("value", option.value);
+          checkbox.find("label").append(option.text);
+
+          // we've ensured values is an array so we can always iterate over it
+          each(values, function(_, value) {
+            if (value === option.value) {
+              checkbox.find("input").prop("checked", true);
+            }
+          });
+
+          input.append(checkbox);
+        });
+        break;
+    }
+
+    // @TODO provide an attributes option instead
+    // and simply map that as keys: vals
+    if (options.placeholder) {
+      input.attr("placeholder", options.placeholder);
+    }
+
+    if (options.pattern) {
+      input.attr("pattern", options.pattern);
+    }
+
+    if (options.maxlength) {
+      input.attr("maxlength", options.maxlength);
+    }
+
+    // now place it in our form
+    form.append(input);
+
+    form.on("submit", function(e) {
+      e.preventDefault();
+      // Fix for SammyJS (or similar JS routing library) hijacking the form post.
+      e.stopPropagation();
+      // @TODO can we actually click *the* button object instead?
+      // e.g. buttons.confirm.click() or similar
+      dialog.find(".btn-primary").click();
+    });
+
+    dialog = exports.dialog(options);
+
+    // clear the existing handler focusing the submit button...
+    dialog.off("shown.bs.modal");
+
+    // ...and replace it with one focusing our input, if possible
+    dialog.on("shown.bs.modal", function() {
+      // need the closure here since input isn't
+      // an object otherwise
+      input.focus();
+    });
+
+    if (shouldShow === true) {
+      dialog.modal("show");
+    }
+
+    return dialog;
+  };
+
+  exports.dialog = function(options) {
+    options = sanitize(options);
+
+    var dialog = $(templates.dialog);
+    var innerDialog = dialog.find(".modal-dialog");
+    var body = dialog.find(".modal-body");
+    var buttons = options.buttons;
+    var buttonStr = "";
+    var callbacks = {
+      onEscape: options.onEscape
+    };
+
+    if ($.fn.modal === undefined) {
+      throw new Error(
+        "$.fn.modal is not defined; please double check you have included " +
+        "the Bootstrap JavaScript library. See http://getbootstrap.com/javascript/ " +
+        "for more details."
+      );
+    }
+
+    each(buttons, function(key, button) {
+
+      // @TODO I don't like this string appending to itself; bit dirty. Needs reworking
+      // can we just build up button elements instead? slower but neater. Then button
+      // can just become a template too
+      buttonStr += "<button data-bb-handler='" + key + "' type='button' class='btn " + button.className + "'>" + button.label + "</button>";
+      callbacks[key] = button.callback;
+    });
+
+    body.find(".bootbox-body").html(options.message);
+
+    if (options.animate === true) {
+      dialog.addClass("fade");
+    }
+
+    if (options.className) {
+      dialog.addClass(options.className);
+    }
+
+    if (options.size === "large") {
+      innerDialog.addClass("modal-lg");
+    } else if (options.size === "small") {
+      innerDialog.addClass("modal-sm");
+    }
+
+    if (options.title) {
+      body.before(templates.header);
+    }
+
+    if (options.closeButton) {
+      var closeButton = $(templates.closeButton);
+
+      if (options.title) {
+        dialog.find(".modal-header").prepend(closeButton);
+      } else {
+        closeButton.css("margin-top", "-10px").prependTo(body);
+      }
+    }
+
+    if (options.title) {
+      dialog.find(".modal-title").html(options.title);
+    }
+
+    if (buttonStr.length) {
+      body.after(templates.footer);
+      dialog.find(".modal-footer").html(buttonStr);
+    }
+
+
+    /**
+     * Bootstrap event listeners; used handle extra
+     * setup & teardown required after the underlying
+     * modal has performed certain actions
+     */
+
+    dialog.on("hidden.bs.modal", function(e) {
+      // ensure we don't accidentally intercept hidden events triggered
+      // by children of the current dialog. We shouldn't anymore now BS
+      // namespaces its events; but still worth doing
+      if (e.target === this) {
+        dialog.remove();
+      }
+    });
+
+    /*
+    dialog.on("show.bs.modal", function() {
+      // sadly this doesn't work; show is called *just* before
+      // the backdrop is added so we'd need a setTimeout hack or
+      // otherwise... leaving in as would be nice
+      if (options.backdrop) {
+        dialog.next(".modal-backdrop").addClass("bootbox-backdrop");
+      }
+    });
+    */
+
+    dialog.on("shown.bs.modal", function() {
+      dialog.find(".btn-primary:first").focus();
+    });
+
+    /**
+     * Bootbox event listeners; experimental and may not last
+     * just an attempt to decouple some behaviours from their
+     * respective triggers
+     */
+
+    if (options.backdrop !== "static") {
+      // A boolean true/false according to the Bootstrap docs
+      // should show a dialog the user can dismiss by clicking on
+      // the background.
+      // We always only ever pass static/false to the actual
+      // $.modal function because with `true` we can't trap
+      // this event (the .modal-backdrop swallows it)
+      // However, we still want to sort of respect true
+      // and invoke the escape mechanism instead
+      dialog.on("click.dismiss.bs.modal", function(e) {
+        // @NOTE: the target varies in >= 3.3.x releases since the modal backdrop
+        // moved *inside* the outer dialog rather than *alongside* it
+        if (dialog.children(".modal-backdrop").length) {
+          e.currentTarget = dialog.children(".modal-backdrop").get(0);
+        }
+
+        if (e.target !== e.currentTarget) {
+          return;
+        }
+
+        dialog.trigger("escape.close.bb");
+      });
+    }
+
+    dialog.on("escape.close.bb", function(e) {
+      if (callbacks.onEscape) {
+        processCallback(e, dialog, callbacks.onEscape);
+      }
+    });
+
+    /**
+     * Standard jQuery event listeners; used to handle user
+     * interaction with our dialog
+     */
+
+    dialog.on("click", ".modal-footer button", function(e) {
+      var callbackKey = $(this).data("bb-handler");
+
+      processCallback(e, dialog, callbacks[callbackKey]);
+    });
+
+    dialog.on("click", ".bootbox-close-button", function(e) {
+      // onEscape might be falsy but that's fine; the fact is
+      // if the user has managed to click the close button we
+      // have to close the dialog, callback or not
+      processCallback(e, dialog, callbacks.onEscape);
+    });
+
+    dialog.on("keyup", function(e) {
+      if (e.which === 27) {
+        dialog.trigger("escape.close.bb");
+      }
+    });
+
+    // the remainder of this method simply deals with adding our
+    // dialogent to the DOM, augmenting it with Bootstrap's modal
+    // functionality and then giving the resulting object back
+    // to our caller
+
+    $(options.container).append(dialog);
+
+    dialog.modal({
+      backdrop: options.backdrop ? "static": false,
+      keyboard: false,
+      show: false
+    });
+
+    if (options.show) {
+      dialog.modal("show");
+    }
+
+    // @TODO should we return the raw element here or should
+    // we wrap it in an object on which we can expose some neater
+    // methods, e.g. var d = bootbox.alert(); d.hide(); instead
+    // of d.modal("hide");
+
+   /*
+    function BBDialog(elem) {
+      this.elem = elem;
+    }
+
+    BBDialog.prototype = {
+      hide: function() {
+        return this.elem.modal("hide");
+      },
+      show: function() {
+        return this.elem.modal("show");
+      }
+    };
+    */
+
+    return dialog;
+
+  };
+
+  exports.setDefaults = function() {
+    var values = {};
+
+    if (arguments.length === 2) {
+      // allow passing of single key/value...
+      values[arguments[0]] = arguments[1];
+    } else {
+      // ... and as an object too
+      values = arguments[0];
+    }
+
+    $.extend(defaults, values);
+  };
+
+  exports.hideAll = function() {
+    $(".bootbox").modal("hide");
+
+    return exports;
+  };
+
+
+  /**
+   * standard locales. Please add more according to ISO 639-1 standard. Multiple language variants are
+   * unlikely to be required. If this gets too large it can be split out into separate JS files.
+   */
+  var locales = {
+    bg_BG : {
+      OK      : "Ок",
+      CANCEL  : "Отказ",
+      CONFIRM : "Потвърждавам"
+    },
+    br : {
+      OK      : "OK",
+      CANCEL  : "Cancelar",
+      CONFIRM : "Sim"
+    },
+    cs : {
+      OK      : "OK",
+      CANCEL  : "Zrušit",
+      CONFIRM : "Potvrdit"
+    },
+    da : {
+      OK      : "OK",
+      CANCEL  : "Annuller",
+      CONFIRM : "Accepter"
+    },
+    de : {
+      OK      : "OK",
+      CANCEL  : "Abbrechen",
+      CONFIRM : "Akzeptieren"
+    },
+    el : {
+      OK      : "Εντάξει",
+      CANCEL  : "Ακύρωση",
+      CONFIRM : "Επιβεβαίωση"
+    },
+    en : {
+      OK      : "OK",
+      CANCEL  : "Cancel",
+      CONFIRM : "OK"
+    },
+    es : {
+      OK      : "OK",
+      CANCEL  : "Cancelar",
+      CONFIRM : "Aceptar"
+    },
+    et : {
+      OK      : "OK",
+      CANCEL  : "Katkesta",
+      CONFIRM : "OK"
+    },
+    fa : {
+      OK      : "قبول",
+      CANCEL  : "لغو",
+      CONFIRM : "تایید"
+    },
+    fi : {
+      OK      : "OK",
+      CANCEL  : "Peruuta",
+      CONFIRM : "OK"
+    },
+    fr : {
+      OK      : "OK",
+      CANCEL  : "Annuler",
+      CONFIRM : "D'accord"
+    },
+    he : {
+      OK      : "אישור",
+      CANCEL  : "ביטול",
+      CONFIRM : "אישור"
+    },
+    hu : {
+      OK      : "OK",
+      CANCEL  : "Mégsem",
+      CONFIRM : "Megerősít"
+    },
+    hr : {
+      OK      : "OK",
+      CANCEL  : "Odustani",
+      CONFIRM : "Potvrdi"
+    },
+    id : {
+      OK      : "OK",
+      CANCEL  : "Batal",
+      CONFIRM : "OK"
+    },
+    it : {
+      OK      : "OK",
+      CANCEL  : "Annulla",
+      CONFIRM : "Conferma"
+    },
+    ja : {
+      OK      : "OK",
+      CANCEL  : "キャンセル",
+      CONFIRM : "確認"
+    },
+    lt : {
+      OK      : "Gerai",
+      CANCEL  : "Atšaukti",
+      CONFIRM : "Patvirtinti"
+    },
+    lv : {
+      OK      : "Labi",
+      CANCEL  : "Atcelt",
+      CONFIRM : "Apstiprināt"
+    },
+    nl : {
+      OK      : "OK",
+      CANCEL  : "Annuleren",
+      CONFIRM : "Accepteren"
+    },
+    no : {
+      OK      : "OK",
+      CANCEL  : "Avbryt",
+      CONFIRM : "OK"
+    },
+    pl : {
+      OK      : "OK",
+      CANCEL  : "Anuluj",
+      CONFIRM : "Potwierdź"
+    },
+    pt : {
+      OK      : "OK",
+      CANCEL  : "Cancelar",
+      CONFIRM : "Confirmar"
+    },
+    ru : {
+      OK      : "OK",
+      CANCEL  : "Отмена",
+      CONFIRM : "Применить"
+    },
+    sq : {
+      OK : "OK",
+      CANCEL : "Anulo",
+      CONFIRM : "Prano"
+    },
+    sv : {
+      OK      : "OK",
+      CANCEL  : "Avbryt",
+      CONFIRM : "OK"
+    },
+    th : {
+      OK      : "ตกลง",
+      CANCEL  : "ยกเลิก",
+      CONFIRM : "ยืนยัน"
+    },
+    tr : {
+      OK      : "Tamam",
+      CANCEL  : "İptal",
+      CONFIRM : "Onayla"
+    },
+    zh_CN : {
+      OK      : "OK",
+      CANCEL  : "取消",
+      CONFIRM : "确认"
+    },
+    zh_TW : {
+      OK      : "OK",
+      CANCEL  : "取消",
+      CONFIRM : "確認"
+    }
+  };
+
+  exports.addLocale = function(name, values) {
+    $.each(["OK", "CANCEL", "CONFIRM"], function(_, v) {
+      if (!values[v]) {
+        throw new Error("Please supply a translation for '" + v + "'");
+      }
+    });
+
+    locales[name] = {
+      OK: values.OK,
+      CANCEL: values.CANCEL,
+      CONFIRM: values.CONFIRM
+    };
+
+    return exports;
+  };
+
+  exports.removeLocale = function(name) {
+    delete locales[name];
+
+    return exports;
+  };
+
+  exports.setLocale = function(name) {
+    return exports.setDefaults("locale", name);
+  };
+
+  exports.init = function(_$) {
+    return init(_$ || $);
+  };
+
+  return exports;
+}));
+
+},{"jquery":92}],31:[function(require,module,exports){
 /*
 * Project: Bootstrap Notify = v3.1.3
 * Description: Turns standard Bootstrap alerts into "Growl-like" notifications.
@@ -1931,7 +3097,7 @@ $app.start(config);
 
 }));
 
-},{"jquery":86}],25:[function(require,module,exports){
+},{"jquery":92}],32:[function(require,module,exports){
 // This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
 require('../../js/transition.js')
 require('../../js/alert.js')
@@ -1945,7 +3111,7 @@ require('../../js/popover.js')
 require('../../js/scrollspy.js')
 require('../../js/tab.js')
 require('../../js/affix.js')
-},{"../../js/affix.js":26,"../../js/alert.js":27,"../../js/button.js":28,"../../js/carousel.js":29,"../../js/collapse.js":30,"../../js/dropdown.js":31,"../../js/modal.js":32,"../../js/popover.js":33,"../../js/scrollspy.js":34,"../../js/tab.js":35,"../../js/tooltip.js":36,"../../js/transition.js":37}],26:[function(require,module,exports){
+},{"../../js/affix.js":33,"../../js/alert.js":34,"../../js/button.js":35,"../../js/carousel.js":36,"../../js/collapse.js":37,"../../js/dropdown.js":38,"../../js/modal.js":39,"../../js/popover.js":40,"../../js/scrollspy.js":41,"../../js/tab.js":42,"../../js/tooltip.js":43,"../../js/transition.js":44}],33:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: affix.js v3.3.5
  * http://getbootstrap.com/javascript/#affix
@@ -2109,7 +3275,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],27:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: alert.js v3.3.5
  * http://getbootstrap.com/javascript/#alerts
@@ -2205,7 +3371,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],28:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: button.js v3.3.5
  * http://getbootstrap.com/javascript/#buttons
@@ -2327,7 +3493,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],29:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: carousel.js v3.3.5
  * http://getbootstrap.com/javascript/#carousel
@@ -2566,7 +3732,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],30:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: collapse.js v3.3.5
  * http://getbootstrap.com/javascript/#collapse
@@ -2779,7 +3945,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],31:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: dropdown.js v3.3.5
  * http://getbootstrap.com/javascript/#dropdowns
@@ -2946,7 +4112,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],32:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: modal.js v3.3.5
  * http://getbootstrap.com/javascript/#modals
@@ -3285,7 +4451,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],33:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: popover.js v3.3.5
  * http://getbootstrap.com/javascript/#popovers
@@ -3395,7 +4561,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],34:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: scrollspy.js v3.3.5
  * http://getbootstrap.com/javascript/#scrollspy
@@ -3569,7 +4735,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],35:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: tab.js v3.3.5
  * http://getbootstrap.com/javascript/#tabs
@@ -3726,7 +4892,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],36:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: tooltip.js v3.3.5
  * http://getbootstrap.com/javascript/#tooltip
@@ -4242,7 +5408,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],37:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 /* ========================================================================
  * Bootstrap: transition.js v3.3.5
  * http://getbootstrap.com/javascript/#transitions
@@ -4303,7 +5469,7 @@ require('../../js/affix.js')
 
 }(jQuery);
 
-},{}],38:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 /*! DataTables 1.10.9
  * ©2008-2015 SpryMedia Ltd - datatables.net/license
  */
@@ -19434,1681 +20600,7 @@ require('../../js/affix.js')
 }(window, document));
 
 
-},{"jquery":86}],39:[function(require,module,exports){
-'use strict';
-
-var exports = {};
-
-exports.version = '1.1.3';
-
-var DependencyResolverException = function (message) {
-  this.__name = 'DependencyResolverException';
-  this.__stack = null;
-  this.__message = message || "A dependency resolver exception has occurred.";
-  var lines, i, tmp;
-  if ((typeof navigator !== 'undefined' && navigator.userAgent.indexOf('Chrome') !== -1) ||
-    (typeof navigator === 'undefined')) {
-    lines = new Error().stack.split('\n');
-    if (lines && lines.length > 2) {
-      tmp = [];
-      for (i = 2; i < lines.length; i++) {
-        if (lines[i]) {
-          tmp.push(lines[i].trim());
-        }
-      }
-      this.stack = tmp.join('\n');
-    }
-  } else if (typeof navigator !== 'undefined' && navigator.userAgent.indexOf('Firefox') !== -1) {
-    lines = new Error().stack.split('\n');
-    if (lines && lines.length > 1) {
-      tmp = [];
-      for (i = 1; i < lines.length; i++) {
-        if (lines[i]) {
-          tmp.push('at ' + lines[i].trim().replace('@', ' (') + ')');
-        }
-      }
-      this.stack = tmp.join('\n');
-    }
-  } else if (typeof navigator !== 'undefined' && navigator.userAgent.indexOf('Trident') !== -1) {
-    try {
-      throw new Error();
-    } catch (error) {
-      if ('stack' in error) {
-        lines = error.stack.split('\n');
-        if (lines && lines.length > 2) {
-          tmp = [];
-          for (i = 2; i < lines.length; i++) {
-            if (lines[i]) {
-              tmp.push(lines[i].trim());
-            }
-          }
-          this.stack = tmp.join('\n');
-        }
-      } else {
-        this.stack = '';
-      }
-    }
-  } else {
-    var error = new Error();
-    if ('stack' in error) {
-      this.stack = error.stack;
-    } else {
-      this.stack = '';
-    }
-  }
-  Object.defineProperty(this, '__name', { enumerable: false });
-  Object.defineProperty(this, '__message', { enumerable: false });
-  Object.defineProperty(this, '__stack', { enumerable: false });
-  Object.seal(this);
-};
-
-DependencyResolverException.prototype = Object.create(Object.prototype, {
-
-  name: {
-    get: function () {
-      return this.__name;
-    },
-    set: function (value) {
-      this.__name = value;
-    },
-    enumerable: true
-  },
-
-  message: {
-    get: function () {
-      return this.__message;
-    },
-    set: function (value) {
-      this.__message = value;
-    },
-    enumerable: true
-  },
-
-  stack: {
-    get: function () {
-      return this.__stack;
-    },
-    set: function (value) {
-      this.__stack = value;
-    },
-    enumerable: true
-  },
-
-  toString: {
-    value: function () {
-      var msg = this.name + ': ' + this.message;
-      if (this.stack) {
-        msg += '\n\t' + this.stack.replace(/\n/g, '\n\t');
-      }
-      return msg;
-    },
-    enumerable: true
-  }
-
-});
-
-Object.seal(DependencyResolverException);
-Object.seal(DependencyResolverException.prototype);
-
-exports.DependencyResolverException = DependencyResolverException;
-
-var InstanceFactoryOptions = function (options) {
-  this.__name = null;
-  this.__type = null;
-  this.__parameters = null;
-  if (options) {
-    for (var propertyName in options) {
-      if (propertyName in this) {
-        this[propertyName] = options[propertyName];
-      } else {
-        throw new DependencyResolverException("Class 'InstanceFactoryOptions' doesn't have a property '" +
-          propertyName + "'");
-      }
-    }
-  }
-  Object.defineProperty(this, '__name', { enumerable: false });
-  Object.defineProperty(this, '__type', { enumerable: false });
-  Object.defineProperty(this, '__parameters', { enumerable: false });
-  Object.seal(this);
-};
-
-InstanceFactoryOptions.prototype = Object.create(Object.prototype, {
-
-  name: {
-    get: function () {
-      return this.__name;
-    },
-    set: function (value) {
-      this.__name = value;
-    },
-    enumerable: true
-  },
-
-  type: {
-    get: function () {
-      return this.__type;
-    },
-    set: function (value) {
-      this.__type = value;
-    },
-    enumerable: true
-  },
-
-  parameters: {
-    get: function () {
-      return this.__parameters;
-    },
-    set: function (value) {
-      this.__parameters = value;
-    },
-    enumerable: true
-  },
-
-  toString: {
-    value: function () {
-      return '[object InstanceFactoryOptions]';
-    },
-    enumerable: true
-  }
-
-});
-
-Object.seal(InstanceFactoryOptions);
-Object.seal(InstanceFactoryOptions.prototype);
-
-exports.InstanceFactoryOptions = InstanceFactoryOptions;
-
-var IInstanceFactory = Object.create(Object.prototype, {
-
-  create: {
-    value: function (options) {},
-    enumerable: true
-  },
-
-  toString: {
-    value: function () {
-      return '[object IInstanceFactory]';
-    },
-    enumerable: true
-  }
-
-});
-
-Object.freeze(IInstanceFactory);
-
-exports.IInstanceFactory = IInstanceFactory;
-
-var InstanceFactory = function () {
-  Object.seal(this);
-};
-
-InstanceFactory.prototype = Object.create(Object.prototype, {
-
-  create: {
-    value: function (options) {
-      if (!options) {
-        throw new DependencyResolverException("Parameter 'options' is not set");
-      }
-      if ('type' in options && !options.type) {
-        throw new DependencyResolverException("Factory can't create object, because type is not set");
-      }
-      if (typeof options.type !== 'function') {
-        throw new DependencyResolverException("Factory can't create object, because given type is not a function");
-      }
-      if (options.type === Number || options.type === Date || options.type === Boolean || options.type === String ||
-        options.type === Array || options.type === Function || options.type === RegExp) {
-        throw new DependencyResolverException("Basic type can not be instantiated using a factory");
-      }
-      var instance = null;
-      if (options.parameters && options.parameters.length > 0) {
-        instance = Object.create(options.type.prototype);
-        options.type.apply(instance, options.parameters);
-      } else {
-        instance = new options.type();
-      }
-      return instance;
-    },
-    enumerable: true
-  },
-
-  toString: {
-    value: function () {
-      return '[object InstanceFactory]';
-    },
-    enumerable: true
-  }
-
-});
-
-Object.seal(InstanceFactory);
-Object.seal(InstanceFactory.prototype);
-
-exports.InstanceFactory = InstanceFactory;
-
-var INameTransformer = Object.create(Object.prototype, {
-
-  transform: {
-    value: function (name) {},
-    enumerable: true
-  },
-
-  toString: {
-    value: function () {
-      return '[object INameTransformer]';
-    },
-    enumerable: true
-  }
-
-});
-
-Object.freeze(INameTransformer);
-
-exports.INameTransformer = INameTransformer;
-
-var NameTransformer = function () {
-  Object.seal(this);
-};
-
-NameTransformer.prototype = Object.create(Object.prototype, {
-
-  transform: {
-    value: function (name) {
-      if (!name) {
-        throw new DependencyResolverException("Parameter 'name' is not passed to the method 'transform'");
-      }
-      return name;
-    },
-    enumerable: true
-  },
-
-  toString: {
-    value: function () {
-      return '[object NameTransformer]';
-    },
-    enumerable: true
-  }
-
-});
-
-Object.seal(NameTransformer);
-Object.seal(NameTransformer.prototype);
-
-exports.NameTransformer = NameTransformer;
-
-var IDependencyResolver = Object.create(Object.prototype, {
-
-  isAutowired: {
-    get: function () {},
-    enumerable: true
-  },
-
-  autowired: {
-    value: function (value) {},
-    enumerable: true
-  },
-
-  register: {
-    value: function (name) {},
-    enumerable: true
-  },
-
-  as: {
-    value: function (type) {},
-    enumerable: true
-  },
-
-  instance: {
-    value: function (instance) {},
-    enumerable: true
-  },
-
-  asSingleton: {
-    value: function () {},
-    enumerable: true
-  },
-
-  withConstructor: {
-    value: function () {},
-    enumerable: true
-  },
-
-  param: {
-    value: function (name) {},
-    enumerable: true
-  },
-
-  withProperties: {
-    value: function (name) {},
-    enumerable: true
-  },
-
-  prop: {
-    value: function (name) {},
-    enumerable: true
-  },
-
-  val: {
-    value: function (instance) {},
-    enumerable: true
-  },
-
-  ref: {
-    value: function (name) {},
-    enumerable: true
-  },
-
-  setFactory: {
-    value: function (factory) {},
-    enumerable: true
-  },
-
-  create: {
-    value: function () {},
-    enumerable: true
-  },
-
-  inject: {
-    value: function (func, name) {},
-    enumerable: true
-  },
-
-  contains: {
-    value: function (name) {},
-    enumerable: true
-  },
-
-  resolve: {
-    value: function (name) {},
-    enumerable: true
-  },
-
-  getDefaultFactory: {
-    value: function () {},
-    enumerable: true
-  },
-
-  setDefaultFactory: {
-    value: function (factory) {},
-    enumerable: true
-  },
-
-  getNameTransformer: {
-    value: function () {},
-    enumerable: true
-  },
-
-  setNameTransformer: {
-    value: function (transformer) {},
-    enumerable: true
-  },
-
-  getRegistration: {
-    value: function (name) {},
-    enumerable: true
-  },
-
-  dispose: {
-    value: function () {},
-    enumerable: true
-  },
-
-  toString: {
-    value: function () {
-      return '[object IDependencyResolver]';
-    },
-    enumerable: true
-  }
-
-});
-
-Object.freeze(IDependencyResolver);
-
-exports.IDependencyResolver = IDependencyResolver;
-
-var DependencyResolver = function (parent) {
-  this.__parent = parent;
-  this.__defaultFactory = null;
-  this.__nameTransformer = null;
-  this.__autowired = false;
-  this.__container = null;
-  this.__registration = null;
-  this.__withProperties = false;
-  this.__withConstructor = false;
-  this.__parameter = null;
-  this.__property = null;
-  this.__function = null;
-  if (parent) {
-    this.__autowired = parent.isAutowired;
-  }
-  Object.defineProperty(this, '__parent', { enumerable: false });
-  Object.defineProperty(this, '__defaultFactory', { enumerable: false });
-  Object.defineProperty(this, '__nameTransformer', { enumerable: false });
-  Object.defineProperty(this, '__autowired', { enumerable: false });
-  Object.defineProperty(this, '__container', { enumerable: false });
-  Object.defineProperty(this, '__registration', { enumerable: false });
-  Object.defineProperty(this, '__withProperties', { enumerable: false });
-  Object.defineProperty(this, '__withConstructor', { enumerable: false });
-  Object.defineProperty(this, '__parameter', { enumerable: false });
-  Object.defineProperty(this, '__property', { enumerable: false });
-  Object.defineProperty(this, '__function', { enumerable: false });
-  Object.seal(this);
-};
-
-DependencyResolver.prototype = Object.create(Object.prototype, {
-
-  isAutowired: {
-    get: function () {
-      return this.__autowired;
-    },
-    enumerable: true
-  },
-
-  autowired: {
-    value: function (value) {
-      if (value === undefined || value === null) {
-        value = true;
-      }
-      if (typeof value !== 'boolean') {
-        throw new DependencyResolverException("Parameter 'value' passed to the method 'autowired' has to " +
-          "be a 'boolean'");
-      }
-      this.__autowired = value;
-      return this;
-    },
-    enumerable: true
-  },
-
-  register: {
-    value: function (name) {
-      if (!name) {
-        throw new DependencyResolverException("Parameter 'name' is not passed to the method 'register'");
-      }
-      if (typeof name !== 'string') {
-        throw new DependencyResolverException("Parameter 'name' passed to the method 'register' has to be " +
-          "a 'string'");
-      }
-      if (!this.__container) {
-        this.__container = Object.create(null);
-      }
-      this.__registration = {
-        name: name,
-        singleton: false,
-        type: null,
-        instance: null,
-        factory: null,
-        dependencies: null
-      };
-      if (!(name in this.__container)) {
-        this.__container[name] = this.__registration;
-      } else {
-        if (!(this.__container[name] instanceof Array)) { 
-          this.__container[name] = [ this.__container[name] ];
-        }
-        this.__container[name].push(this.__registration);
-      }
-      this.__withConstructor = false;
-      this.__withProperties = false;
-      this.__parameter = null;
-      this.__property = null;
-      return this;
-    },
-    enumerable: true
-  },
-
-  as: {
-    value: function (type) {
-      if (!this.__registration) {
-        throw new DependencyResolverException("Registration's name is not defined");
-      }
-      if (!type) {
-        throw new DependencyResolverException("Parameter 'type' is not passed to the method 'as' for " +
-          "registration '" + this.__registration.name + "'");
-      }
-      if (typeof type !== 'function') {
-        throw new DependencyResolverException("Parameter 'type' passed to the method 'as' has to be a 'function' " +
-          "for registration '" + this.__registration.name + "'");
-      }
-      this.__registration.instance = null;
-      this.__registration.type = type;
-      this.__registration.singleton = false;
-      this.__registration.dependencies = {
-        parameters: [],
-        properties: [],
-        functions: []
-      };
-      this.__withConstructor = false;
-      this.__withProperties = false;
-      this.__parameter = null;
-      this.__property = null;
-      this.__function = null;
-      return this;
-    },
-    enumerable: true
-  },
-
-  instance: {
-    value: function (instance) {
-      if (!this.__registration) {
-        throw new DependencyResolverException("Registration's name is not defined");
-      }
-      if (instance === null || instance === undefined) {
-        throw new DependencyResolverException("Parameter 'instance' is not passed to the method 'instance' for " +
-          "registration '" + this.__registration.name + "'");
-      }
-      this.__registration.instance = instance;
-      this.__registration.type = null;
-      this.__registration.factory = null;
-      this.__registration.singleton = true;
-      this.__registration.dependencies = null;
-      this.__withConstructor = false;
-      this.__withProperties = false;
-      this.__parameter = null;
-      this.__property = null;
-      this.__function = null;
-      return this;
-    },
-    enumerable: true
-  },
-
-  asSingleton: {
-    value: function () {
-      if (!this.__registration) {
-        throw new DependencyResolverException("Registration's name is not defined");
-      }
-      if (!this.__registration.type) {
-        throw new DependencyResolverException("Type is not set for registration '" +
-          this.__registration.name + "'");
-      }
-      this.__registration.singleton = true;
-      this.__withConstructor = false;
-      this.__withProperties = false;
-      this.__parameter = null;
-      this.__property = null;
-      this.__function = null;
-      return this;
-    },
-    enumerable: true
-  },
-
-  withConstructor: {
-    value: function () {
-      if (!this.__registration) {
-        throw new DependencyResolverException("Registration's name is not defined");
-      }
-      if (!this.__registration.type) {
-        throw new DependencyResolverException("Type is not set for registration '" +
-          this.__registration.name + "'");
-      }
-      this.__withConstructor = true;
-      this.__withProperties = false;
-      this.__parameter = null;
-      this.__property = null;
-      this.__function = null;
-      return this;
-    },
-    enumerable: true
-  },
-
-  param: {
-    value: function (name) {
-      if (!this.__registration) {
-        throw new DependencyResolverException("Registration's name is not defined");
-      }
-      if (!this.__registration.type) {
-        throw new DependencyResolverException("Type is not set for registration '" + this.__registration.name + "'");
-      }
-      var parameters = null,
-          parameter = null,
-          index;
-      if (this.__withConstructor) {
-        parameters = this.__registration.dependencies.parameters;
-        if (this.__autowired && (name === undefined || name === null)) {
-          throw new DependencyResolverException("Parameter 'name' has to be passed to the method, when dependency " +
-            "container has option 'autowired' enabled");
-        }
-        parameter = this.__findParameter(name, parameters, this.__registration);
-      } else if (this.__withProperties) {
-        if (!this.__function) {
-          throw new DependencyResolverException("Function is not defined");
-        }
-        parameters = this.__function.parameters;
-        parameter = this.__findParameter(name, this.__function.parameters, this.__registration);
-      } else {
-        throw new DependencyResolverException("Invocation of method 'withConstructor' or 'withProperties' " + 
-          "is missing for registration '" + this.__registration.name + "'");
-      }
-      if (!parameter) {
-        parameter = {
-          index: index,
-          name: name,
-          value: undefined,
-          reference: undefined
-        };
-        parameters.push(parameter);
-      }
-      this.__parameter = parameter;
-      this.__property = null;
-      return this;
-    },
-    enumerable: true
-  },
-
-  withProperties: {
-    value: function () {
-      if (!this.__registration) {
-        throw new DependencyResolverException("Registration's name is not defined");
-      }
-      if (!this.__registration.type) {
-        throw new DependencyResolverException("Type is not set for registration '" + this.__registration.name + "'");
-      }
-      this.__withProperties = true;
-      this.__withConstructor = false;
-      this.__parameter = null;
-      this.__property = null;
-      this.__function = null;
-      return this;
-    },
-    enumerable: true
-  },
-
-  prop: {
-    value: function (name) {
-      if (!this.__registration) {
-        throw new DependencyResolverException("Registration's name is not defined");
-      }
-      if (!name) {
-        throw new DependencyResolverException("Parameter 'name' is not passed to the method 'prop' for " +
-          "registration '" + this.__registration.name + "'");
-      }
-      if (typeof name !== 'string') {
-        throw new DependencyResolverException("Parameter 'name' passed to the method 'prop' has to be" +
-          " a 'string' for registration '" + this.__registration.name + "'");
-      }
-      if (!this.__registration.type) {
-        throw new DependencyResolverException("Type is not set for registration '" + this.__registration.name + "'");
-      }
-      if (!this.__withProperties) {
-        throw new DependencyResolverException("Invocation of method 'withProperties' is missing for " +
-          "registration '" + this.__registration.name + "'");
-      }
-      var properties = this.__registration.dependencies.properties,
-          property = null;
-      for (var i = 0; i < properties.length; i++) {
-        if (properties[i].name === name) {
-          property = properties[i];
-          break;
-        }
-      }
-      if (!property) {
-        property = {
-          name: name,
-          value: undefined,
-          reference: undefined
-        };
-        properties.push(property);
-      }
-      this.__parameter = null;
-      this.__property = property;
-      this.__function = null;
-      return this;
-    },
-    enumerable: true
-  },
-
-  func: {
-    value: function (name) {
-      if (!this.__registration) {
-        throw new DependencyResolverException("Registration's name is not defined");
-      }
-      if (!name) {
-        throw new DependencyResolverException("Parameter 'name' is not passed to the method 'func' for " +
-          "registration '" + this.__registration.name + "'");
-      }
-      if (typeof name !== 'string') {
-        throw new DependencyResolverException("Parameter 'name' passed to the method 'func' has to be" +
-          " a 'string' for registration '" + this.__registration.name + "'");
-      }
-      if (!this.__registration.type) {
-        throw new DependencyResolverException("Type is not set for registration '" + this.__registration.name + "'");
-      }
-      if (!this.__withProperties) {
-        throw new DependencyResolverException("Invocation of method 'withProperties' is missing for " +
-          "registration '" + this.__registration.name + "'");
-      }
-      var functions = this.__registration.dependencies.functions,
-          func = null;
-      for (var i = 0; i < functions.length; i++) {
-        if (functions[i].name === name) {
-          func = functions[i];
-          break;
-        }
-      }
-      if (!func) {
-        func = {
-          name: name,
-          parameters: []
-        };
-        functions.push(func);
-      }
-      this.__parameter = null;
-      this.__property = null;
-      this.__function = func;
-      return this;
-    },
-    enumerable: true
-  },
-
-  val: {
-    value: function (instance) {
-      if (!this.__registration) {
-        throw new DependencyResolverException("Registration's name is not defined");
-      }
-      if (instance === null || instance === undefined) {
-        throw new DependencyResolverException("Parameter 'instance' is not passed to the method 'val'");
-      }
-      if (!this.__withProperties && !this.__withConstructor) {
-        throw new DependencyResolverException("Invocation of method withConstructor' or 'withProperties' " +
-          "is missing");
-      }
-      if (this.__withConstructor && !this.__parameter) {
-        throw new DependencyResolverException("Parameter is not defined");
-      }
-      if (this.__withProperties && !this.__parameter && !this.__property) {
-        throw new DependencyResolverException("Parameter or property is not defined");
-      }
-      if (this.__parameter) {
-        this.__parameter.value = instance;
-        this.__parameter.reference = undefined;
-      } else if (this.__property) {
-        this.__property.value = instance;
-        this.__property.reference = undefined;
-      }
-      return this;
-    },
-    enumerable: true
-  },
-
-  ref: {
-    value: function (name) {
-      if (!this.__registration) {
-        throw new DependencyResolverException("Registration's name is not defined");
-      }
-      if (!name) {
-        throw new DependencyResolverException("Parameter 'name' is not passed to the method 'ref' for " +
-          "registration '" + this.__registration.name + "'");
-      }
-      if (typeof name !== 'string') {
-        throw new DependencyResolverException("Parameter 'name' passed to the method 'ref' has to " +
-          "be a 'string' for registration '" + this.__registration.name + "'");
-      }
-      if (!this.__withProperties && !this.__withConstructor) {
-        throw new DependencyResolverException("Invocation of method 'withConstructor' or 'withProperties' " +
-          "is missing for registration '" + this.__registration.name + "'");
-      }
-      if (this.__withConstructor && !this.__parameter) {
-        throw new DependencyResolverException("Parameter is not defined");
-      }
-      if (this.__withProperties && !this.__parameter && !this.__property) {
-        throw new DependencyResolverException("Parameter or property is not defined");
-      }
-      if (!this.contains(name)) {
-        throw new DependencyResolverException("Type or instance is not registered with name '" + name + "'");
-      }
-      if (this.__parameter) {
-        this.__parameter.value = undefined;
-        this.__parameter.reference = name;
-      } else if (this.__property) {
-        this.__property.value = undefined;
-        this.__property.reference = name;
-      }
-      return this;
-    },
-    enumerable: true
-  },
-
-  setFactory: {
-    value: function (factory) {
-      if (!this.__registration) {
-        throw new DependencyResolverException("Registration's name is not defined");
-      }
-      if (!factory) {
-        throw new DependencyResolverException("Parameter 'factory' is not passed to the method 'setFactory");
-      }
-      if (typeof factory !== 'function' && typeof factory !== 'object') {
-        throw new DependencyResolverException("Parameter 'factory' passed to the method 'setFactory' has to be " +
-          "a 'function' or 'object'");
-      }
-      if (typeof factory === 'object' && !('create' in factory)) {
-        throw new DependencyResolverException("Factory's instance passed to the method 'setFactory' has to have " +
-          "a method 'create'");
-      }
-      if (!this.__registration.type) {
-        throw new DependencyResolverException("Type is not set for registration '" + this.__registration.name);
-      }
-      this.__registration.factory = factory;
-      this.__withConstructor = false;
-      this.__withProperties = false;
-      this.__parameter = null;
-      this.__property = null;
-      this.__function = null;
-      return this;
-    },
-    enumerable: true
-  },
-
-  create: {
-    value: function () {
-      return new DependencyResolver(this);
-    },
-    enumerable: true
-  },
-
-  inject: {
-    value: function (func) {
-      if (!func) {
-        throw new DependencyResolverException("Parameter 'func' is not passed to method 'inject'");
-      }
-      var i,
-          parameters = [],
-          context = { resolving: [] };
-      if (func instanceof Array) {
-        if (func.length === 0) {
-          throw new DependencyResolverException("The array passed to the method 'inject' can't be empty");
-        }
-        for (i = 0; i < func.length - 1; i++) {
-          parameters.push(func[i]);
-        }
-        func = func[func.length - 1];
-        if (typeof func !== 'function') {
-          throw new DependencyResolverException("The last item of the array passed to the method 'inject' has " +
-            "to be a 'function'");
-        }
-        for (i = 0; i < parameters.length; i++) {
-          if (typeof parameters[i] === 'string' && this.contains(parameters[i])) {
-            parameters[i] = this.__resolve(parameters[i], context);
-          }
-        }
-        func.apply(null, parameters);
-      } else {
-        var registration = null;
-        if (arguments.length === 2 && typeof arguments[1] === 'string') {
-          var name = arguments[1];
-          if (!this.contains(name)) {
-            throw new DependencyResolverException("Type with name '" + name + "' is not registered");
-          }
-          registration = this.getRegistration(name);
-        }
-        var dependencyName;
-        if (typeof func === 'function') {
-          if (registration) {
-            parameters = this.__getConstructorParameters(registration, context);
-          } else {
-            var args = this.__getFunctionArguments(func);
-            for (i = 0; i < args.length; i++) {
-              dependencyName = this.__resolveDependencyName(args[i]);
-              if (this.contains(dependencyName)) {
-                parameters.push(this.__resolve(dependencyName, context));
-              } else {
-                parameters.push(null);
-              }
-            }
-          }
-          func.apply(null, parameters);
-        } else if (typeof func === 'object') {
-          if (registration) {
-            this.__setProperties(func, registration, context);
-            this.__invokeFunctions(func, registration, context);
-          } else {
-            for (var propertyName in func) {
-              dependencyName = this.__resolveDependencyName(propertyName);
-              if (this.contains(dependencyName)) {
-                parameters.push({
-                  name: propertyName,
-                  value: this.__resolve(dependencyName, context)
-                });
-              }
-            }
-            if (parameters.length > 0) {
-              for (i = 0; i < parameters.length; i++) {
-                func[parameters[i].name] = parameters[i].value;
-              }
-            }
-          }
-        } else {
-          throw new DependencyResolverException("Invalid parameter has been passed to the method 'inject'");
-        }
-      }
-      return this;
-    },
-    enumerable: true
-  },
-
-  contains: {
-    value: function (name) {
-      if (!name) {
-        throw new DependencyResolverException("Parameter 'name' is not passed to the method 'contains'");
-      }
-      if (typeof name !== 'string') {
-        throw new DependencyResolverException("Parameter 'name' passed to the  has to be a 'string'");
-      }
-      var has = false;
-      if (this.__container) {
-        if (name in this.__container) {
-          has = true;
-        }
-      }
-      if (!has && this.__parent) {
-        if (!('contains' in this.__parent)) {
-          throw new DependencyResolverException("Dependency resolver's parent doesn't have a method 'contains'");
-        }
-        has = this.__parent.contains(name);
-      }
-      return has;
-    },
-    enumerable: true
-  },
-
-  resolve: {
-    value: function (name) {
-      return this.__resolve(name, { 
-        resolving: [] 
-      });
-    },
-    enumerable: true
-  },
-
-  getDefaultFactory: {
-    value: function () {
-      var factory = null;
-      if (this.__defaultFactory) {
-        factory = this.__defaultFactory;
-      } else if (this.__parent) {
-        if (!('getDefaultFactory' in this.__parent)) {
-          throw new DependencyResolverException("Dependency resolver's parent doesn't have a " +
-            "method 'getDefaultFactory'");
-        }
-        factory = this.__parent.getDefaultFactory();
-      } else {
-        factory = new InstanceFactory();
-      }
-      return factory;
-    },
-    enumerable: true
-  },
-
-  setDefaultFactory: {
-    value: function (factory) {
-      if (!factory) {
-        throw new DependencyResolverException("Parameter 'factory' is not passed to the method " +
-          "'setDefaultFactory");
-      }
-      if (typeof factory !== 'function' && typeof factory !== 'object') {
-        throw new DependencyResolverException("Parameter 'factory' passed to the method 'setDefaultFactory' has " +
-          " to be a 'function' or 'object'");
-      }
-      if (typeof factory === 'object' && !('create' in factory)) {
-        throw new DependencyResolverException("Factory's instance passed to the method 'setDefaultFactory' has " +
-          "to have a method 'create'");
-      }
-      this.__defaultFactory = factory;
-      return this;
-    },
-    enumerable: true
-  },
-
-  getNameTransformer: {
-    value: function () {
-      var transformer = null;
-      if (this.__nameTransformer) {
-        transformer = this.__nameTransformer;
-      } else if (this.__parent) {
-        if (!('getNameTransformer' in this.__parent)) {
-          throw new DependencyResolverException("Dependency resolver's parent doesn't have a " +
-            "method 'getNameTransformer'");
-        }
-        transformer = this.__parent.getNameTransformer();
-      } else {
-        transformer = new NameTransformer();
-      }
-      return transformer;
-    },
-    enumerable: true
-  },
-
-  setNameTransformer: {
-    value: function (transformer) {
-      if (!transformer) {
-        throw new DependencyResolverException("Parameter 'transformer' is not passed to the method " +
-          "'setNameTransformer'");
-      }
-      if (typeof transformer !== 'function' && typeof transformer !== 'object') {
-        throw new DependencyResolverException("Parameter 'transformer' passed to the method 'setNameTransformer' " +
-          "has to be a 'function' or 'object'");
-      }
-      if (typeof transformer === 'object' && !('transform' in transformer)) {
-        throw new DependencyResolverException("Trabsformers's instance passed to the method 'setNameTransformer' " +
-          "has to have a method 'transform'");
-      }
-      this.__nameTransformer = transformer;
-      return this;
-    },
-    enumerable: true
-  },
-
-  getRegistration: {
-    value: function (name) {
-      var registration = null;
-      if (this.__container && name in this.__container) {
-        registration = this.__container[name];
-      } else if (this.__parent) {
-        if (!('getRegistration' in this.__parent)) {
-          throw new DependencyResolverException("Dependency resolver's parent doesn't have a " +
-            "method 'getRegistration'");
-        }
-        registration = this.__parent.getRegistration(name);
-      }
-      return registration;
-    },
-    enumerable: true
-  },
-
-  dispose: {
-    value: function () {
-      var registration = null, 
-          i = 0;
-      if (this.__container) {
-        for (var name in this.__container) {
-          if (!(this.__container[name] instanceof Array)) {
-            registration = this.__container[name];
-            if (registration.instance && ('dispose' in registration.instance)) {
-              registration.instance.dispose();
-            }
-            registration.instance = null;
-            registration.factory = null;
-          } else {
-            var registrations = this.__container[name];
-            for (i = 0; i < registrations.length; i++) {
-              registration = registrations[i];
-              if (registration.instance && ('dispose' in registration.instance)) {
-                registration.instance.dispose();
-              }
-              registration.instance = null;
-              registration.factory = null;
-            }
-          }
-        }
-      }
-      this.__parent = null;
-      this.__defaultFactory = null;
-      this.__nameTransformer = null;
-      this.__autowired = false;
-      this.__container = null;
-      this.__registration = null;
-      this.__withProperties = false;
-      this.__withConstructor = false;
-      this.__parameter = null;
-      this.__property = null;
-      this.__function = null;
-    },
-    enumerable: true
-  },
-
-  toString: {
-    value: function () {
-      return '[object DependencyResolver]';
-    },
-    enumerable: true
-  },
-
-  __getFunctionArguments: {
-    value: function (func) {
-      if (func && typeof func === 'function' && 'toString' in func) {
-        var str = null;
-        var result = func
-          .toString()
-          .match(/^[\s\(]*function[^(]*\(([^)]*)\)/);
-        if (result && result.length > 1) {
-          str = result[1]
-            .replace(/\/\/.*?[\r\n]|\/\*(?:.|[\r\n])*?\*\//g, '')
-            .replace(/\s+/g, '');
-        }
-        if (str) {
-          return str.split(',');
-        }
-      }
-      return [];
-    }
-  },
-
-  __resolve: {
-    value: function (name, context) {
-      if (!name) {
-        throw new DependencyResolverException("Parameter 'name' is not passed to the method 'resolve'");
-      }
-      if (typeof name !== 'string') {
-        throw new DependencyResolverException("Parameter 'name' passed to the method 'resolve' has to be " +
-          "a 'string'");
-      }
-      if (debug && console && 'log' in console) {
-        var message = "-> '" + name + "'";
-        for (var j = 0; j < context.resolving.length; j++) {
-          message = "  " + message;
-        }
-        console.log(message);
-      }
-      if (!this.contains(name)) {
-        throw new DependencyResolverException("Type or instance with name '" + name + "' is not registered");
-      }
-      var index = context.resolving.indexOf(name);
-      if (index !== -1) {
-        throw new DependencyResolverException("Can not resolve circular dependency '" + name + "'");
-      }
-      context.resolving.push(name);
-      var instance = null,
-          registration = this.getRegistration(name);
-      if (!(registration instanceof Array)) {
-        instance = this.__resolveInstance(registration, context);
-      } else {
-        instance = [];
-        for (var i = 0; i < registration.length; i++) {
-          instance.push(this.__resolveInstance(registration[i], context));
-        }
-      }
-      index = context.resolving.indexOf(name);
-      if (index > -1) {
-        context.resolving.splice(index, 1);
-      }
-      return instance;
-    }
-  },
-
-  __resolveInstance: {
-    value: function (registration, context) {
-      var instance = null;
-      if (registration.instance !== null && registration.instance !== undefined) {
-        instance = registration.instance;
-      } else {
-        instance = this.__createInstance(registration, context);
-        this.__setProperties(instance, registration, context);
-        this.__invokeFunctions(instance, registration, context);
-        if (instance && registration.singleton) {
-          registration.instance = instance;
-        }
-        if (!instance) {
-          throw new DependencyResolverException("Failed to resolve instance by name '" + registration.name + "'");
-        }
-      }
-      return instance;
-    }
-  },
-
-  __resolveDependencyName: {
-    value: function (name) {
-      var transform = this.getNameTransformer();
-      if (typeof transform === 'function') {
-        name = transform(name);
-      } else {
-        name = transform.transform(name);
-      }
-      if (!name) {
-        throw new DependencyResolverException("Failed to resolve dependency name");
-      }
-      return name;
-    }
-  },
-
-  __createInstance: {
-    value: function (registration, context) {
-      var i,
-          instance;
-      var parameters = this.__getConstructorParameters(registration, context);
-      var options = new InstanceFactoryOptions({
-        name: registration.name,
-        type: registration.type,
-        parameters: parameters
-      });
-      var factory = null;
-      if (registration.factory) {
-        factory = registration.factory;
-      } else {
-        factory = this.getDefaultFactory();
-      }
-      if (factory) {
-        if (typeof factory === 'function') {
-          instance = factory.call(null, options);
-        } else {
-          instance = factory.create(options);
-        }
-      } else {
-        throw new DependencyResolverException("Default factory is not defined");
-      }
-      return instance;
-    }
-  },
-
-  __getConstructorParameters: {
-    value: function (registration, context) {
-      var parameters = [];
-      if (registration && registration.dependencies) {
-        var i,
-            parameter,
-            value,
-            args,
-            index;
-        if (this.__autowired) {
-          args = this.__getFunctionArguments(registration.type);
-          var dependencyName;
-          for (i = 0; i < args.length; i++) {
-            dependencyName = this.__resolveDependencyName(args[i]);
-            if (this.contains(dependencyName)) {
-              parameters.push(this.__resolve(dependencyName, context));
-            } else {
-              parameters.push(null);
-            }
-          }
-        }
-        for (i = 0; i < registration.dependencies.parameters.length; i++) {
-          parameter = registration.dependencies.parameters[i];
-          if (parameter.value !== undefined) {
-            value = parameter.value;
-          } else if (parameter.reference !== undefined) {
-            value = this.__resolve(parameter.reference, context);
-          } else {
-            value = null;
-          }
-          if (parameter.index !== undefined && parameter.index !== null) {
-            parameters[parameter.index] = value;
-          } else if (parameter.name) {
-            if (!args) {
-              args = this.__getFunctionArguments(registration.type);
-            }
-            index = args.indexOf(parameter.name);
-            if (index === -1) {
-              throw new DependencyResolverException("Constructor in registration '" + registration.name +
-                "' doesn't have defined parameter '" + parameter.name + "'");
-            }
-            parameters[index] = value;
-          } else {
-            parameters.push(value);
-          }
-        }
-      }
-      return parameters;
-    }
-  },
-
-  __hasProperty: {
-    value: function (registration, name) {
-      var has = false;
-      if (registration.dependencies) {
-        var property;
-        for (var i = 0; i < registration.dependencies.properties.length; i++) {
-          property = registration.dependencies.properties[i];
-          if (property.name === name) {
-            has = true;
-            break;
-          }
-        }
-      }
-      return has;
-    }
-  },
-
-  __findParameter: {
-    value: function (name, parameters, registration) {
-      var parameter = null;
-      if (name !== null && name !== undefined && registration !== null) {
-        if (typeof name === 'number') {
-          index = name;
-          name = undefined;
-          if (index < 0) {
-            throw new DependencyResolverException("Parameter 'name' passed to the method 'param' is out of " +
-              "range for registration '" + registration.name + "'");
-          }
-          if (index < parameters.length) {
-            parameter = parameters[index];
-          }
-        } else if (typeof name === 'string') {
-          for (var i = 0; i < parameters.length; i++) {
-            if (parameters[i].name === name) {
-              parameter = parameters[i];
-              break;
-            }
-          }
-        } else {
-          throw new DependencyResolverException("Parameter 'name' passed to the method 'param' has to " +
-            "be a 'number' or a 'string' for registration '" + registration.name + "'");
-        }
-      }
-      return parameter;
-    }
-  },
-
-  __setProperties: {
-    value: function (instance, registration, context) {
-      if (registration.dependencies) {
-        if (this.__autowired) {
-          for (var propertyName in instance) {
-            var dependencyName = this.__resolveDependencyName(propertyName);
-            if (!this.__hasProperty(registration, propertyName) && this.contains(dependencyName)) {
-              instance[propertyName] = this.__resolve(dependencyName, context);
-            }
-          }
-        }
-        for (var i = 0; i < registration.dependencies.properties.length; i++) {
-          var property = registration.dependencies.properties[i];
-          if (!(property.name in instance)) {
-            throw new DependencyResolverException("Resolved object '" + registration.name + 
-              "' doesn't have property '" + property.name + "'");
-          }
-          if (property.value !== undefined) {
-            instance[property.name] = property.value;
-          } else if (property.reference !== undefined) {
-            instance[property.name] = this.__resolve(property.reference, context);
-          }
-        }
-      }
-    }
-  },
-
-  __invokeFunctions: {
-    value: function (instance, registration, context) {
-      if (registration.dependencies) {
-        var i, 
-            j, 
-            parameter, 
-            value;
-        for (i = 0; i < registration.dependencies.functions.length; i++) {
-          var func = registration.dependencies.functions[i];
-          if (!(func.name in instance)) {
-            throw new DependencyResolverException("Resolved object '" + registration.name + 
-              "' doesn't have function '" + func.name + "'");
-          }
-          var parameters = [];
-          for (j = 0; j < func.parameters.length; j++) {
-            parameter = func.parameters[j];
-            if (parameter.value !== undefined) {
-              value = parameter.value;
-            } else if (parameter.reference !== undefined) {
-              value = this.__resolve(parameter.reference, context);
-            } else {
-              value = null;
-            }
-            if (parameter.index !== undefined && parameter.index !== null) {
-              parameters[parameter.index] = value;
-            } else if (parameter.name) {
-              if (!args) {
-                args = this.__getFunctionArguments(instance[func.name]);
-              }
-              index = args.indexOf(parameter.name);
-              if (index === -1) {
-                throw new DependencyResolverException("Function doesn't have defined parameter '" + 
-                  parameter.name + "'");
-              }
-              parameters[index] = value;
-            } else {
-              parameters.push(value);
-            }
-          }
-          instance[func.name].apply(instance, parameters);
-        }
-      }
-    }
-  }
-
-});
-
-Object.seal(DependencyResolver);
-Object.seal(DependencyResolver.prototype);
-
-exports.DependencyResolver = DependencyResolver;
-
-var defaultDependencyResolver = null,
-    debug = false;
-
-Object.defineProperty(exports, 'getDefaultDependencyResolver', {
-  value: function () {
-    if (!defaultDependencyResolver) {
-      defaultDependencyResolver = new DependencyResolver();
-    }
-    return defaultDependencyResolver;
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'setDefaultDependencyResolver', {
-  value: function (value) {
-    defaultDependencyResolver = value;
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'isAutowired', {
-  get: function () {
-    return exports
-      .getDefaultDependencyResolver()
-      .isAutowired;
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'autowired', {
-  value: function (value) {
-    return exports
-      .getDefaultDependencyResolver()
-      .autowired(value);
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'register', {
-  value: function (name) {
-    return exports
-      .getDefaultDependencyResolver()
-      .register(name);
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'as', {
-  value: function (type) {
-    return exports
-      .getDefaultDependencyResolver()
-      .as(type);
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'instance', {
-  value: function (instance) {
-    return exports
-      .getDefaultDependencyResolver()
-      .instance(instance);
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'asSingleton', {
-  value: function () {
-    return exports
-      .getDefaultDependencyResolver()
-      .asSingleton();
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'withConstructor', {
-  value: function () {
-    return exports
-      .getDefaultDependencyResolver()
-      .withConstructor();
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'param', {
-  value: function (name) {
-    return exports
-      .getDefaultDependencyResolver()
-      .param(name);
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'withProperties', {
-  value: function () {
-    return exports
-      .getDefaultDependencyResolver()
-      .withProperties();
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'prop', {
-  value: function (name) {
-    return exports
-      .getDefaultDependencyResolver()
-      .prop(name);
-  }
-});
-
-Object.defineProperty(exports, 'func', {
-  value: function (name) {
-    return exports
-      .getDefaultDependencyResolver()
-      .func(name);
-  }
-});
-
-Object.defineProperty(exports, 'val', {
-  value: function (instance) {
-    return exports
-      .getDefaultDependencyResolver()
-      .val(instance);
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'ref', {
-  value: function (name) {
-    return exports
-      .getDefaultDependencyResolver()
-      .ref(name);
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'setFactory', {
-  value: function (factory) {
-    return exports
-      .getDefaultDependencyResolver()
-      .setFactory(factory);
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'create', {
-  value: function () {
-    return exports
-      .getDefaultDependencyResolver()
-      .create();
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'inject', {
-  value: function (func, name) {
-    return exports
-      .getDefaultDependencyResolver()
-      .inject(func, name);
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'contains', {
-  value: function (name) {
-    return exports
-      .getDefaultDependencyResolver()
-      .contains(name);
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'resolve', {
-  value: function (name) {
-    return exports
-      .getDefaultDependencyResolver()
-      .resolve(name);
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'getDefaultFactory', {
-  value: function () {
-    return exports
-      .getDefaultDependencyResolver()
-      .getDefaultFactory();
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'setDefaultFactory', {
-  value: function (factory) {
-    return exports
-      .getDefaultDependencyResolver()
-      .setDefaultFactory(factory);
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'getNameTransformer', {
-  value: function () {
-    return exports
-      .getDefaultDependencyResolver()
-      .getNameTransformer();
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'setNameTransformer', {
-  value: function (transformer) {
-    return exports
-      .getDefaultDependencyResolver()
-      .setNameTransformer(transformer);
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'getRegistration', {
-  value: function (name) {
-    return exports
-      .getDefaultDependencyResolver()
-      .getRegistration(name);
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'debug', {
-  get: function () {
-    return debug;
-  },
-  set: function (value) {
-    debug = value;
-  },
-  enumerable: true
-});
-
-Object.defineProperty(exports, 'dispose', {
-  value: function () {
-    return exports
-      .getDefaultDependencyResolver()
-      .dispose();
-  },
-  enumerable: true
-});
-
-module.exports = exports;
-},{}],40:[function(require,module,exports){
+},{"jquery":92}],46:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -21175,7 +20667,7 @@ exports['default'] = inst;
 module.exports = exports['default'];
 
 
-},{"./handlebars.runtime":41,"./handlebars/compiler/ast":43,"./handlebars/compiler/base":44,"./handlebars/compiler/compiler":46,"./handlebars/compiler/javascript-compiler":48,"./handlebars/compiler/visitor":51,"./handlebars/no-conflict":65}],41:[function(require,module,exports){
+},{"./handlebars.runtime":47,"./handlebars/compiler/ast":49,"./handlebars/compiler/base":50,"./handlebars/compiler/compiler":52,"./handlebars/compiler/javascript-compiler":54,"./handlebars/compiler/visitor":57,"./handlebars/no-conflict":71}],47:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -21244,7 +20736,7 @@ exports['default'] = inst;
 module.exports = exports['default'];
 
 
-},{"./handlebars/base":42,"./handlebars/exception":55,"./handlebars/no-conflict":65,"./handlebars/runtime":66,"./handlebars/safe-string":67,"./handlebars/utils":68}],42:[function(require,module,exports){
+},{"./handlebars/base":48,"./handlebars/exception":61,"./handlebars/no-conflict":71,"./handlebars/runtime":72,"./handlebars/safe-string":73,"./handlebars/utils":74}],48:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -21350,7 +20842,7 @@ exports.createFrame = _utils.createFrame;
 exports.logger = _logger2['default'];
 
 
-},{"./decorators":53,"./exception":55,"./helpers":56,"./logger":64,"./utils":68}],43:[function(require,module,exports){
+},{"./decorators":59,"./exception":61,"./helpers":62,"./logger":70,"./utils":74}],49:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -21383,7 +20875,7 @@ exports['default'] = AST;
 module.exports = exports['default'];
 
 
-},{}],44:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -21433,7 +20925,7 @@ function parse(input, options) {
 }
 
 
-},{"../utils":68,"./helpers":47,"./parser":49,"./whitespace-control":52}],45:[function(require,module,exports){
+},{"../utils":74,"./helpers":53,"./parser":55,"./whitespace-control":58}],51:[function(require,module,exports){
 /* global define */
 'use strict';
 
@@ -21601,7 +21093,7 @@ exports['default'] = CodeGen;
 module.exports = exports['default'];
 
 
-},{"../utils":68,"source-map":70}],46:[function(require,module,exports){
+},{"../utils":74,"source-map":76}],52:[function(require,module,exports){
 /* eslint-disable new-cap */
 
 'use strict';
@@ -22175,7 +21667,7 @@ function transformLiteralToPath(sexpr) {
 }
 
 
-},{"../exception":55,"../utils":68,"./ast":43}],47:[function(require,module,exports){
+},{"../exception":61,"../utils":74,"./ast":49}],53:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -22407,7 +21899,7 @@ function preparePartialBlock(open, program, close, locInfo) {
 }
 
 
-},{"../exception":55}],48:[function(require,module,exports){
+},{"../exception":61}],54:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -23535,7 +23027,7 @@ exports['default'] = JavaScriptCompiler;
 module.exports = exports['default'];
 
 
-},{"../base":42,"../exception":55,"../utils":68,"./code-gen":45}],49:[function(require,module,exports){
+},{"../base":48,"../exception":61,"../utils":74,"./code-gen":51}],55:[function(require,module,exports){
 /* istanbul ignore next */
 /* Jison generated parser */
 "use strict";
@@ -24275,7 +23767,7 @@ var handlebars = (function () {
 exports['default'] = handlebars;
 
 
-},{}],50:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 /* eslint-disable new-cap */
 'use strict';
 
@@ -24463,7 +23955,7 @@ PrintVisitor.prototype.HashPair = function (pair) {
 /* eslint-enable new-cap */
 
 
-},{"./visitor":51}],51:[function(require,module,exports){
+},{"./visitor":57}],57:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24605,7 +24097,7 @@ exports['default'] = Visitor;
 module.exports = exports['default'];
 
 
-},{"../exception":55}],52:[function(require,module,exports){
+},{"../exception":61}],58:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24828,7 +24320,7 @@ exports['default'] = WhitespaceControl;
 module.exports = exports['default'];
 
 
-},{"./visitor":51}],53:[function(require,module,exports){
+},{"./visitor":57}],59:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24846,7 +24338,7 @@ function registerDefaultDecorators(instance) {
 }
 
 
-},{"./decorators/inline":54}],54:[function(require,module,exports){
+},{"./decorators/inline":60}],60:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24877,7 +24369,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":68}],55:[function(require,module,exports){
+},{"../utils":74}],61:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24919,7 +24411,7 @@ exports['default'] = Exception;
 module.exports = exports['default'];
 
 
-},{}],56:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24967,7 +24459,7 @@ function registerDefaultHelpers(instance) {
 }
 
 
-},{"./helpers/block-helper-missing":57,"./helpers/each":58,"./helpers/helper-missing":59,"./helpers/if":60,"./helpers/log":61,"./helpers/lookup":62,"./helpers/with":63}],57:[function(require,module,exports){
+},{"./helpers/block-helper-missing":63,"./helpers/each":64,"./helpers/helper-missing":65,"./helpers/if":66,"./helpers/log":67,"./helpers/lookup":68,"./helpers/with":69}],63:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25008,7 +24500,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":68}],58:[function(require,module,exports){
+},{"../utils":74}],64:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25104,7 +24596,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../exception":55,"../utils":68}],59:[function(require,module,exports){
+},{"../exception":61,"../utils":74}],65:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25131,7 +24623,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../exception":55}],60:[function(require,module,exports){
+},{"../exception":61}],66:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25162,7 +24654,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":68}],61:[function(require,module,exports){
+},{"../utils":74}],67:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25190,7 +24682,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{}],62:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25204,7 +24696,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{}],63:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25239,7 +24731,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":68}],64:[function(require,module,exports){
+},{"../utils":74}],70:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25288,7 +24780,7 @@ exports['default'] = logger;
 module.exports = exports['default'];
 
 
-},{"./utils":68}],65:[function(require,module,exports){
+},{"./utils":74}],71:[function(require,module,exports){
 (function (global){
 /* global window */
 'use strict';
@@ -25311,7 +24803,7 @@ module.exports = exports['default'];
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],66:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25605,7 +25097,7 @@ function executeDecorators(fn, prog, container, depths, data, blockParams) {
 }
 
 
-},{"./base":42,"./exception":55,"./utils":68}],67:[function(require,module,exports){
+},{"./base":48,"./exception":61,"./utils":74}],73:[function(require,module,exports){
 // Build out our basic SafeString type
 'use strict';
 
@@ -25622,7 +25114,7 @@ exports['default'] = SafeString;
 module.exports = exports['default'];
 
 
-},{}],68:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25748,7 +25240,7 @@ function appendContextPath(contextPath, id) {
 }
 
 
-},{}],69:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 // USAGE:
 // var handlebars = require('handlebars');
 /* eslint-disable no-var */
@@ -25775,7 +25267,7 @@ if (typeof require !== 'undefined' && require.extensions) {
   require.extensions['.hbs'] = extension;
 }
 
-},{"../dist/cjs/handlebars":40,"../dist/cjs/handlebars/compiler/printer":50,"fs":1}],70:[function(require,module,exports){
+},{"../dist/cjs/handlebars":46,"../dist/cjs/handlebars/compiler/printer":56,"fs":1}],76:[function(require,module,exports){
 /*
  * Copyright 2009-2011 Mozilla Foundation and contributors
  * Licensed under the New BSD license. See LICENSE.txt or:
@@ -25785,7 +25277,7 @@ exports.SourceMapGenerator = require('./source-map/source-map-generator').Source
 exports.SourceMapConsumer = require('./source-map/source-map-consumer').SourceMapConsumer;
 exports.SourceNode = require('./source-map/source-node').SourceNode;
 
-},{"./source-map/source-map-consumer":77,"./source-map/source-map-generator":78,"./source-map/source-node":79}],71:[function(require,module,exports){
+},{"./source-map/source-map-consumer":83,"./source-map/source-map-generator":84,"./source-map/source-node":85}],77:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -25894,7 +25386,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./util":80,"amdefine":81}],72:[function(require,module,exports){
+},{"./util":86,"amdefine":87}],78:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -26042,7 +25534,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./base64":73,"amdefine":81}],73:[function(require,module,exports){
+},{"./base64":79,"amdefine":87}],79:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -26117,7 +25609,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":81}],74:[function(require,module,exports){
+},{"amdefine":87}],80:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -26236,7 +25728,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":81}],75:[function(require,module,exports){
+},{"amdefine":87}],81:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2014 Mozilla Foundation and contributors
@@ -26324,7 +25816,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./util":80,"amdefine":81}],76:[function(require,module,exports){
+},{"./util":86,"amdefine":87}],82:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -26446,7 +25938,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":81}],77:[function(require,module,exports){
+},{"amdefine":87}],83:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -27525,7 +27017,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":71,"./base64-vlq":72,"./binary-search":74,"./quick-sort":76,"./util":80,"amdefine":81}],78:[function(require,module,exports){
+},{"./array-set":77,"./base64-vlq":78,"./binary-search":80,"./quick-sort":82,"./util":86,"amdefine":87}],84:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -27926,7 +27418,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":71,"./base64-vlq":72,"./mapping-list":75,"./util":80,"amdefine":81}],79:[function(require,module,exports){
+},{"./array-set":77,"./base64-vlq":78,"./mapping-list":81,"./util":86,"amdefine":87}],85:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -28342,7 +27834,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./source-map-generator":78,"./util":80,"amdefine":81}],80:[function(require,module,exports){
+},{"./source-map-generator":84,"./util":86,"amdefine":87}],86:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -28714,7 +28206,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":81}],81:[function(require,module,exports){
+},{"amdefine":87}],87:[function(require,module,exports){
 (function (process,__filename){
 /** vim: et:ts=4:sw=4:sts=4
  * @license amdefine 1.0.0 Copyright (c) 2011-2015, The Dojo Foundation All Rights Reserved.
@@ -29019,15 +28511,15 @@ function amdefine(module, requireFn) {
 module.exports = amdefine;
 
 }).call(this,require('_process'),"/node_modules\\handlebars\\node_modules\\source-map\\node_modules\\amdefine\\amdefine.js")
-},{"_process":3,"path":2}],82:[function(require,module,exports){
+},{"_process":3,"path":2}],88:[function(require,module,exports){
 // Create a simple path alias to allow browserify to resolve
 // the runtime on a supported path.
 module.exports = require('./dist/cjs/handlebars.runtime')['default'];
 
-},{"./dist/cjs/handlebars.runtime":41}],83:[function(require,module,exports){
+},{"./dist/cjs/handlebars.runtime":47}],89:[function(require,module,exports){
 module.exports = require("handlebars/runtime")["default"];
 
-},{"handlebars/runtime":82}],84:[function(require,module,exports){
+},{"handlebars/runtime":88}],90:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -38239,7 +37731,7 @@ return jQuery;
 
 }));
 
-},{}],85:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 (function (global){
 
 ; require("jQuery");
@@ -39645,9 +39137,9 @@ if ( $.ajaxPrefilter ) {
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jQuery":84}],86:[function(require,module,exports){
-arguments[4][84][0].apply(exports,arguments)
-},{"dup":84}],87:[function(require,module,exports){
+},{"jQuery":90}],92:[function(require,module,exports){
+arguments[4][90][0].apply(exports,arguments)
+},{"dup":90}],93:[function(require,module,exports){
 /*! DataTables Bootstrap 3 integration
  * ©2011-2014 SpryMedia Ltd - datatables.net/license
  */
@@ -39855,6 +39347,6 @@ else if ( jQuery ) {
 })(window, document);
 
 
-},{"datatables":38,"jquery":86}],88:[function(require,module,exports){
-arguments[4][38][0].apply(exports,arguments)
-},{"dup":38,"jquery":86}]},{},[23]);
+},{"datatables":45,"jquery":92}],94:[function(require,module,exports){
+arguments[4][45][0].apply(exports,arguments)
+},{"dup":45,"jquery":92}]},{},[29]);

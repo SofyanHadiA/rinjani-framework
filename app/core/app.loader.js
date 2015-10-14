@@ -1,6 +1,15 @@
-'use strict'
+/*
+* Page loader core module 
+*/
 
-module.exports = function ($, $notify, $http, $handlebars, $module, $config) {
+var $ = jQuery;
+var $notify = require('./app.notify.js');
+var $http = require('./app.http.js');
+var $module = require('./app.module.js');
+var $handlebars = require('handlebars');
+var $view = require('./app.view.js');
+
+function loaderModule() {
 
     var loader = {
         load: load
@@ -9,43 +18,34 @@ module.exports = function ($, $notify, $http, $handlebars, $module, $config) {
     return loader;
 
     function load() {
-        var hash = location.hash.replace(/^#/, '');
 
-        if (!hash) {
-            hash = $config.route.default;
-        };
+        var config = $app.$config;
 
-        $('app-view').html('<div class="spinner text-center"><div class="dots-loader">Loading…</div></div>');
+        var hash = location.hash.replace(/^#/, '') || config.route.default;
 
-        // try {
-            var _module = $module.resolve(hash);
+        var appView = config.view.appView || 'app-view';
 
-            var model = _module.model;
+        $(appView).html('<div class="spinner text-center"><div class="dots-loader">Loading…</div></div>');
 
-            if (_module.templateUrl) {
-                $http.get(_module.templateUrl).then(function (response) {
-                    var template = response;
-                    render(model, template)
+        try {
+            var module = $module.resolve(hash);
 
-                    _module.controller.load()
+            if (module.templateUrl) {
+                $http.get(module.templateUrl).then(function (response) {
+                    module.template = response;
+                    $view.render(module.template, module.model, appView);
+                    module.controller();
                 });
             }
             else {
-                var template = _module.template;
-                render(model, template)
-
-                _module.controller.load()
+                $view.render(module.template, module.model, appView);
+                module.controller();
             }
-
-        // } catch (e) {
-        //     $notify.danger("Error on load page " + hash + "<br/>" + e);
-        // }
-
-        function render(model, template) {
-
-            var rendered = $handlebars.compile(template);
-            rendered = rendered(model);
-            $('app-view').html(rendered);
+        } catch (e) {
+            $notify.danger("Error on load page " + hash + "<br/>" + e);
         }
+        
     };
 };
+
+module.exports = loaderModule();

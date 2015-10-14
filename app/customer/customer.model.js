@@ -1,5 +1,6 @@
-module.exports = function($language){
-	return {
-		lang: $language		
-	};		
+function customerModel() {
+	return {		
+	};
 };
+
+module.exports = customerModel();

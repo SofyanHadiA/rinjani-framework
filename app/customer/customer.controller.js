@@ -1,18 +1,27 @@
-'use strict';
+function customerController() {
 
-module.exports = function ($, $notify, $tablegrid, $modal, $form) {
-    var customer = {};
+    var $ = $app.$;
+    var $notify = $app.$notify;
+    var $tablegrid = $app.$tablegrid;
+    var $modal = $app.$modal;
+    var $form = $app.$form;
+    var customerForm = require('./form/customer.form.js')($app);
 
-    customer.load = onLoad;
-    //customer.showModal = showModal;
-    customer.tableGrid = {};
-    customer.table = '#manage-table ';
+    var self = {
+        tableGrid: {},
+        table: '#manage-table ',
+        customerForm: customerForm,
+        load: onLoad,
+        showForm: showForm,
+    };
 
-    return customer;
+    self.load();
+
+    return self;
 
     function onLoad() {
 
-        customer.tableGrid = $tablegrid.render("#customer-table", 'customers',
+        self.tableGrid = $tablegrid.render("#customer-table", 'customers',
             [
                 { data: 'last_name' },
                 { data: 'first_name' },
@@ -21,13 +30,13 @@ module.exports = function ($, $notify, $tablegrid, $modal, $form) {
             ], 'person_id');
 
         $('body').on('click', '#customer-add', function () {
-            //$modal.show('customers/view', 'lg');
-            //var customerForm = customerFormController.load();
+            self.showForm();
         });
-    }
-    
-    // function showModal(id) {
-    //     new app.modalForm();
-    // };
+    };
 
+    function showForm() {
+        self.customerForm.controller();
+    };
 };
+
+module.exports = customerController;
