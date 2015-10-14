@@ -7,17 +7,18 @@ require('../../node_modules/jquery-validation/dist/jquery.validate.js');
 
 var formModule = function () {
 
-    var form = {
+    var self = {
         create: create,
         config: config,
-        onSubmit: submit
+        validation: {},
+        onSubmit: onSubmit
     };
 
-    return form;
+    return self;
 
     function create(formId) {
-        form.container = formId
-        $(form.container).validate({
+        self.container = formId
+        self.validatin = $(self.container).validate({
             errorClass: "error text-red",
             errorPlacement: function (error, element) {
                 error.insertBefore(element);
@@ -30,17 +31,17 @@ var formModule = function () {
             },
         })
 
-        return form;
+        return self;
     };
 
     function config(config) {
-        $.extend(form.validation.settings, config);
-        return form;
+        $.extend(self.validation.settings, config);
+        return self;
     };
 
-    function submit(callBack) {
-        form.validation.settings.submitHandler = callBack;
-        return form;
+    function onSubmit(submitFunc) {
+        self.validation.settings.submitHandler = submitFunc;
+        return self;
     };
 };
 

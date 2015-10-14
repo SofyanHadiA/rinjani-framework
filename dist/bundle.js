@@ -363,17 +363,18 @@ require('../../node_modules/jquery-validation/dist/jquery.validate.js');
 
 var formModule = function () {
 
-    var form = {
+    var self = {
         create: create,
         config: config,
-        onSubmit: submit
+        validation: {},
+        onSubmit: onSubmit
     };
 
-    return form;
+    return self;
 
     function create(formId) {
-        form.container = formId
-        $(form.container).validate({
+        self.container = formId
+        self.validatin = $(self.container).validate({
             errorClass: "error text-red",
             errorPlacement: function (error, element) {
                 error.insertBefore(element);
@@ -386,17 +387,17 @@ var formModule = function () {
             },
         })
 
-        return form;
+        return self;
     };
 
     function config(config) {
-        $.extend(form.validation.settings, config);
-        return form;
+        $.extend(self.validation.settings, config);
+        return self;
     };
 
-    function submit(callBack) {
-        form.validation.settings.submitHandler = callBack;
-        return form;
+    function onSubmit(submitFunc) {
+        self.validation.settings.submitHandler = submitFunc;
+        return self;
     };
 };
 
@@ -568,7 +569,7 @@ function loaderModule() {
 module.exports = loaderModule();
 },{"./app.http.js":7,"./app.module.js":11,"./app.notify.js":12,"./app.view.js":14,"handlebars":75}],10:[function(require,module,exports){
 var $ = jQuery;
-var $view = require('./app.view.js');
+var $view = $view || require('./app.view.js');
 
 function modalModule() {
 
@@ -819,8 +820,8 @@ function tableGridModule($modal, $http) {
 module.exports = tableGridModule();
 },{"./../../packages/datatables/media/js/dataTables.bootstrap.js":93,"./../../packages/datatables/media/js/jquery.dataTables.js":94,"bootbox":30}],14:[function(require,module,exports){
 var $ = jQuery;
-var $handlebars = require('handlebars');
-var $language = require('./../language/en.js');
+var $handlebars = $handlebars || require('handlebars');
+var $language = $language || require('./../language/en.js');
 
 function viewModule() {
 
@@ -831,11 +832,13 @@ function viewModule() {
         return self;
 
         function render(template, model, viewContainer) {
-                var rendered = $handlebars.compile(template);
 
-                model = $.extend(model, $language);
+                model = model || {};
+                model.lang = $language;
 
-                rendered = rendered(model);
+                console.log(model);
+
+                var rendered = template(model);
 
                 if (viewContainer) {
                         $(viewContainer).html(rendered);
@@ -899,7 +902,7 @@ function customerModule ($app) {
 	return {
 		'model': require('./customer.model.js'),
 		'controller': require('./customer.controller.js'),		
-		'template': require('./customer.template.hbs')(),
+		'template': require('./customer.template.hbs'),
 	}
 };
 
@@ -916,20 +919,20 @@ module.exports = customerModel();
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression, alias5=container.lambda;
+    var stack1, alias1=container.lambda, alias2=container.escapeExpression;
 
   return "\n<section class=\"content-header\">\n    <h1>\n        "
-    + alias4(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"title","hash":{},"data":data}) : helper)))
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.module_customers : stack1), depth0))
     + "\n        <small>\n            "
-    + alias4(((helper = (helper = helpers.description || (depth0 != null ? depth0.description : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"description","hash":{},"data":data}) : helper)))
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.module_customers_desc : stack1), depth0))
     + "\n        </small>\n    </h1>\n    <ol class=\"breadcrumb\">\n        <li><a href=\"#\"><i class=\"fa fa-dashboard\"></i>Home</a></li>\n        <li class=\"active\">"
-    + alias4(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"title","hash":{},"data":data}) : helper)))
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.module_customers : stack1), depth0))
     + "</li>\n    </ol>\n</section>\n\n<section class=\"content\">\n    <div class=\"row\">\n        <div class=\"col-md-12\">\n            <div class=\"box\">\n                <div class=\"box-header\">\n                    <div class=\"row\">\n                        <div class=\"col-sm-6 \">\n                            <div class=\"btn-group\">\n                                <a href=\"../customers/delete\" id=\"delete-selected\" class=\"btn btn-sm btn-default\">\n                                    <i class=\"fa fa-trash\"></i> "
-    + alias4(alias5(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.common_delete : stack1), depth0))
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.common_delete : stack1), depth0))
     + "\n                                </a>\n                                <button class=\"btn btn-sm btn-default\" id=\"email\">\n                                    <i class=\"fa fa-send\"></i> "
-    + alias4(alias5(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.common_email : stack1), depth0))
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.common_email : stack1), depth0))
     + "\n                                </button>\n                            </div>\n                        </div>\n\n                        <div class=\"col-sm-6 text-right\">\n                            <button id=\"customer-add\" class=\"btn btn-primary\">\n                                <i class=\"fa fa-plus\"></i> "
-    + alias4(alias5(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.customers_new : stack1), depth0))
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.lang : depth0)) != null ? stack1.customers_new : stack1), depth0))
     + "\n                            </button>\n\n                            <a class=\"btn btn-success\" id=\"import-excel\" href=\"../customers/excel_import\" data-target=\"#modal-container\">\n                                <i class=\"fa fa-file-excel-o\"></i> Excel Import\n                            </a>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"box-body \">\n                    <table id=\"customer-table\" class=\"table table-bordered table-hover\">\n                        <thead>\n                            <tr>\n                                <th width=\"10px\">\n                                    <input type=\"checkbox\" id=\"select-all\" />\n                                </th>\n                                <th>Last Name</th>\n                                <th>First Name</th>\n                                <th>Email</th>\n                                <th>Phone</th>\n                                <th width=\"50px\">Action</th>\n                            </tr>\n                        </thead>\n                    </table>\n                </div>\n\n                <div id=\"feedback_bar\"></div>\n            </div>\n        </div>\n    </div>\n</section>";
 },"useData":true});
 
@@ -938,6 +941,7 @@ function customerFormController() {
 
     var $modal = $app.$modal;
     var $form = $app.$form;
+    var $http = $app.$http;
 
     var self = {
         load: onLoad,
@@ -968,18 +972,18 @@ function customerFormController() {
             size: 'lg'
         }
 
-        var template = require('./customer.form.template.hbs')();
+        var template = require('./customer.form.template.hbs');
 
-        $modal.show(template, {}, modalConfig);
+        $modal.show(template, null, modalConfig);
 
         $form.create()
             .config(self.formConfig)
             .onSubmit(function () {
                 var url = $(form).attr('action');
                 var data = $(form).serialize();
-                app.http.post(url, data, function () {
+                $http.post(url, data, function () {
                     $('#modal-container').modal('hide');
-                    app.controller.customerController.tableGrid.ajax.reload();
+                    //app.controller.customerController.tableGrid.ajax.reload();
                 });
             });
     }
@@ -995,7 +999,7 @@ function customerFormModule ($app) {
 	
 	return {		
 		'controller': require('./customer.form.controller.js'),		
-		'template': require('./customer.form.template.hbs')(),
+		'template': require('./customer.form.template.hbs'),
 	}
 };
 
@@ -1091,13 +1095,13 @@ function home($app) {
 	return {
 		'model': require('./home.model.js'),
 		'controller': require('./home.controller.js'),		
-		'template': require('./home.template.js'),
+		'template': require('./home.template.hbs'),
 	}
 };
 
 module.exports = home;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./home.controller.js":24,"./home.model.js":26,"./home.template.js":27}],26:[function(require,module,exports){
+},{"./home.controller.js":24,"./home.model.js":26,"./home.template.hbs":27}],26:[function(require,module,exports){
 function homeModel(){
 	return {
 		title: $app.$language.module_home,
@@ -1106,21 +1110,13 @@ function homeModel(){
 
 module.exports = homeModel();
 },{}],27:[function(require,module,exports){
-module.exports =  '<section class="content-header"></section>' +
-        '<section class="content">' +
-            '<div class="row">' +
-                '<div class="col-md-12">' +
-                    '<div class="box">' +
-                        '<div class="box-body">' +
-                            '<dashboard-content/>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-            '</div>' +
-        '</section>';
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    return "<section class=\"content-header\"></section> \n<section class=\"content\"> \n    <div class=\"row\"> \n        <div class=\"col-md-12\"> \n            <div class=\"box\"> \n                <div class=\"box-body\"> \n                    <dashboard-content/> \n                </div> \n            </div> \n        </div> \n    </div> \n</section>";
+},"useData":true});
 
-
-},{}],28:[function(require,module,exports){
+},{"hbsfy/runtime":89}],28:[function(require,module,exports){
 
 module.exports = {
 	alpha: "The %s field may only contain alphabetical characters."

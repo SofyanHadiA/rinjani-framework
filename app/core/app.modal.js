@@ -1,5 +1,5 @@
 var $ = jQuery;
-var $view = require('./app.view.js');
+var $view = $view || require('./app.view.js');
 
 function modalModule() {
 

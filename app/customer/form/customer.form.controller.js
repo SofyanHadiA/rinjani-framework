@@ -2,6 +2,7 @@ function customerFormController() {
 
     var $modal = $app.$modal;
     var $form = $app.$form;
+    var $http = $app.$http;
 
     var self = {
         load: onLoad,
@@ -32,18 +33,18 @@ function customerFormController() {
             size: 'lg'
         }
 
-        var template = require('./customer.form.template.hbs')();
+        var template = require('./customer.form.template.hbs');
 
-        $modal.show(template, {}, modalConfig);
+        $modal.show(template, null, modalConfig);
 
         $form.create()
             .config(self.formConfig)
             .onSubmit(function () {
                 var url = $(form).attr('action');
                 var data = $(form).serialize();
-                app.http.post(url, data, function () {
+                $http.post(url, data, function () {
                     $('#modal-container').modal('hide');
-                    app.controller.customerController.tableGrid.ajax.reload();
+                    //app.controller.customerController.tableGrid.ajax.reload();
                 });
             });
     }

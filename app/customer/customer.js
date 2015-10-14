@@ -6,7 +6,7 @@ function customerModule ($app) {
 	return {
 		'model': require('./customer.model.js'),
 		'controller': require('./customer.controller.js'),		
-		'template': require('./customer.template.hbs')(),
+		'template': require('./customer.template.hbs'),
 	}
 };
 

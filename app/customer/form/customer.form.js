@@ -5,7 +5,7 @@ function customerFormModule ($app) {
 	
 	return {		
 		'controller': require('./customer.form.controller.js'),		
-		'template': require('./customer.form.template.hbs')(),
+		'template': require('./customer.form.template.hbs'),
 	}
 };
 

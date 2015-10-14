@@ -1,6 +1,6 @@
 var $ = jQuery;
-var $handlebars = require('handlebars');
-var $language = require('./../language/en.js');
+var $handlebars = $handlebars || require('handlebars');
+var $language = $language || require('./../language/en.js');
 
 function viewModule() {
 
@@ -11,11 +11,13 @@ function viewModule() {
         return self;
 
         function render(template, model, viewContainer) {
-                var rendered = $handlebars.compile(template);
 
-                model = $.extend(model, $language);
+                model = model || {};
+                model.lang = $language;
 
-                rendered = rendered(model);
+                console.log(model);
+
+                var rendered = template(model);
 
                 if (viewContainer) {
                         $(viewContainer).html(rendered);
