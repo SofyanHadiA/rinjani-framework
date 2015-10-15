@@ -1,7 +1,19 @@
 'use strict'
 
-var $ = require('jquery');
+/*
+ * main.js
+ */
 
-var app = require('./core/app.js');
+var $app = require('./core/app.js');
 
-console.log(app);
+// load modules
+$app.$module.register('home', require('./home/home.js')($app));
+$app.$module.register('customers', require('./customer/customer.js')($app));
+
+// load config
+var config = require('./config.js');
+
+// start the application
+$app.start(config);
+
+console.log($app)

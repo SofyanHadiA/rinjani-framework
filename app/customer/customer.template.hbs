@@ -1,14 +1,14 @@
-<!-- Content Header (Page header) -->
+
 <section class="content-header">
     <h1>
-        {{title}}
+        {{lang.module_customers}}
         <small>
-            {{description}}
+            {{lang.module_customers_desc}}
         </small>
     </h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
-        <li class="active">{{title}}</li>
+        <li class="active">{{lang.module_customers}}</li>
     </ol>
 </section>
 
@@ -21,7 +21,7 @@
                         <div class="col-sm-6 ">
                             <div class="btn-group">
                                 <a href="../customers/delete" id="delete-selected" class="btn btn-sm btn-default">
-                                    <i class="fa fa-trash"></i> {{lang.common_deletes}}
+                                    <i class="fa fa-trash"></i> {{lang.common_delete}}
                                 </a>
                                 <button class="btn btn-sm btn-default" id="email">
                                     <i class="fa fa-send"></i> {{lang.common_email}}
@@ -30,7 +30,7 @@
                         </div>
 
                         <div class="col-sm-6 text-right">
-                            <button class="btn btn-primary" onclick="app.controller.customerController.showModal('customerNewModal')">
+                            <button id="customer-add" class="btn btn-primary">
                                 <i class="fa fa-plus"></i> {{lang.customers_new}}
                             </button>
 
@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="box-body ">
-                    <table id="manage-table" class="table table-bordered table-hover">
+                    <table id="customer-table" class="table table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th width="10px">

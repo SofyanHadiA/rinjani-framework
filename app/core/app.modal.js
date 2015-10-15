@@ -1,25 +1,40 @@
-'use strict'
+var $ = jQuery;
+var $view = $view || require('./app.view.js');
 
-module.exports = function (url, size, modalId) {
+function modalModule() {
 
-    if (!modalId) {
-        modalId = "modal-container";
-    }
+    var modal = {
+        show: show
+    };
 
-    $('body').append('<div class="modal fade" id="' + modalId + '" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">'
-        + '<div class="modal-dialog modal-' + size + '">'
-        + '<div class="modal-content">'
-        + '</div></div></div>'
-    );
+    return modal;
 
-    $('#' + modalId).removeData('modal')
-        .modal({
-            remote: url,
-            show: true
+    function show(template, model, config) {
+        var defer = $.Deferred();
+
+        var modalId = config.modalId || "modal-container-" + (Math.random() + 1).toString(36).substring(7);
+
+        $('body').append('<div class="modal fade" id="' + modalId + '" tabindex="-1" role="dialog">'
+            + '<div class="modal-dialog modal-' + config.size + '">'
+            + '<div class="modal-content">'
+            // load template
+            + $view.render(template)
+            + '</div></div></div>');
+
+        $('#' + modalId).removeData('modal')
+            .modal({
+                show: true
+            });
+
+        $(document).on('hidden.bs.modal', '#' + modalId, function () {
+            console.log('hide ' + modalId);
+            $('#' + modalId).remove();
+
+            defer.done();
         });
 
-    $(document).on('hidden.bs.modal', '#' + modalId, function () {
-        console.log('hide');
-        $('#' + modalId).remove();
-    });
-}
+        return defer.promise();
+    };
+};
+
+module.exports = modalModule();

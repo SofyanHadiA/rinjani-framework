@@ -1,6 +1,5 @@
-'use strict'
 
-var $language = {
+module.exports = {
 	alpha: "The %s field may only contain alphabetical characters."
 	, alpha_dash: "The %s field may only contain alpha-numeric characters, underscores, and dashes."
 	, alpha_numeric: "The %s field may only contain alpha-numeric characters."
@@ -613,6 +612,3 @@ var $language = {
 	, valid_url: "The %s field must contain a valid URL."
 	, validation_form_error: "Please fill all required fields and make sure input is in correct format."
 };
-
-//app.injector.register('$language', $language);
-

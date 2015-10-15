@@ -1,12 +1,13 @@
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h4 class="modal-title"><?php echo $this->lang->line("customers_basic_information")</h4>
+    <h4 class="modal-title"> {{lang.customers_basic_information}}</h4>
 </div>
 
 <div class="modal-body">
-    <?php echo form_open('customers/save/' . $person_info->person_id,
-        array('name' => 'customer_form', 'id' => 'customer_form', "class" => 'form-horizontal')); ?>
-    <span class="small"><?php echo $this->lang->line('common_fields_required_message'); ?></span>
+    <form id="customer-form" name="customer-form"  action="../customers/save" method="post" class ="form-horizontal">
+    <!--<?php echo form_open('customers/save/' . $person_info->person_id,
+        array('name' => 'customer_form', 'id' => 'customer_form', "class" => 'form-horizontal')); ?>-->
+    <span class="small">{{lang.common_fields_required_message}}</span>
 
     <ul id="error_message_box" class="warning"></ul>
 
@@ -15,15 +16,9 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
-                    <?php echo form_label($this->lang->line('customers_account_number'), 'account_number',
-                        array('class' => 'col-sm-4 control-label')); ?>
+                    <label for="account_number" class="col-sm-4 control-label">{{lang.customers_account_number}}</label>                                        
                     <div class='col-sm-8'>
-                        <?php echo form_input(array(
-                                'name' => 'account_number',
-                                'id' => 'account_number',
-                                'class' => 'form-control',
-                                'value' => $person_info->account_number)
-                        ); ?>
+                        <input name="account_number" id="account_number" class="form-control" value="{{person_info.account_number}}" />                        
                     </div>
                 </div>
             </div>
@@ -44,10 +39,8 @@
             </div>
         </div>
 
-    </fieldset>
-    <?php
-    echo form_close();
-    ?>
+    </fieldset>    
+    </form>    
 </div>
 
 <div class="modal-footer">
