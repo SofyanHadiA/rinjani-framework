@@ -9,6 +9,7 @@ The puspose of Rinjani Framework itself is provides fast, secure, asynchronous a
 - Bower
 - DataTable.Js
 - jQuery
+- Handlebars
 
 ## Tech Stack - Backend ##
 - Open Source Point Of Sales - https://github.com/jekkos/opensourcepos
