@@ -1,6 +1,6 @@
 # Rinjani Javascript Framework  #
 This project is for learning purpose only.
-The puspose of Rinjani Framework is provides fast, secure, asynchronous and easy to use javascript framework, with table grid, searching, pagination, form, modal, and notification ready out of the box.
+The puspose of Rinjani Framework itself is provides fast, secure, asynchronous and easy to use javascript framework, with table grid, search, pagination, form, modal box, menu navigatioin and notification ready out of the box.
 
 ## Tech Stack - Fontend ##
 - Browserify
